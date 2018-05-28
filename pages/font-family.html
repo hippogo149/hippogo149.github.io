@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Font Family</title>
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	
+	<link rel="stylesheet" href="../assets/html.css">
+	<link rel="stylesheet" href="../assets/common.css"></script>
+	<script src="../assets/por.min.js"></script>
+
+	<style>
+		body {
+			text-align: center;
+			width: 100%;
+		}
+		body > div {
+			display: inline-block;
+			text-align: left;
+		}
+		
+		#compare_btn {
+			position: fixed;
+			top: 40px;
+			left: 40px;
+		}
+		
+		td {
+			padding: 4px;
+			border: 1px dashed lightgray;
+			position: relative;
+		}
+		thead td {
+			border-bottom: 2px solid deepskyblue;
+		}
+		td:nth-child(2) {
+			text-align: center;
+		}
+		td:nth-child(3) div {
+			width: 380px;
+		}
+		td:nth-child(3) {
+			font-size: 18px;
+		}
+		table {
+			border-collapse: collapsed;
+		}
+		tr:nth-child(odd) {
+			background-color: #e9e9ff;
+		}
+		
+		.base-font {
+			display: none;
+			color: grey;
+			position: absolute;
+			top: 4px;
+			left: 4px;
+		}
+		.comparing .base-font{
+			display: inline;
+		}
+	</style>
+</head>
+<body>
+	<h2>Font Family</h2>
+	
+	<div id="list_div"></div>
+	
+	<button id="compare_btn" onclick="compareWithBase()"> Compare with base </button>
+
+<script>
+var headerRow = ["Family", "Base", "Sample", "CSS"];
+var familyList = [
+	 ["Arial", "sans-serif"]
+	,["Arial Black", "sans-serif"]
+	,["Arial Rounded", "sans-serif"]
+	,["Arial Narrow", "sans-serif"]
+	,["Arial Unicode", "sans-serif"]
+	,["Gadget", "sans-serif"]
+	,["Helvetica", "sans-serif"]
+	,["Tahoma", "sans-serif"]
+	,["Geneva", "sans-serif"]
+	,["Verdana", "sans-serif"]
+	,["Trebuchet MS", "sans-serif"]
+	,["Franklin Gothic", "sans-serif"]
+	,["Lucida Sans Unicode", "sans-serif"]
+	,["Lucida Grande", "sans-serif"]
+	,["Calibri", "sans-serif"]
+	,["Century Gothic", "sans-serif"]
+	,["Gill Sans", "sans-serif"]
+	,["Microsoft Sans Serif", "sans-serif"]
+	,["Noto Sans", "sans-serif"]
+	,["Segoe UI Regular", "sans-serif"]
+	,["Avantgarde", "sans-serif"]
+	,["TeX Gyre Adventor", "sans-serif"]
+	,["URW Gothic L", "sans-serif"]
+	,["Optima", "sans-serif"]
+	,["sans-serif", "sans-serif"]
+	// serif': normal fonts with serifs
+	,["Times", "serif"]
+	,["Times New Roman", "serif"]
+	,["Didot", "serif"]
+	,["Georgia", "serif"]
+	,["Palatino", "serif"]
+	,["Palatino Linotype", "serif"]
+	,["Garamond", "serif"]
+	,["URW Palladio L", "serif"]
+	,["Bookman", "serif"]
+	,["Bookman Old Style", "serif"]
+	,["Book Antiqua", "serif"]
+	,["URW Bookman L", "serif"]
+	,["New Century Schoolbook", "serif"]
+	,["TeX Gyre Schola", "serif"]
+	,["American Typewriter", "serif"]
+	,["Century Schoolbook", "serif"]
+	,["serif", "serif"]
+	// Fixed-width fonts
+	,["Andale Mono", "monospace"]
+	,["Courier New", "monospace"]
+	,["Courier", "monospace"]
+	,["Lucida Console", "monospace"]
+	,["DejaVu Sans Mono", "monospace"]
+	,["Monaco", "monospace"]
+	,["Consolas", "monospace"]
+	,["FreeMono", "monospace"]
+	,["Fixedsys", "monospace"]
+	,["System", "monospace"]
+	,["OCR A Std", "monospace"]
+	,["Everson Mono", "monospace"]
+	,["DejaVu Sans Mono", "monospace"]
+	,["Roboto Mono", "monospace"]
+	,["Prestige Elite", "monospace"]
+	,["monospace", "monospace"]
+	// Fonts that emulate handwriting
+	,["Comic Sans MS", "cursive"]
+	,["Comic Sans", "cursive"]
+	,["Apple Chancery", "cursive"]
+	,["Bradley Hand", "cursive"]
+	,["Brush Script MT", "cursive"]
+	,["Brush Script Std", "cursive"]
+	,["Snell Roundhand", "cursive"]
+	,["URW Chancery L", "cursive"]
+	,["cursive", "cursive"]
+	// Decorative fonts, for titles, etc.
+	,["Impact", "fantasy"]
+	,["Charcoal", "fantasy"]
+	,["Luminari", "fantasy"]
+	,["Chalkduster", "fantasy"]
+	,["Jazz LET", "fantasy"]
+	,["Blippo", "fantasy"]
+	,["Stencil Std", "fantasy"]
+	,["Marker Felt", "fantasy"]
+	,["Trattatello", "fantasy"]
+	,["Monotype Sorts", "fantasy"]
+	,["fantasy", "fantasy"]
+	,["Webdings", "symbol"]
+	,["Wingdings", "symbol"]
+	,["Zapf Dingbats", "symbol"]
+	,["symbol", "symbol"]
+];
+
+var rowCount = familyList.length;
+for(var i = 0; i < rowCount; ++i) {
+	var row = familyList[i];
+	var ff = row[0];
+	if(ff.indexOf(" ") >= 0) {
+		ff = '"' + ff + '"';
+	}
+	var base = row[1];
+	if(ff !== base) {
+		ff += ", " + base;
+	}
+	row.push("", ff);
+}
+
+var tbl = new Table(list_div);
+tbl.rebuild(familyList, headerRow);
+
+tbl.getCellsInColumn(2).forEach(function(cell, rowIndex) {
+	var row = familyList[rowIndex];
+	var baseFont = row[1];
+	var cssFont = row[3];
+	
+	var sampleTxt = "The Quick Brown Fox Jumps Over The Lazy Dog";
+	var span = document.createElement("div");
+	if(baseFont == "symbol") {
+		span.className = "symbol-font";
+	}
+	span.textContent = sampleTxt;
+	span.style.fontFamily = cssFont;
+	
+	
+	var baseSpan = document.createElement("div");
+	baseSpan.textContent = sampleTxt;
+	baseSpan.style.fontFamily = baseFont;
+	baseSpan.className = "base-font";
+	
+	cell.appendChild(span);
+	cell.appendChild(baseSpan);
+});
+var compareWithBase = function(e) {
+	if(list_div.classList.contains("comparing")) {
+		list_div.classList.remove("comparing")
+	} else {
+		list_div.classList.add("comparing")
+	}
+};
+
+tbl.sort(1, "d");
+</script>
+
+</body>
+</html>

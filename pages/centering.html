@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Centering Content</title>
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	<link rel="stylesheet" type="text/css" href="../assets/html.css">
+	<link rel="stylesheet" type="text/css" href="../assets/common.css">
+
+	<style>
+	.block {
+		display: inline-block;
+		background-color: lightgrey;
+		width: 100px;
+		height: 100px;
+		border: 1px solid red;
+		box-sizing: border-box;
+	}
+	
+	.centering-flex {
+		display: -ms-flexbox;
+		display: flex;
+		height: 100%;
+		-ms-flex-align: center;
+		align-items: center;
+		-ms-flex-pack: center;
+		justify-content: center;
+	}
+	
+	.centering-line {
+		line-height: 100px;
+		text-align: center;
+	}
+	
+	.centering-ghost {
+		position: relative;
+		text-align: center;
+	}
+	.centering-ghost::before {
+		content: " ";
+		display: inline-block;
+		height: 100%;
+		width: 0; /* Possibly unnecessary */
+		vertical-align: middle;
+	}
+	.centering-ghost>*{
+		display: inline-block;
+		vertical-align: middle;
+	}
+	
+	.centering-transform {
+		position: relative;
+		text-align: center;
+	}
+	.centering-transform>*{
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 100%; /* Block element is resized to fit content when having absolute position  */
+	}
+	</style>
+</head>
+<body>
+	<h3>Flex Box Method</h3>
+	<div class="block"><div class="centering-flex">ABC</div></div>
+	<div class="block"><div class="centering-flex">ABC DEF GHI JKLMN OPQ</div></div>
+	<div class="block"><div class="centering-flex">ABC</div></div>
+	<h3>Table Cell Method</h3>
+	<div class="block"><div class="filling-table"><div class="centering-cell">ABC</div></div></div>
+	<div class="block"><div class="filling-table"><div class="centering-cell">ABC DEF GHI JKLMN OPQ</div></div></div>
+	<div class="block"><div class="filling-table"><div class="centering-cell">ABC</div></div></div>
+	<h3>Line Height Method</h3>
+	<div class="block centering-line">ABC</div>
+	<div class="block centering-line">ABC DEF GHI JKLMN OPQ</div>
+	<div class="block centering-line">ABC</div>
+	<h3>Pseudo Element Method</h3>
+	<div class="block centering-ghost"><div>ABC</div></div>
+	<div class="block centering-ghost"><div>ABC DEF GHI JKLMN OPQ</div></div>
+	<div class="block centering-ghost"><div>ABC</div></div>
+	<h3>Transform Method</h3>
+	<div class="block centering-transform"><div>ABC</div></div>
+	<div class="block centering-transform"><div>ABC DEF GHI JKLMN OPQ</div></div>
+	<div class="block centering-transform"><div>ABC</div></div>
+	<h4><a href="https://css-tricks.com/centering-css-complete-guide/">https://css-tricks.com/centering-css-complete-guide/</a>
+</body>
+</html>

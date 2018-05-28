@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Table Builder</title>
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	
+	<link rel="stylesheet" href="../assets/html.css">
+	<script src="../assets/por.min.js"></script>
+
+	<style>
+	#demoHost {
+		overflow:auto; 
+		height: 386px; 
+		border: 1px solid darkgrey;
+	}
+	#demoHost td {
+		border: 1px solid grey;
+	}
+	#controlPanel {
+		display: inline-block;
+		width: 600px;
+		vertical-align: top;
+		margin-bottom: 2px;
+		text-align: center;
+	}
+	#controller {
+		width: 100%;
+	}
+	#controller col{
+		width: 50%;
+	}
+	#controller td:first-child {
+		text-align: right;
+	}
+	#controller td:last-child {
+		text-align: left;
+	}
+	#controller tr input {
+		width: 40px;
+	}
+	#controller tr:last-child input {
+		width: 60px;
+	}
+	</style>
+	
+	<script type="text/javascript">
+	</script>
+</head>
+<body>
+	<h2>Table Builder</h2>
+	<div id="controlPanel">
+		<button onclick="toggleOverflowX()">Fixate Table Width</button>
+		<button onclick="addHeaderRow()">Add Header Row</button>
+		<button onclick="addFooterRow()">Add Footer Row</button>
+		<button onclick="toggleCollapsing()">Toggle Border Collapsing</button>
+		<br>
+		<table id="controller" style="width: 100%;" >
+			<colgroup>
+				<col/>
+				<col/>
+			</colgroup>
+			<tbody>
+				<tr>
+					<td>Column Count - <input id="cCount" onchange="setColumnCount()"/></td>
+					<td><input id="rCount" onchange="setRowCount()" value="" type="text" /> - Row Count</td>
+				</tr>
+				<tr>
+					<td>Column Width - <input id="cWidth" onchange="setColumnWidth()"/></td>
+					<td><input id="rHeight" onchange="setRowHeight()"/> - Row Height</td>
+				</tr>
+				<tr>
+					<td>Total Width - <input id="tWidth" onchange="setTotalWidth()" value="" type="text" /></td>
+					<td><input id="tHeight" onchange="setTotalHeight()"/> - Total Height (tbody only)</td>
+				</tr>
+			</tbody>
+		</table>
+		<div id="demoHost" tabindex="0" onpaste="pasteTable(event)"></div>
+	</div>
+	<textarea id="output" style="vertical-align: top; overflow-x:hidden; overflow-y:auto;" cols="60" rows="32" readonly="readonly"></textarea>
+	
+	<script type='text/javascript'>	
+		var colCount = 2;
+		var rowCount = 2;
+		var defaultWidth = 100;
+		var defaultHeight = 0;
+		var tbl = new Table(null, colCount, rowCount);
+		tbl.getElement().style.display = "inline-block";
+		tbl.setDefaultColumnWidth(defaultWidth);
+		tbl.setDefaultRowHeight(defaultHeight);
+		cCount.value = colCount;
+		cWidth.value = defaultWidth;
+		tWidth.value = colCount * defaultWidth;
+		rCount.value = rowCount;
+		rHeight.value = defaultHeight;
+		tHeight.value = rowCount * defaultHeight;
+
+		tbl.setParent(demoHost);
+		
+		function toggleOverflowX() {
+			tbl.enableOverflowX(!tbl.isOverflowX());
+			updateOutput();
+		}
+		function addHeaderRow() {
+			tbl.addHeaderRows();
+			updateOutput();
+		}
+		function addFooterRow() {
+			tbl.addFooterRows();
+			updateOutput();
+		}
+		function toggleCollapsing() {
+			var elem = tbl.getTableElement();
+			if(elem.style.borderCollapse !== "collapse") {
+				elem.style.borderCollapse = "collapse";
+			} else {
+				elem.style.borderCollapse = "separate";
+			}
+			updateOutput();
+		}
+		function setColumnCount() {
+			var count = Ut.getNumericValue(cCount, 2);
+			var width = Ut.getNumericValue(cWidth, 100);
+			
+			count = (count > 0) ? Math.floor(count) : 1;
+			cCount.value = count;
+			tWidth.value = count * width;
+			
+			tbl.setColumnCount(count);
+			updateOutput();
+		}
+		function setRowCount() {
+			var count = Ut.getNumericValue(rCount, 2);
+			var height = Ut.getNumericValue(rHeight, 32);
+			
+			count = (count >= 0) ? Math.floor(count) : 1;
+			rCount.value = count;
+			tHeight.value = count * height;
+			
+			tbl.setRowCount(count);
+			updateOutput();
+		}
+		
+		function setColumnWidth() {
+			var count = Ut.getNumericValue(cCount, 2);
+			var width = Ut.getNumericValue(cWidth, 100);
+			
+			width = width || NaN;
+			tWidth.value = count * width;
+			
+			tbl.setDefaultColumnWidth(width);
+			updateOutput();
+		}
+		function setRowHeight() {
+			var count = Ut.getNumericValue(rCount, 2);
+			var height = Ut.getNumericValue(rHeight, 32);
+			
+			height = height || NaN;
+			tHeight.value = count * height;
+			
+			tbl.setDefaultRowHeight(height);
+			updateOutput();
+		}
+		
+		function setTotalWidth() {
+			var count = Ut.getNumericValue(cCount, 2);
+			var width = Ut.getNumericValue(tWidth, NaN);
+			
+			width = width || NaN;
+			var defaultWidth = width / count;
+			cWidth.value = defaultWidth;
+			
+			tbl.setDefaultColumnWidth(defaultWidth);
+			updateOutput();
+		}
+		function setTotalHeight() {
+			var count = Ut.getNumericValue(rCount, 2);
+			var height = Ut.getNumericValue(tHeight, NaN);
+			
+			height = height || NaN;
+			var defaultHeight = height / count;
+			rHeight.value = defaultHeight;
+			
+			tbl.setDefaultRowHeight(defaultHeight);
+			updateOutput();
+		}
+		function updateOutput() {
+			output.value = HtmlParser.stringifyElement(tbl.getTableElement()); 
+		}
+		function pasteTable(e) {
+			var data = e.clipboardData.getData("text") || "";
+			tbl.rebuild(data);
+			
+			cCount.value = tbl.getColumnCount();
+			rCount.value = tbl.getRowCount();
+			// rCount.value = tbl.getRowCount();
+			
+			updateOutput();
+		}
+		updateOutput();
+	</script>
+
+</body>
+</html>

@@ -1,0 +1,450 @@
+/* <link rel="stylesheet" type="text/css" href="../src/common.css"> */
+
+div { border: 0 solid black; } /* Default border width is not 0px; */
+
+table {border-collapse: collapse; }
+/*td:empty { height: 21px; } Assume line-height: 21px; */
+
+input[type="checkbox"], input[type="radio"] { vertical-align: middle; }
+input[type="checkbox"] + label, input[type="radio"] + label { margin-left: 2px; vertical-align: middle; }
+
+button:not([disabled]) { cursor: pointer; }
+
+
+.circle-elem {
+	display: inline-block;
+	border-radius: 50%;
+}
+.filling-table {
+	display: table;
+	width: 100%;
+	height: 100%;
+	border-collapse: collapse;
+}
+.centering-cell {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.text-clip,
+.text-ellipsis {
+	overflow: hidden;
+	white-space: nowrap;
+}
+.text-clip {
+	text-overflow: clip;
+}
+.text-ellipsis {
+	text-overflow: ellipsis;
+}
+
+/* DnDTrait */
+.dnd-overlay {
+	position: fixed;
+	left: 0;
+	top: 0;
+	pointer-events: none;
+	width: 100%;
+	height: 100%;
+	background-color: red; /* Stop overlay from pass mouseover event to other visual element in IE10 */
+	opacity: 0;
+	z-index: 999;
+}
+.dnd-guideline,
+.dnd-content-box  {
+	position: absolute;
+	pointer-events: none;
+	left: 0;
+	top: 0;
+	z-index: 999;
+}
+.dnd-guideline {
+	box-sizing: border-box;
+	border: 3px solid orange;
+}
+.dnd-content-box {
+	display: inline-block;
+	box-sizing: border-box;
+	border: 3px solid rgba(200, 200, 200, 0.7);
+	padding: 0 4px;
+	min-width: 16px;
+	min-height: 12px;
+	color: rgba(200, 200, 200, 0.7);
+}
+
+/* ElementList */
+.elem-list {
+	display: inline-block;
+}
+.el-elem {
+	box-sizing: border-box;
+	background-color: lightgrey;
+	padding: 4px;
+	height: 26px;
+	margin-bottom: 2px;
+}
+.el-elem:hover{
+	background-color: grey;
+}
+.el-elem.selected {
+	box-shadow: inset 0 0 0 2px orange;
+}
+
+/* CanvasStack */
+.cs-container {
+	position: relative;
+	display: inline-block;
+}
+.cs-container>canvas{
+	position: absolute;
+	left: 0;
+	top: 0;
+	vertical-align: top;
+}
+.cs-container>canvas:first-child{
+	position: relative;
+}
+
+/* ResizingTrait */
+.rt-activator  {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	width: 20px;
+	height: 20px;
+	background-color: rgba(200, 200, 200, 0.5);
+	opacity: 0;
+	cursor: nw-resize;
+}
+@media (max-device-width: 600px), (max-device-height: 600px) {
+	.rt-activator  {
+		width: 40px;
+		height: 40px;
+	}
+}
+.rt-activator:hover {
+	opacity: 1;
+}
+.rt-activator:active {
+	background-color: orange;
+}
+.rt-guide-box  {
+	position: absolute;
+	pointer-events: none;
+	left: 0;
+	top: 0;
+	z-index: 999;
+	border: 3px solid rgba(150, 150, 180, 0.5);
+}
+
+/* Table */
+.inline-table {
+	display: inline-block;
+}
+.js-table thead td,
+.js-table thead th {
+	cursor: pointer;
+	text-align: center;
+	position: relative; /* For positioning sort icon */
+}
+.js-table .sorted:after {
+	content: " ";
+	position: absolute;
+	left: calc(50% - 0.5em);
+	top: 0;
+	width: 0;
+	height: 0;
+	border: solid 5px transparent;
+}
+.js-table .ascending:after {
+	border-top-width: 0;
+	border-bottom-color: black;
+}
+.js-table .descending:after {
+	border-bottom-width: 0;
+	border-top-color: black;
+}
+
+/* Content Table */
+.content-table td{
+	padding: 0;
+	text-align: center;
+	vertical-align: middle;
+}
+.cell-editor {
+	text-align: center;
+}
+
+/* Find Bar */
+.find-bar {
+	box-sizing: border-box;
+	position: fixed;
+	border-width: 1px;
+	border-style: solid;
+	border-radius: 2px;
+	border-collapse: initial !important;
+	border-spacing: 0;
+
+	white-space: nowrap;
+	overflow: hidden;
+	
+	top: 1px;
+	right: 22px;
+	width: 308px;
+	height: 40px;
+}
+.find-bar *{
+	box-sizing: border-box;
+}
+.find-bar col:first-child {
+	width: 100%;
+}
+.find-bar td {
+	padding: 0;
+}
+.find-bar td > * {
+	vertical-align: middle;
+}
+.find-bar td:first-child {
+	padding-left: 8px;
+}
+.find-bar td:last-child {
+	padding-right: 8px;
+}
+.find-bar input {
+	width: 100%;
+}
+.find-bar td:last-child *:not(button) {
+	cursor: default;
+	
+	user-select: none;
+	-o-user-select: none;
+	-ms-user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+}
+.find-bar .pos-panel {
+	display: inline-block;
+	height: 23px;
+	line-height: 23px;
+	font-family: Arial;
+	margin-left: 4px;
+	opacity: 0.6;
+}
+.find-bar .pos-panel span {
+	font-size: 0.8em;
+	vertical-align: middle;
+}
+.find-bar .pos-panel span+span {
+	margin-left: 4px;
+}
+.find-bar .tr-separator {
+	display: inline-block;
+	height: 25px;
+
+	border-left-width: 1px;
+	border-left-style: solid;
+	margin-left: 6px;
+	margin-right: 6px;
+}
+.find-bar button {
+	width: 23px;
+	height: 23px;
+	border-radius: 2px;
+
+	transition: background-color 0.3s linear; /* Support IE10+ */
+}
+.find-bar button+button {
+	margin-left: 4px;
+}
+.find-bar button[disabled] {
+	opacity: 0.5;
+	cursor: default;
+}
+.find-bar button[disabled]:hover {
+	background-color: transparent;
+}
+.find-bar button {
+	font-weight: bold;
+	font-size: 18px;
+	font-family: monospace;
+}
+.find-bar .prev-button:before {
+	content: "\02C4";
+	position: relative;
+	top: 3px;
+}
+.find-bar .next-button:before {
+	content: "\02C5";
+	position: relative;
+	top: 3px;
+}
+.find-bar .close-button:before {
+	content: "x";
+	position: relative;
+	top: -2px;
+}
+.find-bar input,
+.find-bar button {
+	background-color: transparent;
+	border: none;
+}
+.find-bar input:focus,
+.find-bar button:focus {
+	outline: none;
+}
+.find-bar {
+	border-color: LightGray;
+	background-color: White;
+	
+	box-shadow: 0 2px 0 0 Gray; /* Support IE9+ */
+}
+.find-bar .pos-panel {
+	color: Gray;
+}
+.find-bar .tr-separator {
+	border-color: Gainsboro;
+}
+.find-bar button {
+	color: DimGray;
+}
+.find-bar button:hover {
+	background-color: Gainsboro;
+}
+
+.page-selector {
+	text-align: center;
+}
+.page-selector > button {
+	text-align: center;
+	vertical-align: top;
+	width: 30px;
+	background-color: transparent;
+	border-width: 0 1px;
+	padding: 5px 0;
+}
+.page-selector > button:empty:before { /*Non breaking space &#160;*/
+	content: "\00A0";
+}
+.page-selector > .ps-current-page {
+	font-weight: bold;
+}
+.page-selector > button:hover {
+	background-color: AliceBlue;
+}
+
+.scroll-frame {
+	position: relative;
+	overflow: hidden;
+	box-sizing: border-box;
+}
+.sf-pane {
+	overflow: auto;
+}
+.sf-content {
+	width: 1px;
+	height: 1px;
+}
+.sf-pane,
+.sf-content,
+.sf-place-holder {
+	position: absolute;
+	box-sizing: border-box;
+}
+.sf-pane,
+.sf-place-holder, 
+.sf-place-holder > * {
+	width: 100%;
+	height: 100%;
+}
+	
+.hinting-mask {
+	position: relative;
+	display: inline-block;
+	overflow: hidden;
+}
+.hm-overlay {
+	position: absolute;
+	left: 0;
+	top: 0;
+	color: #777777;
+	user-select: none;
+	pointer-events: none;
+	background-color: transparent;
+	border-color: transparent;
+}
+
+.pt-popup { /* Fixed position will make popup not a part of window scrolling */
+	position: fixed; 
+	left: 0;
+	top: 0;
+	display: inline-block;
+}
+
+.hamburger-menu {
+	display: inline-block;
+	height: 24px;
+	width: 24px;
+	cursor: pointer;
+}
+.hamburger-menu div {
+	height: 13%;
+	background-color: #333;
+	margin-bottom: 15%;
+	transition: 0.4s;
+}
+.hamburger-menu div:first-child {
+	margin-top: 15%;
+}
+.hamburger-menu.active div:first-child {
+	margin-top: 14%;
+	transform: translate(0, 225%) rotate(-45deg) ;
+}
+.hamburger-menu.active div:nth-child(2) {
+	opacity: 0;
+}
+.hamburger-menu.active div:last-child {
+	transform: translate(0, -225%) rotate(45deg) ;
+}
+
+.pgr-track {
+	position: relative;
+	display: inline-block;
+	width: 100%;
+	height: 1em;
+	
+	text-align: center;
+	overflow: hidden;
+	
+	color: white;
+	background-color: lightgrey;
+}
+.pgr-track .pgr-slider {
+	position: absolute;
+	display: inline-block;
+	right: 0;
+	width: 1em;
+	height: 100%;
+	
+	cursor: e-resize;
+	font-weight: bold;
+	background-color: skyblue;
+}
+.pgr-track .pgr-slider:hover {
+	background-color: orange;
+}
+.pgr-track .pgr-slider-trail {
+	position: absolute;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	transition-duration: 100ms;
+	transition-property: left;
+	transition-timing-function: ease-out;
+	background-color: lightgreen;
+	background-image: linear-gradient(0deg, 
+		rgba(150, 255, 150, 1), 
+		rgba(205, 255, 205, 1)
+	);
+}

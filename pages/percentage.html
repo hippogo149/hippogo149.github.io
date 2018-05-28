@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Percentage</title>
+	
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	<link rel="stylesheet" href="../assets/html.css">
+	<script src="../assets/por.min.js"></script>
+
+	<style>
+		body
+		,input {
+			font-family: Arial;
+			font-size: 24px;
+		}
+		body {
+			text-align: center;
+		}
+		input {
+			width: 100px;
+		}
+		td {
+			vertical-align: middle;
+			border: 1px solid grey;
+			border-radius: 5px;
+			padding: 10px;
+		}
+		td span {
+			color: red;
+		}
+		td:first-child {
+			text-align: right;
+		}
+		td[colspan] {
+			text-align: center;
+		}
+		div+div {
+			margin-top: 4px;
+		}
+	</style>
+
+</head>
+<body>
+	<h2>Percentage</h2>
+	<div style="display: inline-block;" >
+		<table>
+			<tbody>
+				<tr>
+					<td>
+						<div>Value: <input id="vInput" onchange="toPercentage(this)" type="number" /></div>
+						<div>Percentage: <input id="pInput" onchange="toValue(this)" type="text" /></div>
+					</td>
+					<td>
+						<div>Total: <input id="tInput" onchange="toPercentage(this)" type="number" /></div>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><span id="pOutput"></span> percent of <span id="tOutput"></span> is <span id="vOutput"></span></td>
+				<tr>
+				<tr>
+					<td>
+						<div>Initial: <input id="vInput2" onchange="toPercentage(this)" type="number" /></div>
+						<div>% Change: <input id="pcInput" onchange="toValue(this)" type="text" /></div>
+					</td>
+					<td>
+						<div>Final: <input id="tInput2" onchange="toPercentage(this)" type="number" /></div>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><span id="vOutput2"></span> is changed to <span id="tOutput2"></span> for <span id="pOutput2"></span> percent</td>
+				<tr>
+			</tbody>
+		</table>
+	</div>
+	
+<script type='text/javascript'>
+	var v, t, p, pc;
+	function toPercentage(changedObject) {
+		v = Ut.getNumericValue(vInput, 0);
+		t = Ut.getNumericValue(tInput, 100);
+		switch(changedObject.id) {
+		case "vInput2": v = Ut.getNumericValue(vInput2, 1); break;
+		case "tInput2": t = Ut.getNumericValue(tInput2, 100); break;
+		}
+		
+		p = Ut.round(v / t * 100);
+		pc = Ut.round((t - v) / Math.abs(v) * 100);
+		render();
+	}
+	function toValue(changedObject) {
+		if(changedObject.id === "pInput") {
+			p = Ut.getNumericValue(pInput, 0);
+			t = Ut.getNumericValue(tInput, 100);
+			
+			v = Ut.round(p * t / 100);
+			pc = Ut.round((t - v) / Math.abs(v) * 100);
+		} else {
+			pc = Ut.getNumericValue(pcInput, 0);
+			v = Ut.getNumericValue(vInput, 0);
+			
+			t = v + v * pc / 100;
+			p = Ut.round(v / t * 100);
+		}
+		render();
+	}
+	function render() {
+		pInput.value = p;
+		tInput.value = t;
+		vInput.value = v;
+		pcInput.value = pc;
+		tInput2.value = t;
+		vInput2.value = v;
+		pOutput.textContent = p;
+		tOutput.textContent = t;
+		vOutput.textContent = v;
+		pOutput2.textContent = pc;
+		tOutput2.textContent = t;
+		vOutput2.textContent = v;
+	}
+	toPercentage(vInput);
+	
+	setTimeout(function() {
+		vInput2.focus();
+		vInput2.select();
+	}, 100);
+</script>
+
+</body>
+</html>
