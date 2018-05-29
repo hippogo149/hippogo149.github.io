@@ -38,7 +38,7 @@
 					cell.appendChild(link);
 					break;
 				case 1:
-					cell.textContent = new Date(val).toLocaleString();
+					cell.textContent = new Date(val).toLocaleString("en-GB");
 					break;
 				case 2:
 					cell.textContent = Ut.fillZeroes(val / 1024) + " KB";
