@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Compound Interest</title>
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	<link rel="stylesheet" href="../assets/html.css">
+	<link rel="stylesheet" href="../assets/common.css">
+	<link rel="stylesheet" href="../assets/table.css">
+	<script src="../assets/por.min.js"></script>
+
+	<style>
+		#indenter {
+			padding-left: 20px;
+		}
+		#indenter>* {
+			vertical-align: top;
+		}
+		#inputHolder {
+			display: inline-block;
+			margin-left: 20px;
+		}
+		input {
+			text-align: right;
+			width: 80px;
+		}
+		
+		#demoFrame {
+			display: inline-block;
+			margin-left: 20px;
+			max-height: 421px;
+			overflow: auto;
+		}
+		
+	</style>
+	
+	<script type="text/javascript">
+		window.addEventListener("load", function() {
+			var winTitle = "Compound Interest";
+			if(winTitle) {
+				document.title = winTitle;
+				var header = document.createElement("h2");
+				header.textContent = winTitle;
+				document.body.insertBefore(header, document.body.firstChild);
+			}
+		}, false);
+	</script>
+</head>
+<body>
+	<div id="indenter">
+	<img src="../assets/img/CompoundInterest.png" alt="Compound Interest Formula" />
+	<h3><span>[S] Final value after </span><span id="tHeader"></span><span> year(s) : </span><span id="sOutput" style="color: darkblue;" ></span> $</h3>
+	<div id="inputHolder"></div>
+	<div id="demoFrame"></div>
+	<br />
+	Reference: <a href="http://en.wikipedia.org/wiki/Compound_interest" target="_blank">http://en.wikipedia.org/wiki/Compound_interest</a>
+	</div>
+	
+<script type='text/javascript'>
+	var tblInputs = new Table(inputHolder, 2, 5);
+	var rows = tblInputs.getAllRows();
+	var cell, r;
+	var cRows = [
+		["[P] ", "Principal amount (initial investment) :", 10000, " $"],
+		["[j] ", "Annual nominal interest rate :", 5, " %"],
+		["[m] ", "Number of times the interest is compounded per year :", 1, " time(s)"],
+		["[t] ", "Number of years :", 10, " year(s)"],
+		["[d] ", "Additional deposit (fixed deposit) after each period :", 0, " $"]
+	];
+	var inputs = [];
+	for(r = 0; r < 5; ++r) {
+		var cRow = cRows[r]
+		cell = rows[r].cells[0];
+		cell.appendChild(Dom.text(cRow[0], "big"));
+		cell.appendChild(Dom.text(cRow[1]));
+		
+		cell = rows[r].cells[1];
+		var input = cell.appendChild(Dom.textInput(cRow[2]));
+		cell.appendChild(Dom.text(cRow[3]));
+		
+		input.addEventListener("change", calculate, false);
+		inputs.push(input);
+	};
+	
+	var tbl;
+	function calculate() {
+		var p = Ut.getNumericValue(inputs[0], cRows[0][2]);
+		var j = Ut.getNumericValue(inputs[1], cRows[1][2]);
+		var m = Ut.getNumericValue(inputs[2], cRows[2][2]);
+		var t = Ut.getNumericValue(inputs[3], cRows[3][2]);
+		var d = Ut.getNumericValue(inputs[4], cRows[4][2]);
+		
+		j /= 100; // percentage
+		var s = p * Math.pow(1 + j / m, m * t);
+		
+		// Demo
+		var totalPeriod = m * t + 1;
+		var realInterest = 1 + j / m;
+		if(!tbl) {
+			tbl = new Table(2);
+			tbl.setColumnWidths([30, 100]);
+			tbl.setParent(demoFrame);
+		}
+		tbl.setRowCount(totalPeriod);
+		var rows = tbl.getRows();
+		var futureValue = p;
+
+		for(var i = 0; i < totalPeriod; ++i) {
+			var row = rows[i];
+			row.cells[0].textContent = i;
+			row.cells[1].textContent = Ut.round(futureValue).toFixed(2);
+			futureValue *= realInterest;
+			futureValue += d;
+		}
+		
+		tHeader.textContent = t;
+		sOutput.textContent = row.cells[1].textContent;
+	}
+	calculate();
+</script>
+
+</body>
+</html>

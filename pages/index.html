@@ -7,20 +7,12 @@
 	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
 	<link rel="stylesheet" href="../assets/html.css">
 	<link rel="stylesheet" href="../assets/common.css">
+	<link rel="stylesheet" href="../assets/table.css">
 	<script src="../assets/por.min.js"></script>
 	<style>
-		body {
+		body, table {
 			font-family: Arial;
-		}
-		.inline-table, table {
 			width: 100%;
-		}
-		td {
-			padding: 4px;
-			border: 1px dashed lightgray;
-		}
-		thead td {
-			border-bottom: 1px solid deepskyblue;
 		}
 		td:nth-child(2) {
 			text-align: center;
@@ -28,16 +20,15 @@
 		td:nth-child(3) {
 			text-align: right;
 		}
-		tr:nth-child(odd) {
-			background-color: #e9e9ff;
-		}
 	</style>
 	<body>
 		<h1>Index of https://hippogo149.github.io/pages/</h1>
+		<div id="index_tbl"></div>
+		
 		<script>
 			__files = [["canvas-grid.html",1495631455906.138,4704],["centering.html",1525792363646.902,2826],["color-value.html",1523720916686.7566,7302],["financial-statement.html",1502898095945.8982,10377],["font-family.html",1524831254432.0652,5344],["percentage.html",1495631455628.1023,3217],["table-builder.html",1495631464298.2046,5526],["text-modifier.html",1496235370226.2725,8101]];
 			
-			var tbl = new Table();
+			var tbl = new Table(index_tbl);
 			tbl.getBody().setCellRenderer(function(cell, val, c, r) {
 				switch(c) {
 				case 0:
@@ -50,12 +41,11 @@
 					cell.textContent = new Date(val).toLocaleString();
 					break;
 				case 2:
-					cell.textContent = Ut.fillZeroes(val / (1024 * 8));
+					cell.textContent = Ut.fillZeroes(val / 1024) + " KB";
 					break;
 				}
 			})
-			tbl.rebuild(__files, ["Name", "Last Modified", "Size (KB)"]);
-			tbl.setParent(document.body);
+			tbl.rebuild(__files, ["Name", "Last Modified", "Size"]);
 		</script>
 	</body>
 </html>

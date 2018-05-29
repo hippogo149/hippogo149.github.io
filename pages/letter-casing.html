@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Letter Casing</title>
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	<link rel="stylesheet" href="../assets/html.css">
+	<link rel="stylesheet" href="../assets/common.css">
+	<link rel="stylesheet" href="../assets/table.css">
+	<script src="../assets/por.min.js"></script>
+	<style>
+		body {
+			width: 100%;
+		}
+		textarea {
+			overflow-x:hidden;
+			overflow-y:auto;
+			width: 100%;
+			height: 60px;
+		}
+		table {
+			border-collapse: separate;
+			word-break: break-word;
+		}
+		thead td {
+			text-align: center;
+		}
+		tbody td:nth-child(1) {
+			font-weight: bold;
+		}
+	</style>
+</head>
+<body>
+<h2>Letter Casing</h2>
+<textarea id="userInput" onchange="caseConversion()"></textarea>
+<br>
+<br>
+<div id="out_tbl"></div>
+
+<script type='text/javascript'>
+	userInput.value = "In-orthography and_typography, as long as letter_case is-the distinction between the letters that   are in larger upper CaseAndSmaller lower case the";
+	
+	var letterCases = [
+		"Prettified Input",
+		"Title Case",
+		"Start Case",
+		"ALL CAPS",
+		"Sentence case",
+		"lower case",
+		"CamelCase",
+		"Snake_case",
+		"Spinal-case or train-case"
+	];
+	
+	var tblContent = letterCases.map(function(val) {
+		return [val, ""];
+	});
+	var tbl = new Table(out_tbl);
+	tbl.rebuild(tblContent, ["Letter Case", "Output"]);
+
+	function caseConversion() {
+		var str = userInput.value;
+		
+		str = singleSpacing(str);
+		tbl.getCell(1, 0).textContent = str;
+		tbl.getCell(1, 1).textContent = titleCase(str);
+		tbl.getCell(1, 2).textContent = startCase(str);
+		tbl.getCell(1, 3).textContent = allCaps(str);
+		tbl.getCell(1, 4).textContent = sentenceCase(str);
+		tbl.getCell(1, 5).textContent = lowerCase(str);
+		tbl.getCell(1, 6).textContent = camelCase(str);
+		tbl.getCell(1, 7).textContent = snakeCase(str);
+		tbl.getCell(1, 8).textContent = spinalCase(str);
+	}
+	function singleSpacing(str) {
+		str = str.replace(/[\r\n\t\-_]/g, " ");
+		var splits = str.split("");
+		var strLen = splits.length;
+		var upper = isUpperCase(splits[0]);
+		for(var i = 1; i < strLen; ++i) {
+			var c = splits[i];
+			if(isUpperCase(c)) {
+				if(!upper) {
+					splits[i] = " " + c;
+				}
+				upper = true;
+			} else {
+				upper = false;
+			}
+		}
+		str = splits.join("");
+		while (str.indexOf("  ") >= 0) { // All double spaces will be collapsed into single space
+			str = str.replace(/  /g, " ");
+		}
+		return str;
+	}
+	function isUpperCase(str) {
+		return str === str.toUpperCase() && str !== str.toLowerCase();
+	}
+	function lowerCase(str) {
+		return str.toLowerCase();
+	}
+	function allCaps(str) {
+		return str.toUpperCase();
+	}
+	function startCase(str) {
+		str = str.toLowerCase();
+		var splits = str.split(" ");
+		for(var i = splits.length; --i >= 0;) {
+			var chunk = splits[i];
+			splits[i] = chunk.charAt(0).toUpperCase() + chunk.substr(1);
+		}
+		return splits.join(" ");
+	}
+	function titleCase(str) {
+		str = startCase(str);
+		var i, c;
+		for(i = combi.length; --i >= 0;) {
+			c = combi[i];
+			var at = str.indexOf(c);
+			if(at > 0 && at < str.length - c.length) {
+				str = str.substr(0, at) + c.toLowerCase() + str.substr(at + c.length);
+			}
+		}
+		var splits = str.split(" ");
+		for(i = splits.length - 1; --i >= 1;) {
+			c = splits[i];
+			if(c.length <= 4 && closeClasses[c]) {
+				splits[i] = c.toLowerCase();
+			}
+		}
+		return splits.join(" ");
+	}
+	function sentenceCase(str) {
+		str = str.toLowerCase();
+		return str.charAt(0).toUpperCase() + str.substr(1);
+	}
+	function camelCase(str) {
+		str = startCase(str);
+		str = str.replace(/ /g, "");
+		return (str.indexOf(",") < 0) ? str :str.replace(/,/g, ", ");
+	}
+	function snakeCase(str) {
+		str = str.replace(/ /g, "_");
+		return (str.indexOf(",") < 0) ? str :str.replace(/,_/g, ", ");
+	}
+	function spinalCase(str) {
+		str = str.replace(/ /g, "-");
+		return (str.indexOf(",") < 0) ? str :str.replace(/,-/g, ", ");
+	}
+	
+	var closeClasses = {
+		// Articles
+		"A": 1,
+		"An": 1,
+		"The": 1,
+		// Prepositions
+		"Aboard": 1,
+		"About": 1,
+		"Above": 1,
+		"Across": 1,
+		"After": 1,
+		"Against": 1,
+		"Along": 1,
+		"Amid": 1,
+		"Among": 1,
+		"Anti": 1,
+		"Around": 1,
+		"As": 1,
+		"At": 1,
+		"Before": 1,
+		"Behind": 1,
+		"Below": 1,
+		"Beneath": 1,
+		"Beside": 1,
+		"Besides": 1,
+		"Between": 1,
+		"Beyond": 1,
+		"But": 1,
+		"By": 1,
+		"Concerning": 1,
+		"Considering": 1,
+		"Despite": 1,
+		"Down": 1,
+		"During": 1,
+		"Except": 1,
+		"Excepting": 1,
+		"Excluding": 1,
+		"Following": 1,
+		"For": 1,
+		"From": 1,
+		"In": 1,
+		"Inside": 1,
+		"Into": 1,
+		"Like": 1,
+		"Minus": 1,
+		"Near": 1,
+		"Of": 1,
+		"Off": 1,
+		"On": 1,
+		"Onto": 1,
+		"Opposite": 1,
+		"Outside": 1,
+		"Over": 1,
+		"Past": 1,
+		"Per": 1,
+		"Plus": 1,
+		"Regarding": 1,
+		"Round": 1,
+		"Save": 1,
+		"Since": 1,
+		"Than": 1,
+		"Through": 1,
+		"To": 1,
+		"Toward": 1,
+		"Towards": 1,
+		"Under": 1,
+		"Underneath": 1,
+		"Unlike": 1,
+		"Until": 1,
+		"Up": 1,
+		"Upon": 1,
+		"Versus": 1,
+		"Via": 1,
+		"With": 1,
+		"Within": 1,
+		"Without": 1,
+		// Coordinating Conjunctions
+		"And": 1,
+		"But": 1,
+		"Or": 1,
+		"Nor": 1,
+		"For": 1,
+		"Yet": 1,
+		"So": 1,
+		// Subordinating Conjunctions
+		"After": 1,
+		"Although": 1,
+		"As": 1,
+		"Because": 1,
+		"Before": 1,
+		"Even": 1,
+		"If": 1,
+		"Inasmuch": 1,
+		"Lest": 1,
+		"Now": 1,
+		"Once": 1,
+		"Provided": 1,
+		"Since": 1,
+		"Supposing": 1,
+		"Than": 1,
+		"That": 1,
+		"Though": 1,
+		"Til": 1,
+		"Unless": 1,
+		"Until": 1,
+		"When": 1,
+		"Whenever": 1,
+		"Where": 1,
+		"Whereas": 1,
+
+		"Wherever": 1,
+		"Whether": 1,
+		"Which": 1,
+		"While": 1,
+		"Who": 1,
+		"Whoever": 1,
+		"Why": 1,
+		// Correlative Conjunctions
+		"Both": 1,
+		"Either": 1,
+		"Neither": 1,
+		"Whether": 1,
+		"Such": 1,
+		"Scarcely": 1,
+		"Rather": 1
+	};
+	
+	var combi = ["As If",
+		"As Long As",
+		"As Much As",
+		"As Soon As",
+		"As Though",
+		"Even If",
+		"Even Though",
+		"If Only",
+		"If When",
+		"If Then",
+		"In Order That",
+		"Just As",
+		"Now Since",
+		"Now That",
+		"Now When",
+		"Provided That",
+		"Rather Than",
+		"So That",
+		"Where if",
+		"Not only",
+		"But Also", 
+		"As Many",
+		"No Sooner"
+	];
+	
+	caseConversion();
+</script>
+	
+</body>
+</html>

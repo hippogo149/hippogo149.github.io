@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Year Conversion</title>
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	<link rel="stylesheet" href="../assets/html.css">
+	<style>
+		*[readonly="true"] {
+			background-color: #fafafa
+		}
+		td {
+			border: 1px solid lightgrey;
+			vertical-align: middle;
+			padding: 8px;
+			white-space: nowrap;
+		}
+	</style>
+</head>
+<body>
+	<div style="text-align: center;">
+		<h2>Year Conversion</h2>
+		<div style="display: inline-block;" >
+			<table style="border-collapse: collapse; width: 200px; ">
+				<tbody>
+					<tr>
+						<td>
+							<span>Input</span>
+							<input id="input_txt" style="width:auto;" onchange="onInputChange(event)" onkeyup="onKeyUp(event)" value="" type="text" />
+						</td>
+						<td>
+							<button>Convert</button>
+						</td>
+						<td>
+							<span>พ.ศ.</span>
+							<input id="ps_txt" style="width:auto;" type="text" readonly="true" /><br /><br />
+							<span>ค.ศ.</span>
+							<input id="ks_txt" style="width:auto;" type="text" readonly="true" />
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	
+<script type='text/javascript'>
+	function onInputChange(e) {
+		var str = input_txt.value;
+		var num = parseInt(str);
+		if(num !== num) {
+			var date = new Date();
+			date.setTime(date.getTime() - date.getTimezoneOffset() * 60000);
+			str = date.toISOString().substr(0, 4);
+			input_txt.value = str;
+			num = Number(str);
+		}
+		ps_txt.value = num + 543;
+		ks_txt.value = num - 543;
+	}
+	function onKeyUp(e) {
+		var str = input_txt.value;
+		var num = parseInt(str);
+		if(num === num) {
+			ps_txt.value = num + 543;
+			ks_txt.value = num - 543;
+		}
+	}
+	onInputChange();
+</script>
+
+</body>
+</html>

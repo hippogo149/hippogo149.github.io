@@ -1,0 +1,10 @@
+.js-table td {
+	padding: 4px;
+	border: 1px dashed lightgray;
+}
+.js-table thead td {
+	border-bottom: 1px solid deepskyblue;
+}
+.js-table tr:nth-child(odd) {
+	background-color: #e9e9ff;
+}

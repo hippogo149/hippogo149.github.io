@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Risk of Ruin</title>
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	<link rel="stylesheet" href="../assets/html.css">
+	<link rel="stylesheet" href="../assets/common.css">
+	<link rel="stylesheet" href="../assets/table.css">
+	<script src="../assets/por.min.js"></script>
+
+	<style>
+		#indenter {
+			padding-left: 20px;
+		}
+		#indenter>* {
+			vertical-align: top;
+		}
+		input {
+			text-align: right;
+			width: 80px;
+		}
+		input[readonly="true"] {
+			color: grey;
+		}
+		
+		#demoFrame {
+			display: inline-block;
+			margin-left: 20px;
+			max-height: 421px;
+			overflow: auto;
+		}
+		#demoFrame td{
+			border: 1px solid grey;
+		}
+	</style>
+</head>
+<body>
+	<h2>Risk of Ruin</h2>
+	<div id="indenter">
+	<img src="../assets/img/RiskOfRuin.png" alt="Risk of Ruin Formula" />
+	<h3><span>[P(ruin)] Probability of Ruin </span> = </span><span id="pOutput" style="color: darkblue;" ></span> %</h3>
+	<div id="inputHolder"></div>
+	<div id="demoFrame"></div>
+	<br>
+	Reference: <br>
+	<a href="https://en.wikipedia.org/wiki/Risk_of_ruin" target="_blank">https://en.wikipedia.org/wiki/Risk_of_ruin</a><br>
+	<a href="https://en.wikipedia.org/wiki/Mean_squared_error" target="_blank">https://en.wikipedia.org/wiki/Mean_squared_error</a>
+	</div>
+	
+<script type='text/javascript'>
+	var cRows = [
+		["[S] ", "Starting value (initial investment) :", 10000, " $", 1],
+		["[W] ", "Win rate (winning percentage):", 55, " %", 1],
+		["[G%] ", "Average percent gain of winning trade:", 10, " %", 1],
+		["[L%] ", "Average percent loss of losing trade:", 10, " %", 1],
+		["[G] ", "Average gain of winning trade:", 0, " $", 2],
+		["[L] ", "Average loss of losing trade:", 0, " $", 2],
+		["[μ] ", "Mean (bias):", 0, " $", 3],
+		["[σ] ", "Standard deviation :", 0, " $", 3],
+		["[γ] ", "Square root of Mean Squared Error (MSE):", 0, "", 0]
+	];
+	
+	var tblInputs = new Table(inputHolder, 2, cRows.length);
+	var rows = tblInputs.getAllRows();
+	var cell, r;
+	
+	var inputs = [];
+	for(r = 0; r < cRows.length; ++r) {
+		var cRow = cRows[r]
+		cell = rows[r].cells[0];
+		cell.appendChild(Dom.text(cRow[0], "big"));
+		cell.appendChild(Dom.text(cRow[1]));
+		
+		cell = rows[r].cells[1];
+		var input = cell.appendChild(Dom.textInput(cRow[2]));
+		cell.appendChild(Dom.text(cRow[3]));
+		
+		input.type = "number";
+		var level = cRow[4];
+		var color = "";
+		var func = null;
+		if(level === 1) {
+			color = "lightsalmon";
+			func = onLevel1Change;
+		} else if(level === 2) {
+			color = "lightgreen";
+			func = onLevel2Change;
+		} else if(level === 3) {
+			color = "lightpink";
+			func = onLevel3Change;
+		}
+		if(color) {
+			input.style.borderColor = color;
+		}
+		if(func) {
+			input.addEventListener("change", func, false);
+		}
+		inputs.push(input);
+	};
+	var ipt = Dom.map(inputs, ["s", "wr", "pg", "pl", "g", "l", "m", "st", "r"]);
+	
+	ipt.s.min = 0;
+	ipt.s.step = 100;
+	ipt.g.step = 100;
+	ipt.l.step = 100;
+	ipt.wr.min = 0;
+	ipt.wr.max = 100;
+	ipt.wr.step = 1;
+	ipt.r.setAttribute("readonly", "true");
+	
+	onLevel1Change();
+	
+	function makePercentInput(input) {
+		input.min = "0";
+		input.max = "100";
+		input.step = "1";
+	}
+	function onLevel1Change(e) {
+		var s = Ut.getNumericValue(ipt.s);
+		var pg = Ut.getNumericValue(ipt.pg);
+		var pl = Ut.getNumericValue(ipt.pl);
+		ipt.g.value = Ut.round(s * pg / 100);
+		ipt.l.value = Ut.round(s * pl / 100);
+		
+		onLevel2Change();
+	}
+	function onLevel2Change(e) {
+		var wr = Ut.getNumericValue(ipt.wr);
+		var g = Ut.getNumericValue(ipt.g);
+		var l = Ut.getNumericValue(ipt.l);
+		if(wr > 100) {
+			wr = 100;
+		} else if(wr < 0) {
+			wr = 0;
+		}
+		if(g < 0) {
+			g = -g;
+			ipt.g.value = g;
+		}
+		if(l > 0) {
+			l = -l;
+			ipt.l.value = l;
+		}
+		if(e) {
+			var s = Ut.getNumericValue(ipt.s);
+			ipt.pg.value = Ut.round(g / s * 100);
+			ipt.pl.value = Ut.round(-l / s * 100);
+		}
+		var lr = 100 - wr;
+		var fe = wr * g / 100;
+		var ae = lr * l / 100;
+		var m = (fe + ae);
+		var std = Math.sqrt(Math.pow(m - fe, 2) + Math.pow(m - ae, 2));
+		ipt.m.value = Ut.roundBy(m, 1000);
+		ipt.st.value = Ut.roundBy(std, 1000);
+		
+		onLevel3Change();
+	}
+	function onLevel3Change() {
+		var s = Ut.getNumericValue(ipt.s);
+		var mean = Ut.getNumericValue(ipt.m);
+		var stddev = Ut.getNumericValue(ipt.st);
+		var r = Math.sqrt(mean * mean + stddev * stddev);
+		var exponent = s / r;
+		var base = 2 / (1 + mean / r) - 1;
+		var p = Math.pow(base, exponent);
+		if(p >= 1) {
+			p = 1;
+		} else if(p < 0) {
+			p = 0;
+		}
+		ipt.r.value = Ut.roundBy(r, 1000);
+		
+		var pct = Ut.roundBy(p * 100, 100000);
+		pOutput.textContent = pct;
+	}
+</script>
+
+</body>
+</html>
