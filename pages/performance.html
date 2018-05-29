@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Performance Tester</title>
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	<link rel="stylesheet" href="../assets/html.css">
+	<script src="../assets/por.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>
+
+	<style>
+		thead td {
+			text-align: center;
+			font-weight: bold;
+		}
+		td {
+			padding: 8px;
+			border: 1px solid lightgrey;
+		}
+		tbody td {text-align: right;}
+		tr:nth-child(even) td {
+			background-color: #efefef;
+		}
+		tr.slowest td {
+			background-color: lightpink;
+		}
+		tr.fastest td {
+			background-color: lightgreen;
+		}
+		td:last-child div {
+			width: 100px;
+			white-space: nowrap;
+			overflow:hidden;
+			text-overflow: ellipsis;
+		}
+		#errMsg {
+			color: red;
+		}
+	</style>
+</head>
+<body>
+	<h2>Performance Tester</h2>
+
+	<div>
+		<button onclick="_startPerfTest()">Start Performance Test</button>
+		<span>Time Limit (ms): </span> <input id="txtTimeLimit" style="width: 40px;" type="text"/>
+		<span>Number of execution: </span> <input id="txtNoOfExec" style="width: 40px;" type="text"/>
+		<button onclick="_clearResults()">Clear Result(s)</button>
+	</div>
+	<div id="errMsg"></div>
+	<br />
+	<div id="beforePanel">
+		<div>Tear up:</div>
+		<textarea id="txtBefore" rows="8" cols="100" placeholder="var obj = {}; This section will not be included in the performance calculation and is performed only once."></textarea>
+	</div>
+	<br />
+	<div>
+		<div>Actual Test: </div>
+		<textarea id="txtActualTest" rows="8" cols="100"></textarea>
+	</div>
+	<br />
+	<div id="afterPanel">
+		<div>Tear down:</div>
+		<textarea id="txtAfter" rows="4" cols="100" placeholder="delete obj; This section will not be included in the performance calculation and is performed only once."></textarea>
+	</div>
+	<br />
+	<button onclick="_startPerfTest()">Start Performance Test</button>&#160;&#160;<span id="txtProgress"></span>
+	<br /><br />
+	<div id="resultPanel">
+		<table border="0" cellspacing="1" style="display: inline-block; vertical-align: top;">
+			<thead>
+				<tr>
+					<td>#</td>
+					<td><div>Avg. execution time (ms)<br />The lesser, the better</div></td>
+					<td><div>Avg. number of execution<br />The higher, the better</div></td>
+					<td><div>Speed Ratio<br />Maximum is 1</div></td>
+					<td><div>Test String<div></td>
+				</tr>
+			</th>
+			<tbody id="resultTable"></tbody>
+		</table>
+		<button onclick="_clearResults()" style="vertical-align: top; margin-top: 18px;">Clear Result(s)</button>
+	</div>
+
+<script type='text/javascript'>
+	if(window.localStorage) { // In IE, localStorage may not exist
+		txtTimeLimit.value = window.localStorage.getItem("txtTimeLimit") || "100";
+		txtNoOfExec.value = window.localStorage.getItem("txtNoOfExec") || "30";
+		txtBefore.value = window.localStorage.getItem("txtBefore") || "";
+		txtActualTest.value = window.localStorage.getItem("txtActualTest") || "";
+		txtAfter.value = window.localStorage.getItem("txtAfter") || "";
+	}
+
+	var _actualTest, _noOfExec, _timeLimit, _batchSize, _totalTime, _execCounts, _curCycle, _runningPerf;
+
+	function _startPerfTest() {
+		if(!_parseInputs()) {
+			return;
+		}
+		
+		if(_runningPerf) { // Prevent running perf test twice during the test
+			return;
+		}
+		_runningPerf = true;
+		
+		if(window.localStorage) { // In IE, localStorage may not exist
+			window.localStorage.setItem("txtTimeLimit", txtTimeLimit.value);
+			window.localStorage.setItem("txtNoOfExec", txtNoOfExec.value);
+			window.localStorage.setItem("txtBefore", txtBefore.value);
+			window.localStorage.setItem("txtActualTest", txtActualTest.value);
+			window.localStorage.setItem("txtAfter", txtAfter.value);
+		}
+		
+		_timeLimit = +txtTimeLimit.value || 100;
+		_noOfExec = +txtNoOfExec.value || 30;
+		_batchSize = 10;
+		_totalTime = 0;
+		_execCounts = [];
+		_curCycle = 0;
+		setTimeout(_onTimer, 1);
+	}
+
+	function _onTimer() {
+		txtProgress.textContent = "Executing... [" + (_curCycle + 1) + "]";
+		var execCount = 0;
+		var timeElapsed = 0;
+
+		while (timeElapsed < _timeLimit){
+			var diff = _actualTest(_batchSize);
+			_totalTime += diff;
+			timeElapsed += diff;
+			execCount += _batchSize;
+			if(diff <= 0) {
+				_batchSize++;
+			} else if(_batchSize > 1 && diff > _timeLimit) {
+				_batchSize--;
+			}
+		}
+		_execCounts.push(execCount);
+		_curCycle++;
+		if(_curCycle < _noOfExec) {
+			setTimeout(_onTimer, 1);
+		} else {
+			_concludeResults();
+		}
+	}
+
+	function _concludeResults() {
+		_runningPerf = false;
+		
+		var totalCount = 0;
+		for (var k = _noOfExec; --k >= 0;) {
+			totalCount += _execCounts[k];
+		}
+		var avgTime = Math.floor(_totalTime / totalCount * 100000) / 100000;
+
+		var td0 = document.createElement('td');
+		var td1 = document.createElement('td');
+		var td2 = document.createElement('td');
+		var td3 = document.createElement('td'); 
+		var td4 = document.createElement('td');
+		td0.textContent = resultTable.children.length + 1;
+		td1.textContent = avgTime.toFixed(5);
+		td2.textContent = (Math.floor(totalCount / _noOfExec * 100) / 100).toFixed(2);
+		// td3.textContent = "";
+		var div = document.createElement("div");
+		div.textContent = txtActualTest.value;
+		div.title = txtActualTest.value;
+		td4.appendChild(div);
+		
+		var tr = document.createElement('tr');
+		tr.appendChild(td0);
+		tr.appendChild(td1);
+		tr.appendChild(td2);
+		tr.appendChild(td3);
+		tr.appendChild(td4);
+		
+		resultTable.insertBefore(tr, resultTable.firstChild);
+		
+		// Find slowest and fastest results
+		var children = resultTable.children;
+		var min = NaN, max = NaN;
+		for(k = children.length; --k >= 0;) {
+			tr = children[k];
+			var val = +tr.cells[2].textContent;
+			if(!(val >= min)) {
+				min = val;
+				minAt = k;
+			}
+			if(!(val <= max)) {
+				max = val;
+				maxAt = k;
+			}
+			tr.className = "";
+		}
+		var maxVal = +children[maxAt].cells[2].textContent;
+		for(k = children.length; --k >= 0;) {
+			tr = children[k];
+			var val = +tr.cells[2].textContent;
+			tr.cells[3].textContent = (Math.floor(val / maxVal * 10000) / 10000).toFixed(4);
+		}
+		
+		if(minAt !== maxAt) {
+			children[minAt].className = "slowest";
+			children[maxAt].className = "fastest";
+		}
+	}
+
+	function _clearResults() {
+		while (resultTable.firstChild) {
+			resultTable.removeChild(resultTable.firstChild);
+		}
+	}
+
+	function _parseInputs() {
+		errMsg.textContent = "";
+		try {
+			_actualTest  =
+				eval("(function(__batchSize) { "
+				+ txtBefore.value + ";\n"
+				+ "var __begin = new Date().getTime();\n"
+				+ "for(var __j = __batchSize; --__j >= 0;) {\n"
+				+ txtActualTest.value + ";\n"
+				+ "} var __end = new Date().getTime();\n"
+				+ txtAfter.value + ";\n"
+				+ "return __end - __begin;})");
+			_actualTest(1); // Test the parsed function once
+			return true;
+		} catch(err) {
+			errMsg.textContent = err.message;
+		}
+		return false;
+	}
+</script>
+
+</body>
+</html>

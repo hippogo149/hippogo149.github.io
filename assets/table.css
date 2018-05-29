@@ -3,8 +3,15 @@
 	border: 1px dashed lightgray;
 }
 .js-table thead td {
+	padding-top: 6px;
+	padding-bottom: 6px;
 	border-bottom: 1px solid deepskyblue;
 }
 .js-table tr:nth-child(odd) {
 	background-color: #e9e9ff;
+}
+.js-table .descending:after,
+.js-table .ascending:after {
+	border-top-color: deepskyblue;
+	border-bottom-color: deepskyblue;
 }

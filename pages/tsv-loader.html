@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>TSV Loader</title>
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	<link rel="stylesheet" href="../assets/html.css">
+	<link rel="stylesheet" href="../assets/common.css">
+	<link rel="stylesheet" href="../assets/table.css">
+	<script src="../assets/por.min.js"></script>
+
+	<style>
+	body {
+		font-family: Arial;
+		font-size: 12px;
+	}
+	</style>
+</head>
+<body>
+	<div id="container"></div>
+	Select .tsv file to view in table format <input type="file" accept=".tsv" onchange="openFile(event)">
+<script>
+	function openFile(e) {
+		var file_in = e.currentTarget;
+		var reader = new FileReader();
+		reader.addEventListener("load", onFileLoaded);
+		reader.readAsText(file_in.files[0]);
+	}
+	function onFileLoaded(e) {
+		var reader = e.currentTarget;
+		var txt = reader.result;
+		
+		Dom.removeChildren(container);
+		
+		var tbl = new Table();
+		var firstNL = txt.indexOf("\n");
+		var headerTxt = null;
+		var contentTxt = txt;
+		if(firstNL >= 0)  {
+			headerTxt = txt.substr(0, firstNL);
+			contentTxt = txt.substr(firstNL + 1);
+		}
+		tbl.rebuild(contentTxt, headerTxt, null, "\t");
+		tbl.distributeColumnWidth();
+		tbl.setParent(container);
+	}
+</script>
+
+</body>
+</html>

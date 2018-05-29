@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Gb Sky Events</title>
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	<link rel="stylesheet" href="../assets/html.css">
+	<link rel="stylesheet" href="../assets/common.css">
+	
+	<script src="../assets/por.min.js"></script>
+
+	<style>
+		td {
+			border: 1px solid grey;
+			padding: 4px;
+		}
+		.answer {
+			font-weight: bold;
+		}
+		tr {
+			height: 32px;
+		}
+	</style>
+</head>
+<body>
+	<h2>Gb Sky Events</h2>
+	
+	Search : <input id="filter_input" style="width:200px;" onkeyup="onFilter(event)" value="" type="text" /><button onclick="onReset()">Reset</button><br /><br />
+	<table style="border-collapse: collapse;">
+		<colgroup>
+			<col style="width: 800px;">
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<thead>
+			<tr>
+				<td>Q</td>
+				<td>A1</td>
+				<td>A2</td>
+				<td>A3</td>
+			</tr>
+		</thead>
+		<tbody id="main_tbody">
+			<tr>
+				<td>Do you know which hero is the Hero's Statue built for?</td>
+				<td>Sage-Astana</td>
+				<td>Chief Artisan-Vosebarker</td>
+				<td class="answer">Ranger-Augustus</td>
+			</tr>
+			<tr>
+				<td>Do you know who was the conquest of the initial owner of the famous Melee Master's Gloves?</td>
+				<td class="answer">God Archilles</td>
+				<td>Archangel Gabriel</td>
+				<td>Fallen Angel Lucifer</td>
+			</tr>
+			<tr>
+				<td>According to the 4th volume of the "Sage's Diary", what was Astana the sage getting ready to learn?</td>
+				<td>Dragon's Whisper</td>
+				<td>Plane Function</td>
+				<td class="answer">Concoct Perfume</td>
+			</tr>
+			<tr>
+				<td>Divine Dragon's collections are very impressive! Of all the following items, which does not belong to it?</td>
+				<td>Universe Cube</td>
+				<td>Half Leftover Pizza</td>
+				<td class="answer">Titan's Cyrstal</td>
+			</tr>
+			<tr>
+				<td>The gloomy Dracula Castle houses nine sacred artifacts. Which of the following items is not included?</td>
+				<td>Mutu's Skin</td>
+				<td class="answer">Issac's Blood</td>
+				<td>Nibelungen Spear</td>
+			</tr>
+			<tr>
+				<td>Do you know which item stolen by Mayo the Great God of Thieves makes him famous?</td>
+				<td class="answer">Dimension Boots</td>
+				<td>Crown</td>
+				<td>Dragon Egg</td>
+			</tr>
+			<tr>
+				<td>Have you heard of Vosebarker's design manuscript? Question: Who can be the maker of it?</td>
+				<td>Machinist</td>
+				<td>Dwarf King</td>
+				<td class="answer">Alchemist</td>
+			</tr>
+			<tr>
+				<td>The Oriental Shrine in the maze boasts various items from the east fro sacrifice. Which of the following is excluded?</td>
+				<td>Brewmaster's Wine</td>
+				<td class="answer">Pharaoh's Mask</td>
+				<td>Arabian Nights</td>
+			</tr>
+			<tr>
+				<td>Do you know who gave the Great Druid's Cloak to a lost girl?</td>
+				<td>Powerful Druid</td>
+				<td>Beautiful Elf</td>
+				<td class="answer">Third-class Mage</td>
+			</tr>
+			<tr>
+				<td>The Machine Altar in the maze boasts various mechanical items for sacrifice. Which of the following is excluded?</td>
+				<td class="answer">Mithril Bullet</td>
+				<td>Tin Man's Heart</td>
+				<td>Goblin's Device</td>
+			</tr>
+			<tr>
+				<td>Do you know how did the most famous and outstanding Necromancer Harvan die?</td>
+				<td class="answer">Get executed</td>
+				<td>Get assassinated</td>
+				<td>Get Killed</td>
+			</tr>
+			<tr>
+				<td>There're five capable evil gods in the Bloody Fortress. Which of the following is not included?</td>
+				<td>Knight of Nine-Heinhardt</td>
+				<td class="answer">God of the Night-Aioria</td>
+				<td>Mono-Eye Tyrant-Heraclius</td>
+			</tr>
+			<tr>
+				<td>There are a lot of empires on the continent. How many colors do you need to draw a world map?</td>
+				<td>3</td>
+				<td class="answer">4</td>
+				<td>5</td>
+			</tr>
+			<tr>
+				<td>Monkeys from the Adventurer's Forest love to throw various items. Which of these is excluded</td>
+				<td>Alloy Shield</td>
+				<td class="answer">Head Hoop</td>
+				<td>The Dead Cat</td>
+			</tr>
+			<tr>
+				<td>Time flies! I have developed from a juvenile to a strong man. Question: How many days make up 10 successive years?</td>
+				<td>3650365136523650</td>
+				<td class="answer">365136523653</td>
+				<td>36523653</td>
+			</tr>
+			<tr>
+				<td>The Magic Academy has a mystic mirror. Without any magic cast upon it, the mirror can transform an object in front of it into a bigger one. What is this mirror for?</td>
+				<td>Concave Mirror</td>
+				<td>Concave Lense</td>
+				<td class="answer">Convex Lens</td>
+			</tr>
+			<tr>
+				<td>There are 10 kinds of Gumballs on the continent. Some understand the binary system and the rest don't! Hahaha… Don't you find it funny? Then the question is, what does 10111011 equal to in the binary system?</td>
+				<td>129</td>
+				<td>163</td>
+				<td class="answer">187</td>
+			</tr>
+			<tr>
+				<td>1 bottle of Dwarf's Bitter sells at 1 coin. 2 empty bottles can be exchanged for another bottle of Dwarf's Bitter. With 20 coins, how many bottles at most can you afford?</td>
+				<td>38</td>
+				<td class="answer">39</td>
+				<td>40</td>
+			</tr>
+			<tr>
+				<td>Merchant Gumball sells a jewel at 12 gems which he bought with 10 gems. In order to make a wiser trade-off, he buys back the jewel with 14 gems and then sells it again at 16 gems. Question: How many gems does he finally earn?</td>
+				<td>2</td>
+				<td class="answer">4</td>
+				<td>6</td>
+			</tr>
+			<tr>
+				<td>There are two children in the family. One is a boy, then what is the probability that the other is a boy too?</td>
+				<td>1/2</td>
+				<td class="answer">1/3</td>
+				<td>2/3</td>
+			</tr>
+			<tr>
+				<td>A family with two children, one is a boy born on a Tuesday. Then, the other is the probability that a boy is?</td>
+				<td>1/2</td>
+				<td>1/3</td>
+				<td class="answer">13/27</td>
+			</tr>
+			<tr>
+				<td>There are three Gumballs, A, B, C. One of them is a fighter, another is a swordsman, and the last is a witch. If Gumball C is older than the swordsman, Gumball A is not of the same age with the fighter, and the fighter is younger than Gumball B, then what should be Gumball A's class?</td>
+				<td class="answer">Swordsman</td>
+				<td>Courage</td>
+				<td>Witch</td>
+			</tr>
+			<tr>
+				<td>At both ends of a pulley hang a 10-pound weight and a 10-pound monkey respectively. They keep the pulley in balance. When the monkey climbed up the rope how will the weight move?</td>
+				<td>Rise</td>
+				<td>Immobile</td>
+				<td class="answer">Descend</td>
+			</tr>
+			<tr>
+				<td>Priest Gumball said he cures those who never cure themselves. So should he cure himself?</td>
+				<td>Do</td>
+				<td>Shouldn't</td>
+				<td class="answer">Do or not to do, It's a very hard choice</td>
+			</tr>
+			<tr>
+				<td>In the Adventurer's Forest appear 49 monsters. Some of them are boars and the others are poisonous spiders. They have 200 legs in total. Question: How many spiders are there?</td>
+				<td>7</td>
+				<td>1</td>
+				<td>3</td>
+			</tr>
+			<tr>
+				<td>Buddy! I get into some troubles during mechanical operation. There is a sequence of numbers in the operation manual, can you help me to figure it out? 13, 14, 16, 21, n what should "n" be?</td>
+				<td>23</td>
+				<td class="answer">35</td>
+				<td>27</td>
+			</tr>
+			<tr>
+				<td>Do you know the trigonometric function between -a and a ? Cos(-a)=?</td>
+				<td>-cos a</td>
+				<td class="answer">cos a</td>
+				<td>sin a</td>
+			</tr>
+			<tr>
+				<td>Buddy! I get into some troubles during mechanical operation. There is a sequence of numbers in the operation manual, can you help me to figure it out? 5, 17, 21, 25, n, what should "n" be?</td>
+				<td class="answer">29</td>
+				<td>36</td>
+				<td>41</td>
+			</tr>
+			<tr>
+				<td>Buddy! I get into some troubles during mechanical operation. There is a sequence of numbers in the operation manual, can you help me to figure it out? 256, 269, 286, 302, n, what should "n" be?</td>
+				<td>306</td>
+				<td class="answer">307</td>
+				<td>308</td>
+			</tr>
+			<tr>
+				<td>Buddy! I get into some troubles during mechanical operation. There is a sequence of numbers in the operation manual, can you help me to figure it out? 16, 27, 16, n, 1, what should "n" be?</td>
+				<td>7</td>
+				<td>6</td>
+				<td class="answer">5</td>
+			</tr>
+			<tr>
+				<td>Buddy! I get into some troubles during mechanical operation. There is a sequence of numbers in the operation manual, can you help me to figure it out? 15, 28, 54, n, 210, what should "n" be?</td>
+				<td>78</td>
+				<td class="answer">106</td>
+				<td>165</td>
+			</tr>
+			<tr>
+				<td>Astana the sage figured out one of the most perfect formulas in the natural world, relating the most important elements to each other. Question: e^TTi?</td>
+				<td class="answer">-1</td>
+				<td>0</td>
+				<td>1</td>
+			</tr>
+			<tr>
+				<td>Buddy! I get into some troubles during mechanical operation. There is a sequence of numbers in the operation manual, can you help me to figure it out? 0, 4, 18, n, 100, what should "n" be?</td>
+				<td>38</td>
+				<td class="answer">48</td>
+				<td>58</td>
+			</tr>
+			<tr>
+				<td>Buddy! I get into some troubles during mechanical operation. There is a sequence of numbers in the operation manual, can you help me to figure it out? 20, 22, 25, 30, 37, n, what should "n" be?</td>
+				<td class="answer">48</td>
+				<td>49</td>
+				<td>55</td>
+			</tr>
+			<tr>
+				<td>Buddy! I get into some troubles during mechanical operation. There is a sequence of numbers in the operation manual, can you help me to figure it out? 7, 9, -1, 5, n, what should "n" be?</td>
+				<td>2</td>
+				<td>-1</td>
+				<td class="answer">-3</td>
+			</tr>
+			<tr>
+				<td>Buddy! I get into some troubles during mechanical operation. There is a sequence of numbers in the operation manual, can you help me to figure it out? 1, 3, 4, 8, 16, n, what should "n" be?</td>
+				<td>26</td>
+				<td class="answer">32</td>
+				<td>16</td>
+			</tr>
+			<tr>
+				<td>Which one of the following substances has the lowest pH value when all of them have equal Molar concentration?</td>
+				<td>Ethanol</td>
+				<td class="answer">Acetic Acid</td>
+				<td>Carbonic Acid</td>
+			</tr>
+			<tr>
+				<td>People often ask me about the posion formulas, which of the following materials is suitable for making posion?</td>
+				<td>Aluminium Oxide</td>
+				<td class="answer">Arsenic Trioxide</td>
+				<td>Ferric Oxide</td>
+			</tr>
+			<tr>
+				<td>People often ask me about the hallucinogen formulas, which of the following materials has a function of anaesthesia?</td>
+				<td>Acetic Acid</td>
+				<td>Ethyne</td>
+				<td class="answer">Aether</td>
+			</tr>
+			<tr>
+				<td>Iodine is a common toxicidum for external use. About its function of disinfection, which of the following is true?</td>
+				<td>Dissolve Germ</td>
+				<td>Germs will die due to lack of oxygen</td>
+				<td class="answer">Oxidates germs and denaturalizes their proteins</td>
+			</tr>
+			<tr>
+				<td>Which one of the following substances is used as either a preservative or a seasoning?</td>
+				<td class="answer">Table Salt</td>
+				<td>MSG</td>
+				<td>Lemon Yellow</td>
+			</tr>
+			<tr>
+				<td>Table salt as a flavouring makes food more delicious. What is the main component of table salt?</td>
+				<td>Potassium Chloride</td>
+				<td>Sodium Carbonate</td>
+				<td class="answer">Sodium Chloride</td>
+			</tr>
+			<tr>
+				<td>To make a potion capable of dissolving coins, what should be the additive?</td>
+				<td>HCL and H2SO4</td>
+				<td class="answer">HCL and HNO3</td>
+				<td>H2SO4 and HNO3</td>
+			</tr>
+			<tr>
+				<td>Grease has lower density than water. Among the following three substances, which should be considered as grease?</td>
+				<td>Fossil Fuel</td>
+				<td>Coal Oil</td>
+				<td class="answer">Peanut Oil</td>
+			</tr>
+			<tr>
+				<td>Of starch, grease, sugar, caustic soda, protein, glucose, how many are subject to hydrolysis reaction?</td>
+				<td class="answer">4 Kinds</td>
+				<td>5 Kinds</td>
+				<td>6 Kinds</td>
+			</tr>
+			<tr>
+				<td>Battles come with deaths. Which is needed in conserving corpses?</td>
+				<td class="answer">Formaldehyde</td>
+				<td>Ethanol</td>
+				<td>Acetone</td>
+			</tr>
+			<tr>
+				<td>Which organelle of a green vegetable cell witnesses most of the respiration process?</td>
+				<td>Chloroplast</td>
+				<td class="answer">Mitochondria</td>
+				<td>Ribosome</td>
+			</tr>
+			<tr>
+				<td>There is no end to the growth of World Tree. Even a branch of mine becomes bigger and longer. What's the name for the phenomenon?</td>
+				<td>Sexual Reproduction</td>
+				<td class="answer">Asexual Reproduction</td>
+				<td>Self Breeding</td>
+			</tr>
+			<tr>
+				<td>Some plants are poisonous in nature. Do you know which plant is the most poisonous in the world?</td>
+				<td>Semen Cuscutae</td>
+				<td class="answer">Toxic Wood</td>
+				<td>Mandara</td>
+			</tr>
+			<tr>
+				<td>Instead of photosynthesis, plants are the source of some plants' nutreints. Which of the following is the provide of nutrients?</td>
+				<td class="answer">Semen Cuscutae</td>
+				<td>mushroom </td>
+				<td>Mandara</td>
+			</tr>
+			<tr>
+				<td>The pea cannon shoots out very hard peas! Of which part are those peas in the Pea Cannon?</td>
+				<td>Root</td>
+				<td>Fruit</td>
+				<td class="answer">Seed</td>
+			</tr>
+			<tr>
+				<td>Attacking the cactus can harm the attacker. Which sharp part of the cactus come from?</td>
+				<td>Stem</td>
+				<td class="answer">Leaf</td>
+				<td>Body</td>
+			</tr>
+			<tr>
+				<td>In summer, Gumballs under the World Tree feel nice and cool. What function of the plant gives them this feeling?</td>
+				<td>Photosynthesis</td>
+				<td>Respiration</td>
+				<td class="answer">Transpiration</td>
+			</tr>
+			<tr>
+				<td>Which organelle of a green vegetable cell witnesses most of the photosysthesis process?</td>
+				<td class="answer">Chloroplast</td>
+				<td>Mitochondria</td>
+				<td>Ribosome</td>
+			</tr>
+			<tr>
+				<td>Most Plants spread their seeds by other media. Which of the following plants spread their seeds via water?</td>
+				<td>Dandelion</td>
+				<td>Pea</td>
+				<td class="answer">Coconut</td>
+			</tr>
+			<tr>
+				<td>Eyesight counts very much in maze exploration! Which of the following plant is good for improving eyesight?</td>
+				<td class="answer">Carrot</td>
+				<td>Leek</td>
+				<td>Tomato</td>
+			</tr>
+			<tr>
+				<td>Lich Statue</td>
+				<td class="answer">In order to find great wealth</td>
+				<td>In order to explore the ancient knowledge</td>
+				<td>In order to save the world</td>
+			</tr>
+			<tr>
+				<td>Tyrant Statue</td>
+				<td class="answer">In order to find great wealth</td>
+				<td>In order to explore the ancient knowledge</td>
+				<td>In order to save the world</td>
+			</tr>
+			<tr>
+				<td>Fire Statue</td>
+				<td>In order to find great wealth</td>
+				<td class="answer">In order to explore the ancient knowledge</td>
+				<td>In order to save the world</td>
+			</tr>
+			<tr>
+				<td>Knight Statue</td>
+				<td>In order to find great wealth</td>
+				<td>In order to explore the ancient knowledge</td>
+				<td class="answer">In order to save the world</td>
+			</tr>
+			<tr>
+				<td>Lady Statue</td>
+				<td>In order to find great wealth</td>
+				<td>In order to explore the ancient knowledge</td>
+				<td class="answer">In order to save the world</td>
+			</tr>
+		</tbody>
+	</table>
+<script>
+	var trList = new ElementList(main_tbody, "tr"); 
+	filter_input.focus();
+	
+	function onFilter(e) {
+		trList.filterIn(filterLogic);
+	}
+	
+	function filterLogic(elem) {
+		var needle = filter_input.value; // Accessing global variable
+		if(!needle) { return true; }
+		needle = needle.trim();
+		needle = needle.toLowerCase(); 
+		
+		var cells = elem.cells;
+		for(var i = cells.length; --i >= 0;) {
+			var cell = cells[i];
+			var lowerCaseText = cell.textContent.toLowerCase();
+			if(lowerCaseText.indexOf(needle) >= 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+	function onReset() {
+		filter_input.value = "";
+		trList.unsuspendAll(null);
+		filter_input.focus();
+	}
+</script>
+
+</body>
+</html>
