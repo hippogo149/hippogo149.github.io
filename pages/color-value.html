@@ -26,7 +26,7 @@
 			border: 1px dashed lightgray;
 		}
 		thead td {
-			border-bottom: 2px solid deepskyblue;
+			border-bottom: 1px solid deepskyblue;
 		}
 		td:nth-child(2) {
 			text-align: center;
@@ -230,37 +230,31 @@ for(i = 0; i < rowCount; ++i) {
 
 var tbl = new Table(list_div);
 tbl.rebuild(colorList, headerRow);
-tbl.setSortLogic(function(cellA, cellB, order) {
-	return (cellB._colorVal - cellA._colorVal) * order;
-}, 2);
-tbl.setSortLogic(ElementList.numericElementComparer, 4);
-tbl.setSortLogic(ElementList.numericElementComparer, 5);
-tbl.setSortLogic(ElementList.numericElementComparer, 6);
 
 tbl.getCellsInColumn(2).forEach(function(cell) {
-	var hex = cell.textContent;
+	var hex = cell.rawValue;
 	cell.style.color = hex;
 	cell.style.backgroundColor = hex;
 	cell.style.borderColor = hex;
-	cell._colorVal = getColorValue(hex);
+	cell.rawValue = getColorValue(hex);
 });
 tbl.getCellsInColumn(4).forEach(function(cell) {
-	var val = +cell.textContent;
+	var val = cell.rawValue;
 	cell.style.color = Color.getBrightness([val, 0, 0]) > 140 ? "black" : "white";
 	cell.style.backgroundColor = Color.red(val);
 });
 tbl.getCellsInColumn(5).forEach(function(cell) {
-	var val = +cell.textContent;
+	var val = cell.rawValue;
 	cell.style.color = Color.getBrightness([0, val, 0]) > 140 ? "black" : "white";
 	cell.style.backgroundColor = Color.green(val);
 });
 tbl.getCellsInColumn(6).forEach(function(cell) {
-	var val = +cell.textContent;
+	var val = cell.rawValue;
 	cell.style.color = Color.getBrightness([0, 0, val]) > 140 ? "black" : "white";
 	cell.style.backgroundColor = Color.blue(val);
 });
 
-tbl.sort(2, "d");
+tbl.sort(2, "a");
 </script>
 
 </body>

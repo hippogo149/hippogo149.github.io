@@ -1,24 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>hippogo149.github.io</title>
-		<link rel="icon" href="data:;base64,iVBORw0KGgo=">
-		<style>
-			html, body { overflow: hidden; }
-			body{ font: 18px Arial; text-align: center; }
-			div { width:140px; height: 140px; transform: rotate(45deg); position: fixed; }
-			#d1 { left: -70px;    top: -70px; background-color: red; }
-			#d2 { right:-70px;    top: -70px; background-color: cyan; }
-			#d3 { left: -70px; bottom: -70px; background-color: green; }
-			#d4 { right:-70px; bottom: -70px; background-color: gold; }
-		</style>
-	</head>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Hippogo149 Pages</title>
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	<link rel="stylesheet" href="../assets/html.css">
+	<link rel="stylesheet" href="../assets/common.css">
+	<script src="../assets/por.min.js"></script>
+	<style>
+		body {
+			font-family: Arial;
+		}
+		.inline-table, table {
+			width: 100%;
+		}
+		td {
+			padding: 4px;
+			border: 1px dashed lightgray;
+		}
+		thead td {
+			border-bottom: 1px solid deepskyblue;
+		}
+		td:nth-child(2) {
+			text-align: center;
+		}
+		td:nth-child(3) {
+			text-align: right;
+		}
+		tr:nth-child(odd) {
+			background-color: #e9e9ff;
+		}
+	</style>
 	<body>
-		<div id="d1"></div><div id="d2"></div><div id="d3"></div><div id="d4"></div>
-		<h1><a href="https://github.com/hippogo149/">Hello World!</a></h1>
-		<h3><a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fhippogo149.github.io%2F">W3C Markup Validation Service</a></h3>
-		<h3><a href="https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fhippogo149.github.io%2F&tab=mobile">Google PageSpeed Insights</a></h3>
+		<h1>Index of https://hippogo149.github.io/pages/</h1>
+		<script>
+			__files = [["canvas-grid.html",1495631455906.138,4704],["centering.html",1525792363646.902,2826],["color-value.html",1523720916686.7566,7302],["financial-statement.html",1502898095945.8982,10377],["font-family.html",1524831254432.0652,5344],["percentage.html",1495631455628.1023,3217],["table-builder.html",1495631464298.2046,5526],["text-modifier.html",1496235370226.2725,8101]];
+			
+			var tbl = new Table();
+			tbl.getBody().setCellRenderer(function(cell, val, c, r) {
+				switch(c) {
+				case 0:
+					var link = document.createElement("a");
+					link.textContent = val;
+					link.setAttribute("href", val);
+					cell.appendChild(link);
+					break;
+				case 1:
+					cell.textContent = new Date(val).toLocaleString();
+					break;
+				case 2:
+					cell.textContent = Ut.fillZeroes(val / (1024 * 8));
+					break;
+				}
+			})
+			tbl.rebuild(__files, ["Name", "Last Modified", "Size (KB)"]);
+			tbl.setParent(document.body);
+		</script>
 	</body>
 </html>
