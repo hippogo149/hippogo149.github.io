@@ -7,28 +7,28 @@
 	
 	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
 	<link rel="stylesheet" href="../assets/html.css">
+	<link rel="stylesheet" href="../assets/common.css">
+	<link rel="stylesheet" href="../assets/table.css">
 	<script src="../assets/por.min.js"></script>
 
 	<style>
-		body
-		,input {
+		body, input {
 			font-family: Arial;
-			font-size: 24px;
+			font-size: 22px;
 		}
+
 		body {
 			text-align: center;
 		}
 		input {
-			width: 100px;
+			width: 140px;
 		}
-		td {
-			vertical-align: middle;
-			border: 1px solid grey;
+		table {
+			border-collapse: separate;
+		}
+		.js-table td {
 			border-radius: 5px;
 			padding: 10px;
-		}
-		td span {
-			color: red;
 		}
 		td:first-child {
 			text-align: right;
@@ -39,92 +39,121 @@
 		div+div {
 			margin-top: 4px;
 		}
+		div[style] span:nth-child(odd) {
+			color: red;
+		}
 	</style>
 
 </head>
 <body>
-	<h2>Percentage</h2>
-	<div style="display: inline-block;" >
-		<table>
-			<tbody>
-				<tr>
-					<td>
-						<div>Value: <input id="vInput" onchange="toPercentage(this)" type="number" /></div>
-						<div>Percentage: <input id="pInput" onchange="toValue(this)" type="text" /></div>
-					</td>
-					<td>
-						<div>Total: <input id="tInput" onchange="toPercentage(this)" type="number" /></div>
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2"><span id="pOutput"></span> percent of <span id="tOutput"></span> is <span id="vOutput"></span></td>
-				<tr>
-				<tr>
-					<td>
-						<div>Initial: <input id="vInput2" onchange="toPercentage(this)" type="number" /></div>
-						<div>% Change: <input id="pcInput" onchange="toValue(this)" type="text" /></div>
-					</td>
-					<td>
-						<div>Final: <input id="tInput2" onchange="toPercentage(this)" type="number" /></div>
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2"><span id="vOutput2"></span> is changed to <span id="tOutput2"></span> for <span id="pOutput2"></span> percent</td>
-				<tr>
-			</tbody>
-		</table>
-	</div>
+	<h2>Percentage Calculator</h2>
+	<div id="tbl_div" class="inline-table"></div>
 	
 <script>
+	var tbl = new Table(tbl_div, 2, 6);
+	Dom.appendChild(tbl.getCell(0, 0),
+		Dom.appendChild(Dom.block(), Dom.text("Value: "), Dom.numericInput()),
+		Dom.appendChild(Dom.block(), Dom.text("Percentage: "), Dom.textInput())
+	);
+	tbl.getCell(1, 0).appendChild(
+		Dom.appendChild(Dom.block(), Dom.text("Total: "), Dom.numericInput())
+	);
+	var spans0 = tbl.spanBlock(0, 1, 1, 1).appendChild(
+		Dom.texts("", " percent of ", "", " is ", "")
+		// What is 5% of 200? >> 10
+	).children;
+
+	Dom.appendChild(tbl.getCell(0, 2),
+		Dom.appendChild(Dom.block(), Dom.text("Initial: "), Dom.numericInput()),
+		Dom.appendChild(Dom.block(), Dom.text("% Change: "), Dom.textInput())
+	);
+	tbl.getCell(1, 2).appendChild(
+		Dom.appendChild(Dom.block(), Dom.text("Final: "), Dom.numericInput())
+	);
+	var spans3 = tbl.spanBlock(0, 1, 3, 3).appendChild(
+		Dom.texts("", " is changed to ", "", " for ", "", " percent")
+		// 10 is what% of 200? >> 5%
+	).children;
+	
+	Dom.appendChild(tbl.getCell(0, 4),
+		Dom.appendChild(Dom.block(), Dom.text("Change: "), Dom.numericInput()),
+		Dom.appendChild(Dom.block(), Dom.text("Percentage: "), Dom.textInput())
+	);
+	tbl.getCell(1, 4).appendChild(
+		Dom.appendChild(Dom.block(), Dom.text("Principal: "), Dom.numericInput())
+	);
+	var spans5 = tbl.spanBlock(0, 1, 5, 5).appendChild(
+		Dom.texts("", " is ", "", " percent of ", "")
+		// 10 is 5% of what? >> 200
+	).children;
+	
+	var inputList = tbl.getElement().getElementsByTagName("INPUT");
+	var inputs = [];
+	for(var i = inputList.length; --i >= 0;) { inputs[i] = inputList[i]; }
+	
+	tbl.addEventListener("change", onInputChange);
 	var v, t, p, pc;
-	function toPercentage(changedObject) {
-		v = Ut.getNumericValue(vInput, 0);
-		t = Ut.getNumericValue(tInput, 100);
-		switch(changedObject.id) {
-		case "vInput2": v = Ut.getNumericValue(vInput2, 1); break;
-		case "tInput2": t = Ut.getNumericValue(tInput2, 100); break;
-		}
-		
-		p = Ut.round(v / t * 100);
-		pc = Ut.round((t - v) / Math.abs(v) * 100);
-		render();
-	}
-	function toValue(changedObject) {
-		if(changedObject.id === "pInput") {
-			p = Ut.getNumericValue(pInput, 0);
-			t = Ut.getNumericValue(tInput, 100);
-			
-			v = Ut.round(p * t / 100);
-			pc = Ut.round((t - v) / Math.abs(v) * 100);
-		} else {
-			pc = Ut.getNumericValue(pcInput, 0);
-			v = Ut.getNumericValue(vInput, 0);
+	var vMap = {0: 10, 3: 10, 6: 10};
+	var tMap = {2: 50, 5: 50, 8: 50};
+	
+	setTimeout(function() {
+		inputs[1].focus();
+		inputs[1].select();
+	}, 100);
+	onInputChange({target: inputs[0]});
+	function onInputChange(e) {
+		var tgt = e.target;
+		var index = inputs.indexOf(tgt);
+		var vIndex = vMap[index] != null ? index : 0;
+		var tIndex = tMap[index] != null ? index : 2;
+		if(index === 4) { // pc is changed. Calculate t and p
+			pc = Ut.getNumericValue(inputs[4], 0);
+			v = Ut.getNumericValue(inputs[vIndex], vMap[vIndex]);
 			
 			t = v + v * pc / 100;
 			p = Ut.round(v / t * 100);
+		} else { // Calculate pc
+			if(index === 6 || index === 7) { // p or v is changed. Calculate t
+				p = Ut.getNumericValue(inputs[7], 0);
+				v = Ut.getNumericValue(inputs[vIndex], vMap[vIndex]);
+				
+				t = Ut.round(v / p * 100);
+			} else if(index === 1 || index === 2) { // t is changed. Calculate v
+				p = Ut.getNumericValue(inputs[1], 0);
+				t = Ut.getNumericValue(inputs[tIndex], tMap[tIndex]);
+				
+				v = Ut.round(p * t / 100);
+			} else { // v (0, 3) or t (5, 8) is changed. Calculate p
+				v = Ut.getNumericValue(inputs[vIndex], vMap[vIndex]);
+				t = Ut.getNumericValue(inputs[tIndex], tMap[tIndex]);
+				
+				p = Ut.round(v / t * 100);
+			}
+			pc = Ut.round((t - v) / Math.abs(v) * 100);
 		}
 		render();
-	}
+	};
 	function render() {
-		pInput.value = p;
-		tInput.value = t;
-		vInput.value = v;
-		pcInput.value = pc;
-		tInput2.value = t;
-		vInput2.value = v;
-		pOutput.textContent = p;
-		tOutput.textContent = t;
-		vOutput.textContent = v;
-		pOutput2.textContent = pc;
-		tOutput2.textContent = t;
-		vOutput2.textContent = v;
+		inputs[0].value = v;
+		inputs[1].value = p;
+		inputs[2].value = t;
+		inputs[3].value = v;
+		inputs[4].value = pc;
+		inputs[5].value = t;
+		inputs[6].value = v;
+		inputs[7].value = p;
+		inputs[8].value = t;
+		
+		spans0[0].textContent = p;
+		spans0[2].textContent = t;
+		spans0[4].textContent = v;
+		spans3[0].textContent = v;
+		spans3[2].textContent = t;
+		spans3[4].textContent = pc;
+		spans5[0].textContent = v;
+		spans5[2].textContent = p;
+		spans5[4].textContent = t;
 	}
-	toPercentage(vInput);
-	
-	setTimeout(function() {
-		vInput2.focus();
-		vInput2.select();
-	}, 100);
 </script>
 
 </body>
