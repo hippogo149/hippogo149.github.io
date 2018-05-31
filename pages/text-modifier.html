@@ -13,15 +13,20 @@
 		.column {
 			display: inline-block;
 			line-height: 24px;
+			max-width: 100%;
+			width: 500px;
 		}
 		#paramList {
 			margin-left: 8px;
 		}
 		textarea { 
+			font-family: "Courier News", monospace;
 			margin-top: 4px; 
 			
 			overflow-y: auto;
-			height: 600px;
+			height: 500px;
+			width: 100%;
+			box-sizing: border-box;
 		}
 		
 		@media all and (min-width: 1101px) {
@@ -29,48 +34,26 @@
 				overflow-x: auto;
 				white-space: nowrap;
 			}
-			#txt_input {
-				width: 480px;
-			}
-			#txt_output {
-				width: 640px;
-			}
 		}
 		@media all and (max-width: 1100px) {
 			textarea { 
 				overflow-x: hidden;
 			}
-			#txt_input {
-				height: 200px;
-			}
-			#txt_output {
-				height: 300px;
-			}
 		}
 		@media all and (min-width: 821px) and (max-width: 1100px) {
-			textarea {
+			.column {
 				width: 780px;
 			}
 		}
 		@media all and (max-width: 820px) {
-			textarea {
+			.column {
 				width: 450px;
 			}
 		}
 	</style>
-	<script type="text/javascript">
-		window.addEventListener("load", function() {
-			var winTitle = "Text Modifier";
-			if(winTitle) {
-				document.title = winTitle;
-				var header = document.createElement("h2");
-				header.textContent = winTitle;
-				document.body.insertBefore(header, document.body.firstChild);
-			}
-		}, false);
-	</script>
 </head>
 <body>
+	<h2>Text Modifier</h2>
 	<div>
 		<div class="column">
 			Text Input: <button onclick="replaceInput(event)"> Replace Input with Output </button><br>
@@ -83,7 +66,7 @@
 	</div>
 
 
-<script type='text/javascript'>
+<script>
 	var lastInput = "";
 	var outputMode = 0;
 	
@@ -110,7 +93,9 @@
 		["Stringify JavaScript", null, stringifyJS, "Delimiter: ", "'", ""],
 		["Stringify JSON", null, stringifyJSON],
 		["Convert Text to TSV", null, tabularFormat], // TSV = Tab-Separated Values
-		["Convert TSV to 2D Array", null, scriptifyTsv]
+		["Convert TSV to 2D Array", null, scriptifyTsv],
+		["Prettify 2D Array", null, prettify2DArray],
+		["Strip comments", null, stripComments]
 	];
 	
 	Dom.options(mode_sel, selDefs, outputMode);
@@ -268,25 +253,95 @@
 		}
 		return str;
 	}
-	function tabularFormat(str) {
+	function tabularFormat(str) { // Text to TXV
 		str = str.replace(/\[|\]|"|'/g, ""); // Allow JS Array to be transformed
 		var tbl = Ary.toTable(str);
-		return Ary.tableToString(tbl); // To TSV format string
+		str = Ary.tableToString(tbl); // To TSV format string
+		return str.trim(); // IE9+
 	}
 	function scriptifyTsv(str) {
 		str = str.trim(); // IE9+
 		var tbl = Ary.toTable(str, null, "\t");
+		return joinStrTableArray(tbl);
+	}
+	function joinStrTableArray(tbl) {
 		var rowCount = tbl.length;
 		if(rowCount <= 0) {
 			return "[]";
 		}
+		var firstRow = tbl[0];
+		if(!Array.isArray(firstRow)) {
+			return JSON.stringify(tbl);
+		}
+		
+		// String Array only. TODO: Handle more data type
 		var str = "[\n";
-		str += '\t ["' + tbl[0].join('", "') + '"]';
+		str += '\t ["' + firstRow.join('", "') + '"]';
 		for(r = 1; r < rowCount; ++r) {
 			var row = tbl[r];
 			str += '\n\t,["' + row.join('", "') + '"]';
 		}
 		return str + "\n]";
+	};
+	function prettify2DArray(str) {
+		var out_str = str.replace(/[\r\n\t]/g, ""); // Strip all new lines and tabs
+		out_str = out_str.trim(); // IE9+
+		out_str = out_str.replace(/;\s*$/, ""); // Remove ending semicolon
+		
+		if(!out_str.match(/^\[ *\[.*\] *\]$/)) {
+			return out_str; // Invalid input
+		}
+		out_str = out_str.replace(/ *, */g, ","); // Strip all spaces around a comma
+		out_str = out_str.replace(/\[ +/g, "["); // Strip all spaces after open bracket
+		out_str = out_str.replace(/ +\]/g, "]"); // Strip all spaces before close bracket
+		
+		out_str = out_str.substr(2, out_str.length - 4); // Strip outer brackets
+		
+		var tbl = out_str.split("],["); // Array of rows
+		var rowCount = tbl.length;
+		var maxLens = [];
+		for(var r = 0; r < rowCount; ++r) {
+			var strRow = tbl[r];
+			var row = strRow.split(",");
+			tbl[r] = row;
+			var colCount = row.length;
+			for(var c = 0; c < colCount; ++c) {
+				var str = row[c];
+				var strLen = (str) ? str.length : 0;
+				if(!(strLen <= maxLens[c])) {
+					maxLens[c] = strLen;
+				}
+			}
+		}
+		colCount = maxLens.length;
+		for(c = 0; c < colCount; ++c) {
+			var maxLen = maxLens[c];
+			for(r = 0; r < rowCount; ++r) {
+				row = tbl[r];
+				str = row[c];
+				if(str) {
+					strLen = str.length;
+					while(strLen++ < maxLen) {
+						str += " ";
+					}
+					row[c] = str;
+				}
+			}
+		}
+		
+		
+		var firstRow = tbl[0];
+		out_str= "[\n";
+		out_str += '\t [' + firstRow.join(', ') + ']';
+		for(r = 1; r < rowCount; ++r) {
+			var row = tbl[r];
+			out_str += '\n\t,[' + row.join(', ') + ']';
+		}
+		return out_str + "\n]";
+	}
+	function stripComments(str) {
+		str = str.replace(/\/\*[\s\S]*?\*\//g, ""); // Slash star enclosure
+		return str.replace(/\/\/[\s\S]*?\n/g, "\n"); // Double slashes
 	}
 	
 	// Helper
