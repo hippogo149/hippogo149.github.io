@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Thai Solar Calendar</title>
+		<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+		<link rel="stylesheet" href="../assets/html.css">
+		<link rel="stylesheet" href="../assets/common.css">
+		<link rel="stylesheet" href="../assets/table.css">
+		<script src="../assets/por.min.js"></script>
+		<style>
+			.current { border: 2px solid orange; }
+		</style>
+	</head>
+	<body>
+		<h2>Thai Solar Calendar</h2>
+		<div id="now_div"></div>
+		<br>
+		<div id="calendar_div"></div>
+		<br>
+		<b>Reference:</b> <br>
+		<a href="https://en.wikipedia.org/wiki/Thai_solar_calendar">https://en.wikipedia.org/wiki/Thai_solar_calendar</a><br>
+		<a href="https://en.wikipedia.org/wiki/Julian_calendar">https://en.wikipedia.org/wiki/Julian_calendar</a><br>
+		<a href="https://www.englishclub.com/vocabulary/time-date.htm">https://www.englishclub.com/vocabulary/time-date.htm</a>
+		
+		<script>
+			var now = new Date();
+			var day = now.getDay();
+			var mon = now.getMonth();
+			var year = now.getFullYear();
+			var leapYear = ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0) ? 1 : 0;
+			var header = ["#", "English", "Thai", "Abbr.", "Length", "Zodiac"];
+			var content = [
+				 [1, "January", "มกราคม", "ม.ค.", 31, "\u2651 Capricorn" ]
+				,[2, "February", "กุมภาพันธ์", "ก.พ.", 28 + leapYear, "\u2652 Aquarius"]
+				,[3, "March", "มีนาคม", "มี.ค.", 31, "\u2653 Pisces"]
+				,[4, "April", "เมษายน", "เม.ย.", 30, "\u2648 Aries" ]
+				,[5, "May", "พฤษภาคม", "พ.ค.", 31, "\u2649 Taurus"]
+				,[6, "June", "มิถุนายน", "มิ.ย.", 30, "\u264a Gemini"]
+				,[7, "July", "กรกฎาคม", "ก.ค.", 31, "\u264b Cancer"]
+				,[8, "August", "สิงหาคม", "ส.ค.", 31, "\u264c Leo"]
+				,[9, "September", "กันยายน", "ก.ย.", 30, "\u2651 Virgo"]
+				,[10, "October", "ตุลาคม", "ต.ค.", 31, "\u264d Libra"]
+				,[11, "November", "พฤศจิกายน", "พ.ย.", 30, "\u264f Scorpio"]
+				,[12, "December", "ธันวาคม", "ธ.ค.", 31, "\u2650 Sagittarius"]
+			];
+			
+			now_div.textContent = day
+				+ " " + content[mon][1]
+				+ " " + year + " /"
+				+ " " + day
+				+ " " + content[mon][2]
+				+ " " + "พ.ศ. " + (year + 543);
+				
+			var tbl = new Table(calendar_div);
+			tbl.rebuild(content, header);
+			tbl.getRow(mon).className = "current";
+		</script>
+	</body>
+</html>

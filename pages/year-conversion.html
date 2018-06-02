@@ -6,67 +6,62 @@
 	<title>Year Conversion</title>
 	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
 	<link rel="stylesheet" href="../assets/html.css">
+	<script src="../assets/por.min.js"></script>
 	<style>
-		*[readonly="true"] {
-			background-color: #fafafa
+		body {
+			text-align: center;
+			font-family: Tahoma;
 		}
-		td {
-			border: 1px solid lightgrey;
-			vertical-align: middle;
-			padding: 8px;
-			white-space: nowrap;
+		div {
+			background-color: seashell;
+			padding: 20px 0;
+			border-radius: 10px;
+			margin-bottom: 20px;
+		}
+		h3:first-child {
+			margin-top: 0;
+		}
+		#be_txt, #ce_txt{
+			color: navy;
+			font-size: x-large;
 		}
 	</style>
 </head>
 <body>
-	<div style="text-align: center;">
-		<h2>Year Conversion</h2>
-		<div style="display: inline-block;" >
-			<table style="border-collapse: collapse; width: 200px; ">
-				<tbody>
-					<tr>
-						<td>
-							<span>Input</span>
-							<input id="input_txt" style="width:auto;" onchange="onInputChange(event)" onkeyup="onKeyUp(event)" value="" type="text" />
-						</td>
-						<td>
-							<button>Convert</button>
-						</td>
-						<td>
-							<span>พ.ศ.</span>
-							<input id="ps_txt" style="width:auto;" type="text" readonly="true" /><br /><br />
-							<span>ค.ศ.</span>
-							<input id="ks_txt" style="width:auto;" type="text" readonly="true" />
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
+	<h2>Year Conversion</h2>
 	
-<script type='text/javascript'>
-	function onInputChange(e) {
+<script>
+	var b = Dom.tree(document.body,
+		["div", 
+			"span(Year: )", "input#input_txt)"
+		],
+		["div", 
+			"h3(Buddhist Era (B.E.))",
+			"span (พ.ศ. )", "b#be_txt", 
+			"h3(Christian/Common Era. (C.E.))",
+			"span( ค.ศ. )", "b#ce_txt"
+		]
+	);
+	input_txt.addEventListener("change", calculateYear);
+	input_txt.addEventListener("keyup", calculateYear);
+		
+	function calculateYear(e) {
 		var str = input_txt.value;
-		var num = parseInt(str);
-		if(num !== num) {
-			var date = new Date();
-			date.setTime(date.getTime() - date.getTimezoneOffset() * 60000);
-			str = date.toISOString().substr(0, 4);
-			input_txt.value = str;
-			num = Number(str);
+		var num = parseInt(str, 10);
+		if(!e || e.type === "change") {
+			if(num !== num) {
+				num = new Date().getFullYear();
+				input_txt.value = num;
+			}
 		}
-		ps_txt.value = num + 543;
-		ks_txt.value = num - 543;
-	}
-	function onKeyUp(e) {
-		var str = input_txt.value;
-		var num = parseInt(str);
 		if(num === num) {
-			ps_txt.value = num + 543;
-			ks_txt.value = num - 543;
+			be_txt.textContent = num + 543;
+			ce_txt.textContent = num - 543;
 		}
 	}
-	onInputChange();
+	calculateYear();
+	input_txt.focus();
+	input_txt.select();
 </script>
 
 </body>
