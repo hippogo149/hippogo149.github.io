@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Spinners</title>
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	<link rel="stylesheet" type="text/css" href="../asset/html.css">
+
+	<style>
+		pre {
+			overflow: auto;
+		}
+		.container-box {
+			position: relative;
+			display: inline-block;
+			width: 300px;
+			height: 300px;
+		}
+		#container_css #spinner_css, .container-box {
+			border: 2px solid royalblue;
+		}
+		.spinner:before {
+			content: "";
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			width: 50px; /* percentage width will produce wobble motion */
+			height: 50px;
+			margin-top: -25px;
+			margin-left: -25px;
+			border-radius: 50%; /* IE9+ */
+		}
+		.type1:before {
+			border-top: 5px solid coral;
+			animation: full-rotation 2s infinite linear; /* IE10+ */
+		}
+		.type2:before {
+			border: 5px solid lightgrey;
+			border-top-color: coral;
+			animation: full-rotation 1s infinite linear;
+		}
+		.type3:before {
+			border: 5px solid transparent;
+			border-top-color: coral;
+			border-bottom-color: coral;
+			animation: full-rotation 1s infinite ease;
+		}
+		.type4:before {
+			border: 6px solid transparent;
+			border-top-color: coral;
+			border-left-width: 0;
+			animation: full-rotation 1s infinite linear;
+		}
+		.type5:before {
+			border: 5px solid lightgrey;
+			border-top-color: coral;
+			animation: full-rotation 1s infinite linear;
+			
+			width: 20%;
+			height: 20%;
+			margin-top: -10%;
+			margin-left: -10%;
+		}
+		@keyframes full-rotation {
+			100% {
+				transform: rotate(360deg); /* IE10+ */
+			}
+		}
+	</style>
+</head>
+<body>
+	<pre class="container-box spinner type1"></pre>
+	<pre class="container-box spinner type2"></pre>
+	<pre class="container-box spinner type3"></pre>
+	<pre class="container-box spinner type4"></pre>
+	<pre class="container-box spinner type5"></pre>
+	<div id="spinner_css">
+	<h4>Main Spinner Class</h4>
+	<pre></pre>
+	</div>
+	<div id="container_css">
+	<h4>Container CSS</h4>
+	<pre></pre>
+	</div>
+
+<script>
+	function removeTabs(str) {
+		return str.replace(/\t+/g, function(val) {
+			return val.substr(2).replace(/\t/g, "    ");
+		});
+	}
+	var styleElem = document.head.getElementsByTagName("style")[0];
+	var txt = removeTabs(styleElem.innerHTML);
+	var preElems = document.getElementsByTagName("pre");
+	
+	var spinnerTxt =  txt.match(/\.spinner[\w\W]*?}/)[0];
+	var keyFrameTxt =  txt.match(/\@keyframes[\w\W]*}/)[0]; // WARNING: Using greedy matching
+	preElems[0].innerHTML = txt.match(/\.type1[\w\W]*?}/)[0];
+	preElems[1].innerHTML = txt.match(/\.type2[\w\W]*?}/)[0];
+	preElems[2].innerHTML = txt.match(/\.type3[\w\W]*?}/)[0];
+	preElems[3].innerHTML = txt.match(/\.type4[\w\W]*?}/)[0];
+	preElems[4].innerHTML = txt.match(/\.type5[\w\W]*?}/)[0];
+	
+	spinner_css.children[1].innerHTML = spinnerTxt + "\n" + keyFrameTxt;
+	container_css.children[1].innerHTML = txt.match(/\.container-box[\w\W]*?}/)[0];
+</script>
+
+</body>
+</html>
