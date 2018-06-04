@@ -18,13 +18,8 @@
 			margin: 0 10px 0 0;
 			display: inline-block; 
 		}
-		#ts_btn {
-			margin-left: 20px;
-			vertical-align: text-bottom;
-		}
 		#titleBand {
-			height: 40px;
-			line-height: 40px;
+			padding-bottom: 10px;
 		}
 		#mainFrame {
 			height: calc(100% - 40px);
@@ -39,6 +34,9 @@
 			animation-duration: 2s;
 			animation-timing-function: linear;
 			animation-iteration-count: infinite;
+		}
+		#last_txt {
+			margin-right: 20px;
 		}
 		@keyframes blinker {  
 			0%, 100% { color: black; }
@@ -60,29 +58,37 @@
 </head>
 <body>
 	<div id="titleBand">
-		<h2>Canvas Grid</h2>Rendering grid with <span id="col_sp"></span> columns x <span id="row_sp"></span> rows = <span id="cell_sp" class="blink_me"></span> <span class="blink_me">cells!!!</span><button id="ts_btn" onclick="onToggleStreaming()">Toggle Streaming</button>
+		<h2>Canvas Grid</h2>Rendering grid with <span id="col_sp"></span> columns x <span id="row_sp"></span> rows = <span id="cell_sp" class="blink_me"></span> <span id="last_txt" class="blink_me">cells!!!</span><button id="ts_btn" onclick="onToggleStreaming()">Toggle Streaming</button>
 	</div>
 	<div id="mainFrame">
 		<div id="loadingSpinner" class="spinner"></div>
 	</div>
 	
 <script>
+	var rowCount = 500;
 	var options = {
 		colCount: 200,
 		rowHeight: 32,
 		colWidth: 80,
 		font: "14px sans-serif"
 	};
+
+	var cellCount = options.colCount * rowCount;
+	col_sp.textContent = options.colCount.toLocaleString(); // number with comma separators
+	row_sp.textContent = rowCount.toLocaleString();
+	cell_sp.textContent = cellCount.toLocaleString();
+		
 	var streaming = 0;
 	var grid = new CanvasGrid(null, options);
 	grid.listen("contentHeightChanged", onContentChanged);
-	var sf = new ScrollFrame(mainFrame);
 	var gridElem = grid.getElement();
 	gridElem.classList.add("canvas-grid");
-	sf.cloak(gridElem);
-	sf.listen("scroll", onScroll);
-	sf.listen("resize", onResize);
-	// grid.addEventListener("wheel", onMouseWheel);
+	
+	var sf = new ScrollFrame(mainFrame, {
+		content: gridElem,
+		scroll: onScroll,
+		resize: onResize
+	});
 	
 	var spinnerSize = Math.floor(loadingSpinner.offsetWidth / 2);
 	loadingSpinner.style.left = (Math.floor(mainFrame.clientWidth / 2) - spinnerSize) + "px";
@@ -91,11 +97,11 @@
 	setTimeout(init, 0);
 	
 	function init() {
+		sf.setSize(null, "calc(100% - " + titleBand.offsetHeight + "px)");
 		grid.setDataFromObjectMap(buildGridData());
 		mainFrame.removeChild(loadingSpinner);
 	}
 	function buildGridData() {
-		var rowCount = 500;
 		var colCount = options.colCount;
 		var data = {};
 		var cids = [];
@@ -115,18 +121,11 @@
 	}
 	
 	function onContentChanged() {
-		var colCount = grid.getColumnCount();
-		var rowCount = grid.getRowCount();
-		var cellCount = colCount * rowCount;
-		col_sp.textContent = colCount.toLocaleString();
-		row_sp.textContent = rowCount.toLocaleString();
-		cell_sp.textContent = cellCount.toLocaleString();
-		
 		sf.setContentSize(grid.getContentWidth(), grid.getContentHeight());
 	}
 	
 	function onResize(e) {
-		grid.updateSize();
+		grid.setSize(e.width, e.height);
 	}
 	function onScroll(e) {
 		grid.scrollTop(e.scrollTop);
