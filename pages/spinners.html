@@ -91,19 +91,19 @@
 		});
 	}
 	var styleElem = document.head.getElementsByTagName("style")[0];
-	var txt = removeTabs(styleElem.innerHTML);
+	var txt = removeTabs(styleElem.innerText);
 	var preElems = document.getElementsByTagName("pre");
 	
 	var spinnerTxt =  txt.match(/\.spinner[\w\W]*?}/)[0];
 	var keyFrameTxt =  txt.match(/\@keyframes[\w\W]*}/)[0]; // WARNING: Using greedy matching
-	preElems[0].innerHTML = txt.match(/\.type1[\w\W]*?}/)[0];
-	preElems[1].innerHTML = txt.match(/\.type2[\w\W]*?}/)[0];
-	preElems[2].innerHTML = txt.match(/\.type3[\w\W]*?}/)[0];
-	preElems[3].innerHTML = txt.match(/\.type4[\w\W]*?}/)[0];
-	preElems[4].innerHTML = txt.match(/\.type5[\w\W]*?}/)[0];
+	preElems[0].innerText = txt.match(/\.type1[\w\W]*?}/)[0];
+	preElems[1].innerText = txt.match(/\.type2[\w\W]*?}/)[0];
+	preElems[2].innerText = txt.match(/\.type3[\w\W]*?}/)[0];
+	preElems[3].innerText = txt.match(/\.type4[\w\W]*?}/)[0];
+	preElems[4].innerText = txt.match(/\.type5[\w\W]*?}/)[0];
 	
-	spinner_css.children[1].innerHTML = spinnerTxt + "\n" + keyFrameTxt;
-	container_css.children[1].innerHTML = txt.match(/\.container-box[\w\W]*?}/)[0];
+	spinner_css.children[1].innerText = spinnerTxt + "\n" + keyFrameTxt;
+	container_css.children[1].innerText = txt.match(/\.container-box[\w\W]*?}/)[0];
 </script>
 
 </body>
