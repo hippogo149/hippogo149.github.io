@@ -176,143 +176,6 @@ button:not([disabled]) { cursor: pointer; }
 	text-align: center;
 }
 
-/* Find Bar */
-.find-bar {
-	box-sizing: border-box;
-	position: fixed;
-	border-width: 1px;
-	border-style: solid;
-	border-radius: 2px;
-	border-collapse: initial !important;
-	border-spacing: 0;
-
-	white-space: nowrap;
-	overflow: hidden;
-	
-	top: 1px;
-	right: 22px;
-	width: 308px;
-	height: 40px;
-}
-.find-bar *{
-	box-sizing: border-box;
-}
-.find-bar col:first-child {
-	width: 100%;
-}
-.find-bar td {
-	padding: 0;
-}
-.find-bar td > * {
-	vertical-align: middle;
-}
-.find-bar td:first-child {
-	padding-left: 8px;
-}
-.find-bar td:last-child {
-	padding-right: 8px;
-}
-.find-bar input {
-	width: 100%;
-}
-.find-bar td:last-child *:not(button) {
-	cursor: default;
-	
-	user-select: none;
-	-o-user-select: none;
-	-ms-user-select: none;
-	-moz-user-select: none;
-	-webkit-user-select: none;
-}
-.find-bar .pos-panel {
-	display: inline-block;
-	height: 23px;
-	line-height: 23px;
-	font-family: Arial;
-	margin-left: 4px;
-	opacity: 0.6;
-}
-.find-bar .pos-panel span {
-	font-size: 0.8em;
-	vertical-align: middle;
-}
-.find-bar .pos-panel span+span {
-	margin-left: 4px;
-}
-.find-bar .tr-separator {
-	display: inline-block;
-	height: 25px;
-
-	border-left-width: 1px;
-	border-left-style: solid;
-	margin-left: 6px;
-	margin-right: 6px;
-}
-.find-bar button {
-	width: 23px;
-	height: 23px;
-	border-radius: 2px;
-
-	transition: background-color 0.3s linear; /* Support IE10+ */
-}
-.find-bar button+button {
-	margin-left: 4px;
-}
-.find-bar button[disabled] {
-	opacity: 0.5;
-	cursor: default;
-}
-.find-bar button[disabled]:hover {
-	background-color: transparent;
-}
-.find-bar button {
-	font-weight: bold;
-	font-size: 18px;
-	font-family: monospace;
-}
-.find-bar .prev-button:before {
-	content: "\02C4";
-	position: relative;
-	top: 3px;
-}
-.find-bar .next-button:before {
-	content: "\02C5";
-	position: relative;
-	top: 3px;
-}
-.find-bar .close-button:before {
-	content: "x";
-	position: relative;
-	top: -2px;
-}
-.find-bar input,
-.find-bar button {
-	background-color: transparent;
-	border: none;
-}
-.find-bar input:focus,
-.find-bar button:focus {
-	outline: none;
-}
-.find-bar {
-	border-color: LightGray;
-	background-color: White;
-	
-	box-shadow: 0 2px 0 0 Gray; /* Support IE9+ */
-}
-.find-bar .pos-panel {
-	color: Gray;
-}
-.find-bar .tr-separator {
-	border-color: Gainsboro;
-}
-.find-bar button {
-	color: DimGray;
-}
-.find-bar button:hover {
-	background-color: Gainsboro;
-}
-
 .page-selector {
 	text-align: center;
 }
@@ -334,22 +197,24 @@ button:not([disabled]) { cursor: pointer; }
 	background-color: AliceBlue;
 }
 
-.scroll-frame {
-	position: relative;
-	overflow: hidden;
-	box-sizing: border-box;
-}
 .sf-pane {
+	position: relative;
 	overflow: auto;
 }
 .sf-content {
 	width: 1px;
 	height: 1px;
 }
+.sf-place-holder {
+	position: absolute;
+	left: 0;
+	top: 0;
+	overflow: hidden; /* To ensure that content is never affect scrollbar */
+}
+
 .sf-pane,
 .sf-content,
 .sf-place-holder {
-	position: absolute;
 	box-sizing: border-box;
 }
 .sf-pane,
