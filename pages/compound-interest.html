@@ -23,7 +23,12 @@
 		}
 		input {
 			text-align: right;
+			box-sizing: border-box;
 			width: 80px;
+		}
+		input::-webkit-outer-spin-button, 
+		input::-webkit-inner-spin-button { 
+			margin-left: 4px; 
 		}
 		
 		#demoFrame {
@@ -33,21 +38,19 @@
 			overflow: auto;
 		}
 		
-	</style>
-	
-	<script type="text/javascript">
-		window.addEventListener("load", function() {
-			var winTitle = "Compound Interest";
-			if(winTitle) {
-				document.title = winTitle;
-				var header = document.createElement("h2");
-				header.textContent = winTitle;
-				document.body.insertBefore(header, document.body.firstChild);
+		@media (max-width: 400px) {
+			body {
+				padding: 4px;
 			}
-		}, false);
-	</script>
+			#indenter {
+				padding-left: 4px;
+			}
+		}
+		
+	</style>
 </head>
 <body>
+	<h2>Compound Interest</h2>
 	<div id="indenter">
 	<img src="../assets/img/CompoundInterest.png" alt="Compound Interest Formula" />
 	<h3><span>[S] Final value after </span><span id="tHeader"></span><span> year(s) : </span><span id="sOutput" style="color: darkblue;" ></span> $</h3>
@@ -57,7 +60,7 @@
 	Reference: <a href="http://en.wikipedia.org/wiki/Compound_interest" target="_blank">http://en.wikipedia.org/wiki/Compound_interest</a>
 	</div>
 	
-<script type='text/javascript'>
+<script>
 	var tblInputs = new Table(inputHolder, 2, 5);
 	var rows = tblInputs.getAllRows();
 	var cell, r;
@@ -76,7 +79,7 @@
 		cell.appendChild(Dom.text(cRow[1]));
 		
 		cell = rows[r].cells[1];
-		var input = cell.appendChild(Dom.textInput(cRow[2]));
+		var input = cell.appendChild(Dom.numericInput(cRow[2]));
 		cell.appendChild(Dom.text(cRow[3]));
 		
 		input.addEventListener("change", calculate, false);

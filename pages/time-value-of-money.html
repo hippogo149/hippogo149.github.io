@@ -3,10 +3,173 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>-</title>
+		<title>Time Value of Money</title>
 		<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+		<link rel="stylesheet" href="../assets/html.css">
+		<link rel="stylesheet" href="../assets/common.css">
+		<link rel="stylesheet" href="../assets/table.css">
+		<script src="../assets/por.min.js"></script>
+		<style>
+			body {
+				font-family: Arial;
+				margin-bottom: 30px;
+			}
+			thead {
+				font-weight: bold;
+			}
+			body > *:not(:first-child) {
+				margin-top: 6px;
+			}
+			body > a {
+				word-break: break-word;
+			}
+			
+			input {
+				text-align: right;
+				box-sizing: border-box;
+			}
+			input::-webkit-outer-spin-button, 
+			input::-webkit-inner-spin-button { 
+				margin-left: 4px; 
+			}
+
+			div > input {
+				width: 50px;
+			}
+			td input {
+				width: 100%;
+			}
+			
+			td:nth-child(2) {
+				text-align: right;
+			}
+			col:nth-child(3) {
+				width: 100px;
+			}
+			col:nth-child(4) {
+				width: 120px;
+			}
+			tbody {
+				font-size: small;
+			}
+			@media (max-width: 520px) {
+				body {
+					padding: 4px;
+				}
+				col:not(:last-child) {
+					width: 80px;
+				}
+			}
+		</style>
 	</head>
 	<body>
-		<a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fhippogo149.github.io%2Fpages%2Fproper.html">Proper HTML</a>
+		<h2>Time Value of Money</h2>
+		<div>Interest Rate (i): <input id="i_inp" onchange="findAll(event)" value="3" type="number"> %</div>
+		<div>Number of Periods (n): <input id="n_inp" onchange="findAll(event)" value="5"  min="0" type="number"></div>
+		<div id="calc_div"></div>
+		
+		<br><b>References: </b><br>
+		<a href="https://en.wikipedia.org/wiki/Time_value_of_money">https://en.wikipedia.org/wiki/Time_value_of_money</a><br>
+		<a href="https://www.investopedia.com/articles/03/082703.asp">https://www.investopedia.com/articles/03/082703.asp</a>
+		
+		<script>
+			var tbl = new Table(calc_div);
+			var headers = ["Find", "Given", "Input", "Result"];
+			var content = [
+				 ["Future value (F)"     , "Present value (P)"    ]
+				,["Present value (P)"    , "Future value (F)"     ]
+				,["Repeating payment (A)", "Future value (F)"     ]
+				,["Repeating payment (A)", "Present value (P)"    ]
+				,["Future value (F)"     , "Repeating payment (A)"]
+				,["Present value (P)"    , "Repeating payment (A)"]
+			];
+			var rowCount = content.length;
+			for(var i = 0; i < rowCount; ++i) {
+				content[i].push(Dom.numericInput(), Dom.text());
+			}
+			var refLinks = [
+				 "https://en.wikipedia.org/wiki/Future_value"
+				,"https://en.wikipedia.org/wiki/Present_value"
+				,"https://en.wikipedia.org/wiki/Annuity"
+				,"https://en.wikipedia.org/wiki/Annuity"
+				,"https://en.wikipedia.org/wiki/Future_value"
+				,"https://en.wikipedia.org/wiki/Present_value"
+			]
+			var findFfromP = function(row, rate, e) {
+				var p = Ut.getNumericValue(content[row][2], 100);
+				var f = p * e;
+				content[row][3].textContent = Ut.roundBy(f, 10000);
+			};
+			var findPfromF = function(row, rate, e) {
+				var f = Ut.getNumericValue(content[row][2], 100);
+				var p = f / e;
+				content[row][3].textContent = Ut.roundBy(p, 10000);
+			};
+			var findAfromF = function(row, rate, e) {
+				var f = Ut.getNumericValue(content[row][2], 100);
+				var a = f * rate / (e - 1);
+				content[row][3].textContent = Ut.roundBy(a, 10000);
+			};
+			var findAfromP = function(row, rate, e) {
+				var p = Ut.getNumericValue(content[row][2], 100);
+				var a = p * (rate * e) / (e - 1);
+				content[row][3].textContent = Ut.roundBy(a, 10000);
+			};
+			var findFfromA = function(row, rate, e) {
+				var a = Ut.getNumericValue(content[row][2], 100);
+				var f = a * (e - 1) / rate;
+				content[row][3].textContent = Ut.roundBy(f, 10000);
+			};
+			var findPfromA = function(row, rate, e) {
+				var p = Ut.getNumericValue(content[row][2], 100);
+				var a = p * (e - 1) / (rate * e);
+				content[row][3].textContent = Ut.roundBy(a, 10000);
+			};
+			var calcs = [
+				 findFfromP
+				,findPfromF
+				,findAfromF
+				,findAfromP
+				,findFfromA
+				,findPfromA
+			];
+			
+			tbl.getBody().setCellRenderer(function(cell, d, c, r){
+				switch(c) {
+				case 0:
+					Dom.appendChild(cell, Dom.link(refLinks[r], d));
+					break;
+				case 1: 
+					Dom.appendChild(cell, Dom.text(d + ": "));
+					break;
+				case 3:
+					var ls = content[r][0].match(/\((.*)\)/)[1];
+					Dom.appendChild(cell, Dom.text(ls + " = "), d);
+					break;
+				default: 
+					return false;
+				}
+			});
+			tbl.rebuild(content, headers);
+			tbl.addEventListener("change", function(e) {
+				var r = tbl.getRowIndex(e);
+				if(r < 0) { return; }
+				
+				var rate = Ut.getNumericValue(i_inp, 3) / 100;
+				var n = Ut.getNumericValue(n_inp, 5);
+				var e = Math.pow(1 + rate, n);
+				calcs[r](r, rate, e);
+			}, false);
+			
+			function findAll() {
+				var rate = Ut.getNumericValue(i_inp, 3) / 100;
+				var n = Ut.getNumericValue(n_inp, 5);
+				var e = Math.pow(1 + rate, n);
+				for(var r = 0; r < rowCount; ++r) {
+					calcs[r](r, rate, e);
+				}
+			}
+			findAll();
+		</script>
 	</body>
 </html>
