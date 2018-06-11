@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Chart Bars</title>
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	<link rel="stylesheet" type="text/css" href="../assets/html.css">
+	<link rel="stylesheet" type="text/css" href="../assets/common.css">
+	
+	<script src="../assets/por.min.js"></script>
+
+	<style>
+		body {
+			height: 100vh;
+			width: 100vw;
+			overflow: hidden;
+		}
+		.bar {
+			position: absolute;
+		}
+		
+		.positive-bar .bar {
+			background-color: green;
+		}
+		.negative-bar .bar {
+			background-color: red;
+		}
+		.right-bar {
+			right: 0;
+			background-color: pink;
+			border-radius: 5px 0 0 5px;
+		}
+		.bottom-bar {
+			bottom: 0;
+			background-color: lightgreen;
+			border-width: 4px 4px 0 4px;
+			border-style: dotted;
+			border-color: grey;
+		}
+		#h_bar {
+			height: 4px;
+			width: 100%;
+		}
+		#v_bar {
+			width: 6px;
+			height: 100%;
+		}
+		.bi-dir-bar {
+			background-color: lightgrey;
+		}
+		.abs {
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+		@media (max-width: 400px) { 
+			.bottom-bar {
+				border-width: 1px 1px 0 1px;
+				border-style: dashed;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div id="h_bar" class="abs"></div>
+	<div id="v_bar" class="abs vertical"></div>
+	<h1>Chart Bars</h1>
+	
+	
+<script>
+	var rCount = 20;
+	var bCount = 10;
+	var rgtBars = new Array(rCount);
+	var btmBars = new Array(bCount);
+	var hBar = new DBar(h_bar);
+	var vBar = new DBar(v_bar);
+	var mX = 200;
+	var mY = 100;
+	var cX = 0;
+	var cY = 0;
+	function init() {
+		var i, bar;	
+		for(i = 0; i < rCount; ++i) {
+			bar = rgtBars[i] = new Bar(Dom.block("right-bar"));
+			bar.setParent(document.body);
+		}
+		for(i = 0; i < bCount; ++i) {
+			bar = btmBars[i] = new Bar(Dom.block("bottom-bar"), "u");
+			bar.setParent(document.body);
+		}
+	}
+	
+	function calcBarLayout() {
+		var padding = 20;
+		var gap = 0.2;
+		var w = document.body.offsetWidth;
+		var h = document.body.offsetHeight;
+		var l = Math.ceil((w - padding * 2) / bCount);
+		var t = Math.ceil((h - padding * 2) / rCount);
+		var offX = padding + l * gap / 2;
+		var offY = padding + t * gap / 2;
+		var bw = Ut.round(l * (1 - gap));
+		var bh = Ut.round(t * (1 - gap));
+		
+		var i, bar, elem;	
+		for(i = 0; i < rCount; ++i) {
+			var top = (offY + t * i);
+			bar = rgtBars[i];
+			elem = bar.getElement();
+			elem.style.height = bh + "px";
+			bar.x = w;
+			bar.y = top + bh / 2;
+			elem.style.top = top + "px";
+		}
+		for(i = 0; i < bCount; ++i) {
+			var left = (offX + l * i);
+			bar = btmBars[i];
+			elem = bar.getElement();
+			elem.style.width = bw + "px";
+			bar.x = left + bh / 2;
+			bar.y = h;
+			elem.style.left = left + "px";
+		}
+		
+		cX = w / 2;
+		cY = h / 2;
+	}
+	function updateBarValue(bar) {
+		bar.distance = Pt.lineLength(mX, mY, bar.x, bar.y);
+	}
+	function getBarValue(bar) {
+		return bar.distance;
+	}
+	function calcBarSize() {
+		rgtBars.forEach(updateBarValue);
+		var rStatInfo = Stats.fromObjects(rgtBars, getBarValue);
+		Stats.toRatios(rStatInfo, rgtBars, getBarValue, rgtBars);
+		
+		btmBars.forEach(updateBarValue);
+		var bStatInfo = Stats.fromObjects(btmBars, getBarValue);
+		Stats.toRatios(bStatInfo, btmBars, getBarValue, btmBars);
+		
+		var i, bar;
+		for(i = 0; i < rCount; ++i) {
+			bar = rgtBars[i];
+			var mouseDistX = (bar.x - mX) - 20;
+			bar.setSize(Ut.round(mouseDistX * (1 - bar.ratio)) + 10);
+			bar.setColor(Color.fromHsl(
+				0, 
+				0.7 * bar.ratio + 0.3, 
+				0.6 * bar.ratio + 0.3
+			));
+		}
+		for(i = 0; i < bCount; ++i) {
+			bar = btmBars[i];
+			var mouseDistY = (bar.y - mY) - 10;
+			bar.setSize(Ut.round(mouseDistY * bar.ratio) + 10);
+			bar.setColor(Color.fromHsl(
+				bar.ratio, 
+				0.8, 
+				0.3 * bar.ratio + 0.5,
+				0.8
+			));
+		}
+		
+		hBar.setBarSize(mX - cX);
+		vBar.setBarSize(cY - mY);
+	}
+	init();
+	calcBarLayout();
+	calcBarSize();
+	
+	function onMouseMove(e) {
+		var touches = e.changedTouches;
+		var pagePos = (touches) ? touches[0] : e;
+		mX = pagePos.clientX;
+		mY = pagePos.clientY;
+		calcBarSize();
+		e.preventDefault();
+		e.stopPropagation();
+	}
+	
+	document.body.addEventListener("mousemove", onMouseMove);
+	document.body.addEventListener("touchmove", onMouseMove);
+	document.body.addEventListener("touchstart", onMouseMove);
+	window.addEventListener("resize", calcBarLayout);
+</script>
+
+</body>
+</html>
