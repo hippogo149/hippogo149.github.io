@@ -11,9 +11,9 @@
 	<script src="../assets/por.min.js"></script>
 
 	<style>
-		body {
-			height: 100vh;
-			width: 100vw;
+		html, body {
+			height: 100%;
+			width: 100%;
 			overflow: hidden;
 		}
 		.bar {
@@ -107,20 +107,16 @@
 		for(i = 0; i < rCount; ++i) {
 			var top = (offY + t * i);
 			bar = rgtBars[i];
-			elem = bar.getElement();
-			elem.style.height = bh + "px";
 			bar.x = w;
 			bar.y = top + bh / 2;
-			elem.style.top = top + "px";
+			bar.setRect(null, top, null, bh);
 		}
 		for(i = 0; i < bCount; ++i) {
 			var left = (offX + l * i);
 			bar = btmBars[i];
-			elem = bar.getElement();
-			elem.style.width = bw + "px";
 			bar.x = left + bh / 2;
 			bar.y = h;
-			elem.style.left = left + "px";
+			bar.setRect(left, null, bw, null);
 		}
 		
 		cX = w / 2;
@@ -128,6 +124,8 @@
 	}
 	function updateBarValue(bar) {
 		bar.distance = Pt.lineLength(mX, mY, bar.x, bar.y);
+		bar.distanceX = bar.x - mX - 20;
+		bar.distanceY = bar.y - mY - 10;
 	}
 	function getBarValue(bar) {
 		return bar.distance;
@@ -144,8 +142,7 @@
 		var i, bar;
 		for(i = 0; i < rCount; ++i) {
 			bar = rgtBars[i];
-			var mouseDistX = (bar.x - mX) - 20;
-			bar.setSize(Ut.round(mouseDistX * (1 - bar.ratio)) + 10);
+			bar.setSize(Ut.round(bar.distanceX * (1 - bar.ratio)) + 10);
 			bar.setColor(Color.fromHsl(
 				0, 
 				0.7 * bar.ratio + 0.3, 
@@ -154,10 +151,9 @@
 		}
 		for(i = 0; i < bCount; ++i) {
 			bar = btmBars[i];
-			var mouseDistY = (bar.y - mY) - 10;
-			bar.setSize(Ut.round(mouseDistY * bar.ratio) + 10);
+			bar.setSize(Ut.round(bar.distanceY * bar.ratio) + 10);
 			bar.setColor(Color.fromHsl(
-				bar.ratio, 
+				0.9 * bar.ratio, 
 				0.8, 
 				0.3 * bar.ratio + 0.5,
 				0.8
