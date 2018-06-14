@@ -314,6 +314,10 @@ button:not([disabled]) { cursor: pointer; }
 	);
 }
 
+.range-input > * {
+	vertical-align: middle;
+}
+
 .positive-bar, .negative-bar {
 	display: inline-block;
 	position: relative;

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Simple Animation</title>
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	<link rel="stylesheet" href="../assets/html.css">
+	<link rel="stylesheet" href="../assets/common.css">
+	
+	<script src="../assets/por.min.js"></script>
+
+	<style>
+		#container_div>div {
+			position: relative;
+			display: inline-block;
+			vertical-align: top;
+			width: 150px;
+			height: 150px;
+			border: 2px solid royalblue;
+			margin-bottom: 10px;
+			cursor: pointer;
+		}
+		#container_div>div:hover {
+			border-color: tomato;
+		}
+		#ani_ctrl {
+			margin-bottom: 10px;
+		}
+		#container_div {
+			position: relative;
+		}
+		#canvas_div {
+			position: absolute;
+			left: 0;
+			top: 0;
+		}
+	</style>
+</head>
+<body>
+	<div id="ani_ctrl"></div>
+	<div id="container_div">
+		<canvas id="canvas_div"></canvas>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+	</div>
+
+<script>
+	var aniCtrl = new RangeInput(ani_ctrl, {
+		 min: 0.01
+		,max: 0.05
+		,value: 0.05
+		,label: "Animation Speed: "
+	});
+	var consolidated = true;
+	var boxes = Ary.from(container_div.getElementsByTagName("div"));
+	var cvb = new CanvasBox(canvas_div);
+	var grpSize = 5;
+	var cdt = new CountdownTimer(onEnterFrame, 40);
+	var boxWidth = boxes[0].clientWidth;
+	var boxHeight = boxes[0].clientHeight;
+	var cx = boxWidth / 2;
+	var cy = boxHeight / 2;
+	
+	var drawCircle = function() {
+		var offsetX = consolidated ? 0 : this.x;
+		var offsetY = consolidated ? 0 : this.y;
+		var pt = this.getPt();
+		var scaleR = this.scaleR ? this.scaleR.next() : 1;
+		var easeX = this.easeX ? this.easeX.next() : 0;
+		this.canvas.fillCircle(
+			offsetX + pt.x + easeX, offsetY + pt.y, 
+			this.radius * scaleR, 
+			this.fillColor
+		);
+	};
+	var drawSquare = function() {
+		var offsetX = consolidated ? 0 : this.x;
+		var offsetY = consolidated ? 0 : this.y;
+		var pt = this.getPt();
+		var radian = this.rotation ? this.rotation.next() : 0;
+		this.shape.setTranslation(offsetX + pt.x, offsetY + pt.y);
+		this.shape.setRotation(radian);
+		this.shape.fill(this.canvas, this.fillColor);
+	};
+	
+	var colors = Color.gradientHex(
+		[255, 69, 0], 
+		[25, 25, 112], 
+		grpSize - 2
+	);
+	var easeFuncs = [
+		null,
+		Ani.Easing.Edge,
+		Ani.Easing.Overshoot.bind(null, 1.735),
+		Ani.Easing.Rebound,
+		Ani.Easing.Bounce
+	];
+	var pts = [];
+	var aniRanges = [];
+	Ary.create(grpSize, 0).forEach(newShape1);
+	Ary.create(grpSize, 1).forEach(newShape2);
+	Ary.create(grpSize, 2).forEach(newShape3);
+	
+	function newShape1(setNum, idx) {
+		var aniPt = new Ani.Pt(Pt.create(cx, cy));
+		aniPt.box = boxes[setNum * grpSize + idx];
+		aniPt.canvas = cvb;
+		aniPt.fillColor = colors[idx];
+		aniPt.radius = 30;
+		
+		aniRanges.push(aniPt.scaleR = new Ani.EaseRange(1, 2, 0.05));
+		aniPt.scaleR.setEaseFunction(easeFuncs[idx]);
+		aniPt.draw = drawCircle;
+		pts.push(aniPt);
+	}
+	function newShape2(setNum, idx) {
+		var aniPt = new Ani.Pt(Pt.create(20, cy));
+		aniPt.box = boxes[setNum * grpSize + idx];
+		aniPt.canvas = cvb;
+		aniPt.fillColor = colors[idx];
+		aniPt.radius = 4;
+		
+		aniRanges.push(aniPt.easeX = new Ani.EaseRange(0, boxWidth - 40, 0.05));
+		aniPt.easeX.setEaseFunction(easeFuncs[idx]);
+		aniPt.draw = drawCircle;
+		pts.push(aniPt);
+	}
+	function newShape3(setNum, idx) {
+		var aniPt = new Ani.Pt(Pt.create(cx, cy));
+		aniPt.box = boxes[setNum * grpSize + idx];
+		aniPt.canvas = cvb;
+		aniPt.fillColor = colors[idx];
+		aniPt.radius = 30;
+		aniPt.shape = new Pts(Pts.square(aniPt.radius));
+		
+		aniRanges.push(aniPt.rotation = new Ani.EaseRange(0, Math.PI, 0.05));
+		aniPt.rotation.setEaseFunction(easeFuncs[idx]);
+		aniPt.draw = drawSquare;
+		pts.push(aniPt);
+	}
+	function drawShape(aniPt) {
+		aniPt.draw();
+	}
+	function updateAnimationSpeed(aniRange) {
+		aniRange.setStep(aniCtrl.getValue());
+	}
+	function updateShapePosition(aniPt) {
+		var pos = Ut.getRelativePosition(aniPt.box, container_div, aniPt);
+	}
+	
+	function onEnterFrame() {
+		cvb.clearCanvas();
+		pts.forEach(drawShape);
+	}
+	function onResize() {
+		cvb.updateSize();
+		pts.forEach(updateShapePosition);
+	}
+	function onSpeedChange() {
+		aniRanges.forEach(updateAnimationSpeed);
+	}
+	function onToggleMode() {
+		consolidated = !consolidated;
+		pts.forEach(drawShape);
+	}
+	
+	window.addEventListener("resize", onResize);
+	aniCtrl.addEventListener("change", onSpeedChange);
+	container_div.addEventListener("click", onToggleMode);
+	container_div.addEventListener("mousedown", Ut.preventDefault);
+	
+	onResize();
+	cdt.start();
+</script>
+
+</body>
+</html>
