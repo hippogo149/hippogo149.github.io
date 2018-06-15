@@ -77,23 +77,19 @@
 	var cy = boxHeight / 2;
 	
 	var drawCircle = function() {
-		var offsetX = consolidated ? 0 : this.x;
-		var offsetY = consolidated ? 0 : this.y;
 		var pt = this.getPt();
 		var scaleR = this.scaleR ? this.scaleR.next() : 1;
 		var easeX = this.easeX ? this.easeX.next() : 0;
 		this.canvas.fillCircle(
-			offsetX + pt.x + easeX, offsetY + pt.y, 
+			pt.x + easeX, pt.y, 
 			this.radius * scaleR, 
 			this.fillColor
 		);
 	};
 	var drawSquare = function() {
-		var offsetX = consolidated ? 0 : this.x;
-		var offsetY = consolidated ? 0 : this.y;
 		var pt = this.getPt();
 		var radian = this.rotation ? this.rotation.next() : 0;
-		this.shape.setTranslation(offsetX + pt.x, offsetY + pt.y);
+		this.shape.setTranslation(pt.x, pt.y);
 		this.shape.setRotation(radian);
 		this.shape.fill(this.canvas, this.fillColor);
 	};
@@ -126,6 +122,9 @@
 		aniRanges.push(aniPt.scaleR = new Ani.EaseRange(1, 2, 0.05));
 		aniPt.scaleR.setEaseFunction(easeFuncs[idx]);
 		aniPt.draw = drawCircle;
+		
+		aniPt.startPt = aniPt.getPt().clone();
+		aniPt.mod = aniPt.addModifier(new Ani.Approach(aniPt.getPt().clone()));
 		pts.push(aniPt);
 	}
 	function newShape2(setNum, idx) {
@@ -138,6 +137,9 @@
 		aniRanges.push(aniPt.easeX = new Ani.EaseRange(0, boxWidth - 40, 0.05));
 		aniPt.easeX.setEaseFunction(easeFuncs[idx]);
 		aniPt.draw = drawCircle;
+		
+		aniPt.startPt = aniPt.getPt().clone();
+		aniPt.mod = aniPt.addModifier(new Ani.Approach(aniPt.getPt().clone()));
 		pts.push(aniPt);
 	}
 	function newShape3(setNum, idx) {
@@ -150,8 +152,14 @@
 		
 		aniRanges.push(aniPt.rotation = new Ani.EaseRange(0, Math.PI, 0.05));
 		aniPt.rotation.setEaseFunction(easeFuncs[idx]);
+		
+		aniPt.startPt = aniPt.getPt().clone();
+		aniPt.mod = aniPt.addModifier(new Ani.Approach(aniPt.getPt().clone()));
 		aniPt.draw = drawSquare;
 		pts.push(aniPt);
+	}
+	function moveShape(aniPt) {
+		aniPt.move();
 	}
 	function drawShape(aniPt) {
 		aniPt.draw();
@@ -160,11 +168,19 @@
 		aniRange.setStep(aniCtrl.getValue());
 	}
 	function updateShapePosition(aniPt) {
-		var pos = Ut.getRelativePosition(aniPt.box, container_div, aniPt);
+		Ut.getRelativePosition(aniPt.box, container_div, aniPt);
+		
+		var offsetX = consolidated ? 0 : aniPt.x;
+		var offsetY = consolidated ? 0 : aniPt.y;
+		aniPt.mod.getTarget().setXY(
+			offsetX + aniPt.startPt.x, 
+			offsetY + aniPt.startPt.y
+		); 
 	}
 	
 	function onEnterFrame() {
 		cvb.clearCanvas();
+		pts.forEach(moveShape);
 		pts.forEach(drawShape);
 	}
 	function onResize() {
@@ -174,8 +190,14 @@
 	function onSpeedChange() {
 		aniRanges.forEach(updateAnimationSpeed);
 	}
-	function onToggleMode() {
+	function onToggleMode(e) {
+		var tgt = e.target;
+		if(tgt.tagName !== "DIV") {
+			return;
+		}
+		
 		consolidated = !consolidated;
+		pts.forEach(updateShapePosition);
 		pts.forEach(drawShape);
 	}
 	
