@@ -17,9 +17,11 @@
 		#indenter>* {
 			vertical-align: top;
 		}
-		#inputHolder {
+		#input_holder {
 			display: inline-block;
+			margin-bottom: 10px;
 			margin-left: 20px;
+			word-wrap: break-word;
 		}
 		input {
 			text-align: right;
@@ -29,6 +31,9 @@
 		input::-webkit-outer-spin-button, 
 		input::-webkit-inner-spin-button { 
 			margin-left: 4px; 
+		}
+		.balance {
+			color: darkblue;
 		}
 		
 		#demoFrame {
@@ -53,23 +58,37 @@
 	<h2>Compound Interest</h2>
 	<div id="indenter">
 	<img src="../assets/img/CompoundInterest.png" alt="Compound Interest Formula" />
-	<h3><span>[S] Final value after </span><span id="tHeader"></span><span> year(s) : </span><span id="sOutput" style="color: darkblue;" ></span> $</h3>
-	<div id="inputHolder"></div>
+	<h3 id="balance_h"></h3>
+	<h3 id="interest_h"></h3>
+	<h3 id="deposit_h"></h3>
+	<div id="input_holder"></div>
 	<div id="demoFrame"></div>
 	<br />
 	Reference: <a href="http://en.wikipedia.org/wiki/Compound_interest" target="_blank">http://en.wikipedia.org/wiki/Compound_interest</a>
 	</div>
 	
 <script>
-	var tblInputs = new Table(inputHolder, 2, 5);
+	var year_span = Dom.text();
+	var balance_span = Dom.text();
+	balance_span.className = "balance"; 
+	var interest_span = Dom.text();
+	var deposit_span = Dom.text();
+	var interest_pct = Dom.text();
+	var deposit_pct = Dom.text();
+	
+	balance_h.appendChild(Dom.texts("[S] Final balance after", year_span, " year(s): ", balance_span, " $"));
+	interest_h.appendChild(Dom.texts("Total compound interest generated: ", interest_span, " $ (", interest_pct, "%)"));
+	deposit_h.appendChild(Dom.texts("Total deposit: ", deposit_span, " $ (", deposit_pct, "%)"));
+	
+	var tblInputs = new Table(input_holder, 2, 5);
 	var rows = tblInputs.getAllRows();
 	var cell, r;
 	var cRows = [
 		["[P] ", "Principal amount (initial investment) :", 10000, " $"],
-		["[j] ", "Annual nominal interest rate :", 5, " %"],
+		["[j] ", "Nominal annual interest rate :", 5, " %"],
 		["[m] ", "Number of times the interest is compounded per year :", 1, " time(s)"],
 		["[t] ", "Number of years :", 10, " year(s)"],
-		["[d] ", "Additional deposit (fixed deposit) after each period :", 0, " $"]
+		["[d] ", "Monthly deposit :", 0, " $"]
 	];
 	var inputs = [];
 	for(r = 0; r < 5; ++r) {
@@ -86,39 +105,87 @@
 		inputs.push(input);
 	};
 	
-	var tbl;
+	var realInterest = NaN;
+	var tbl = new Table(demoFrame);
+	tbl.setHeaderContent(["#", "Balance", "Deposit", "Interest"]);
+	tbl.getBody().setCellRenderer(function(cell, val, c, r) {
+		if(c > 0) {
+			if(c === 1) {
+				cell.textContent = Ut.fillZeroes(val);
+			} else {
+				if(val) {
+					if(c === 2) {
+						cell.textContent = Ut.round(val);
+					} else if(c === 3) {
+						cell.textContent = Ut.fillZeroes(val) +
+							" (" + Ut.round(realInterest * 100 - 100) + "%)";
+					}
+				} else {
+					cell.textContent = "";
+				}
+			}
+			return true;
+		}
+		return false;
+	});
+	// tbl.setColumnWidths(30, 0);
+			
 	function calculate() {
-		var p = Ut.getNumericValue(inputs[0], cRows[0][2]);
-		var j = Ut.getNumericValue(inputs[1], cRows[1][2]);
-		var m = Ut.getNumericValue(inputs[2], cRows[2][2]);
-		var t = Ut.getNumericValue(inputs[3], cRows[3][2]);
-		var d = Ut.getNumericValue(inputs[4], cRows[4][2]);
+		var p = Ut.getNumericValue(inputs[0], cRows[0][2]); // principal
+		var annualInt = Ut.getNumericValue(inputs[1], cRows[1][2]); // [j]
+		var period = Ut.getNumericValue(inputs[2], cRows[2][2]); // [m]
+		var t = Ut.getNumericValue(inputs[3], cRows[3][2]); // number of years
+		var d = Ut.getNumericValue(inputs[4], cRows[4][2]); // deposit
 		
-		j /= 100; // percentage
-		var s = p * Math.pow(1 + j / m, m * t);
+		annualInt /= 100; // percentage
+		// var s = p * Math.pow(1 + annualInt / period, period * t);
 		
 		// Demo
-		var totalPeriod = m * t + 1;
-		var realInterest = 1 + j / m;
-		if(!tbl) {
-			tbl = new Table(2);
-			tbl.setColumnWidths([30, 100]);
-			tbl.setParent(demoFrame);
-		}
-		tbl.setRowCount(totalPeriod);
-		var rows = tbl.getRows();
+		var lastPeriod = 12 * t;
+		var totalPeriod = lastPeriod + 1;
+		var rows = new Array(totalPeriod);
+		realInterest = 1 + annualInt / period;
+		
 		var futureValue = p;
+		var totalDeposit = p;
+		var m = 13 - period;
 
 		for(var i = 0; i < totalPeriod; ++i) {
-			var row = rows[i];
-			row.cells[0].textContent = i;
-			row.cells[1].textContent = Ut.round(futureValue).toFixed(2);
-			futureValue *= realInterest;
-			futureValue += d;
+			var row = rows[i] = new Array(4);
+			row[0] = i; // # period
+			row[1] = futureValue; // current balance
+			
+			if(i < lastPeriod) {
+				if(--m <= 0) {
+					futureValue *= realInterest;
+					m = 13 - period;
+				}
+				row[3] = futureValue - row[1]; // Interest gain
+				
+				row[2] = d; // Deposit made
+				futureValue += d;
+				totalDeposit += d;
+			} else {
+				row[2] = row[3] = 0;
+			}
 		}
 		
-		tHeader.textContent = t;
-		sOutput.textContent = row.cells[1].textContent;
+		var balance_num = row[1];
+		var totalInterest = (balance_num - totalDeposit);
+		
+		Ary.filterOut(rows, function(val, idx) {
+			if(idx && idx < lastPeriod) {
+				return (!val[2] && !val[3]);
+			}
+		});
+		tbl.setContent(rows);
+		
+		year_span.textContent = t;
+		balance_span.textContent = balance_num.toLocaleString();
+		interest_span.textContent = totalInterest.toLocaleString();
+		deposit_span.textContent = totalDeposit.toLocaleString();
+		interest_pct.textContent = Ut.fillZeroes(totalInterest / balance_num * 100);
+		deposit_pct.textContent = Ut.fillZeroes(totalDeposit / balance_num * 100);
 	}
 	calculate();
 </script>
