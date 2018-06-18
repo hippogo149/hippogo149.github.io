@@ -11,35 +11,39 @@
 	<script src="../assets/por.min.js"></script>
 
 	<style>
+		body {
+			font-family: sans-serif;
+		}
 		#indenter {
 			padding-left: 20px;
+			margin-bottom: 30px;
 		}
 		#indenter>* {
 			vertical-align: top;
 		}
-		#input_holder {
+		#input_div {
 			display: inline-block;
 			margin-bottom: 10px;
 			margin-left: 20px;
 			word-wrap: break-word;
 		}
-		input {
+		input, select  {
 			text-align: right;
 			box-sizing: border-box;
-			width: 80px;
+			width: 105px;
 		}
 		input::-webkit-outer-spin-button, 
 		input::-webkit-inner-spin-button { 
 			margin-left: 4px; 
 		}
-		.balance {
+		h3 span:nth-child(even) {
 			color: darkblue;
 		}
 		
-		#demoFrame {
+		#balance_div {
 			display: inline-block;
 			margin-left: 20px;
-			max-height: 421px;
+			max-height: 356px;
 			overflow: auto;
 		}
 		
@@ -48,7 +52,10 @@
 				padding: 4px;
 			}
 			#indenter {
-				padding-left: 4px;
+				padding-left: 6px;
+			}
+			#input_div, #balance_div {
+				margin-left: 0;
 			}
 		}
 		
@@ -61,54 +68,62 @@
 	<h3 id="balance_h"></h3>
 	<h3 id="interest_h"></h3>
 	<h3 id="deposit_h"></h3>
-	<div id="input_holder"></div>
-	<div id="demoFrame"></div>
-	<br />
+	<div id="input_div"></div>
+	<div id="balance_div"></div>
+	<br><br>
 	Reference: <a href="http://en.wikipedia.org/wiki/Compound_interest" target="_blank">http://en.wikipedia.org/wiki/Compound_interest</a>
 	</div>
 	
 <script>
 	var year_span = Dom.text();
 	var balance_span = Dom.text();
-	balance_span.className = "balance"; 
 	var interest_span = Dom.text();
 	var deposit_span = Dom.text();
 	var interest_pct = Dom.text();
 	var deposit_pct = Dom.text();
 	
-	balance_h.appendChild(Dom.texts("[S] Final balance after", year_span, " year(s): ", balance_span, " $"));
+	balance_span.className = "balance"; 
+	balance_h.appendChild(Dom.texts("[S] Final balance after ", year_span, " year(s): ", balance_span, " $"));
 	interest_h.appendChild(Dom.texts("Total compound interest generated: ", interest_span, " $ (", interest_pct, "%)"));
 	deposit_h.appendChild(Dom.texts("Total deposit: ", deposit_span, " $ (", deposit_pct, "%)"));
 	
-	var tblInputs = new Table(input_holder, 2, 5);
-	var rows = tblInputs.getAllRows();
-	var cell, r;
-	var cRows = [
-		["[P] ", "Principal amount (initial investment) :", 10000, " $"],
-		["[j] ", "Nominal annual interest rate :", 5, " %"],
-		["[m] ", "Number of times the interest is compounded per year :", 1, " time(s)"],
-		["[t] ", "Number of years :", 10, " year(s)"],
-		["[d] ", "Monthly deposit :", 0, " $"]
-	];
+	var selLabels = ["Annually", "Semiannually", "Quarterly", "Monthly"];
+	var selVals = [1, 2, 4, 12];
 	var inputs = [];
-	for(r = 0; r < 5; ++r) {
-		var cRow = cRows[r]
-		cell = rows[r].cells[0];
-		cell.appendChild(Dom.text(cRow[0], "big"));
-		cell.appendChild(Dom.text(cRow[1]));
-		
-		cell = rows[r].cells[1];
-		var input = cell.appendChild(Dom.numericInput(cRow[2]));
-		cell.appendChild(Dom.text(cRow[3]));
-		
-		input.addEventListener("change", calculate, false);
-		inputs.push(input);
-	};
+	var cRows = [
+		[["[P] ", "Principal amount (initial investment) :"], 
+			Dom.numericInput(null, 0, null, 100), " $"],
+		[["[j] ", "Nominal annual interest rate :"], 
+			Dom.numericInput(null, 0), " %"],
+		[["[m] ", "Interest is compounded:"], 
+			Dom.select(selLabels, null, 0), ""],
+		[["[t] ", "Number of years :"], 
+			Dom.numericInput(null, 0), " year(s)"],
+		[["[d] ", "Monthly deposit :"], 
+			Dom.numericInput(null, 0, null, 100), " $"]
+	];
+	var inputTbl = new Table(input_div);
+	inputTbl.getBody().setCellRenderer(function(cell, val, c, r) {
+		switch(c) {
+		case 0:
+			Dom.appendChild(cell, Dom.text(val[0], "big"), Dom.text(val[1]));
+			break;
+		case 1:
+			inputs[r] = val;
+			Dom.appendChild(cell, val);
+			break;
+		default:
+			return false;
+		}
+	});
+	inputTbl.setContent(cRows);
+	inputTbl.addEventListener("change", calculate, false);
+	
 	
 	var realInterest = NaN;
-	var tbl = new Table(demoFrame);
-	tbl.setHeaderContent(["#", "Balance", "Deposit", "Interest"]);
-	tbl.getBody().setCellRenderer(function(cell, val, c, r) {
+	var balanceTbl = new Table(balance_div);
+	balanceTbl.setHeaderContent(["#", "Balance", "Deposit", "Interest"]);
+	balanceTbl.getBody().setCellRenderer(function(cell, val, c, r) {
 		if(c > 0) {
 			if(c === 1) {
 				cell.textContent = Ut.fillZeroes(val);
@@ -128,14 +143,14 @@
 		}
 		return false;
 	});
-	// tbl.setColumnWidths(30, 0);
-			
+
+
 	function calculate() {
-		var p = Ut.getNumericValue(inputs[0], cRows[0][2]); // principal
-		var annualInt = Ut.getNumericValue(inputs[1], cRows[1][2]); // [j]
-		var period = Ut.getNumericValue(inputs[2], cRows[2][2]); // [m]
-		var t = Ut.getNumericValue(inputs[3], cRows[3][2]); // number of years
-		var d = Ut.getNumericValue(inputs[4], cRows[4][2]); // deposit
+		var p = Ut.getNumericValue(inputs[0], 10000); // principal
+		var annualInt = Ut.getNumericValue(inputs[1], 5); // [j]
+		var period = selVals[inputs[2].selectedIndex];
+		var t = Ut.getNumericValue(inputs[3], 10); // number of years
+		var d = Ut.getNumericValue(inputs[4], 0); // deposit
 		
 		annualInt /= 100; // percentage
 		// var s = p * Math.pow(1 + annualInt / period, period * t);
@@ -148,7 +163,7 @@
 		
 		var futureValue = p;
 		var totalDeposit = p;
-		var m = 13 - period;
+		var m = (12 / period);
 
 		for(var i = 0; i < totalPeriod; ++i) {
 			var row = rows[i] = new Array(4);
@@ -158,7 +173,7 @@
 			if(i < lastPeriod) {
 				if(--m <= 0) {
 					futureValue *= realInterest;
-					m = 13 - period;
+					m = (12 / period);
 				}
 				row[3] = futureValue - row[1]; // Interest gain
 				
@@ -170,7 +185,7 @@
 			}
 		}
 		
-		var balance_num = row[1];
+		var balance_num = rows[lastPeriod][1];
 		var totalInterest = (balance_num - totalDeposit);
 		
 		Ary.filterOut(rows, function(val, idx) {
@@ -178,7 +193,7 @@
 				return (!val[2] && !val[3]);
 			}
 		});
-		tbl.setContent(rows);
+		balanceTbl.setContent(rows);
 		
 		year_span.textContent = t;
 		balance_span.textContent = balance_num.toLocaleString();
