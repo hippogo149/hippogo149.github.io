@@ -25,6 +25,8 @@
 			display: inline-block;
 			margin-bottom: 10px;
 			margin-left: 20px;
+		}
+		h3, a, table {
 			word-wrap: break-word;
 		}
 		input, select  {
@@ -71,7 +73,9 @@
 	<div id="input_div"></div>
 	<div id="balance_div"></div>
 	<br><br>
-	Reference: <a href="http://en.wikipedia.org/wiki/Compound_interest" target="_blank">http://en.wikipedia.org/wiki/Compound_interest</a>
+	<b>Reference:</b><br>
+	<a href="http://en.wikipedia.org/wiki/Compound_interest" target="_blank">http://en.wikipedia.org/wiki/Compound_interest</a><br>
+	<a href="https://www.investopedia.com/terms/c/compoundinterest.asp" target="_blank">https://www.investopedia.com/terms/c/compoundinterest.asp</a>
 	</div>
 	
 <script>
@@ -82,25 +86,24 @@
 	var interest_pct = Dom.text();
 	var deposit_pct = Dom.text();
 	
-	balance_span.className = "balance"; 
-	balance_h.appendChild(Dom.texts("[S] Final balance after ", year_span, " year(s): ", balance_span, " $"));
-	interest_h.appendChild(Dom.texts("Total compound interest generated: ", interest_span, " $ (", interest_pct, "%)"));
-	deposit_h.appendChild(Dom.texts("Total deposit: ", deposit_span, " $ (", deposit_pct, "%)"));
+	balance_h.appendChild(Dom.texts("[S] Final savings balance after ", year_span, " year(s): $ ", balance_span));
+	interest_h.appendChild(Dom.texts("Total interest earned: $ ", interest_span, " (", interest_pct, "%)"));
+	deposit_h.appendChild(Dom.texts("Initial investment + monthly Contributions: $ ", deposit_span, " (", deposit_pct, "%)"));
 	
 	var selLabels = ["Annually", "Semiannually", "Quarterly", "Monthly"];
-	var selVals = [1, 2, 4, 12];
+	var selVals = [1, 2, 4 /* 3 month term */, 12];
 	var inputs = [];
 	var cRows = [
 		[["[P] ", "Principal amount (initial investment) :"], 
-			Dom.numericInput(null, 0, null, 100), " $"],
+			Dom.numericInput(null, 0, null, 100), ""],
 		[["[j] ", "Nominal annual interest rate :"], 
-			Dom.numericInput(null, 0), " %"],
+			Dom.numericInput(null, 0), "%"],
 		[["[m] ", "Interest is compounded:"], 
-			Dom.select(selLabels, null, 0), ""],
+			Dom.select(selLabels, null, 3), ""],
 		[["[t] ", "Number of years :"], 
 			Dom.numericInput(null, 0), " year(s)"],
 		[["[d] ", "Monthly deposit :"], 
-			Dom.numericInput(null, 0, null, 100), " $"]
+			Dom.numericInput(null, 0, null, 100), ""]
 	];
 	var inputTbl = new Table(input_div);
 	inputTbl.getBody().setCellRenderer(function(cell, val, c, r) {
@@ -155,11 +158,12 @@
 		annualInt /= 100; // percentage
 		// var s = p * Math.pow(1 + annualInt / period, period * t);
 		
-		// Demo
 		var lastPeriod = 12 * t;
 		var totalPeriod = lastPeriod + 1;
 		var rows = new Array(totalPeriod);
 		realInterest = 1 + annualInt / period;
+		var APY = Ut.round((Math.pow(realInterest, period) - 1) * 100);
+		console.log("Annual Percentage Yield (APY) = " + APY + "%");
 		
 		var futureValue = p;
 		var totalDeposit = p;
