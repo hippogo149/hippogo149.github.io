@@ -124,7 +124,7 @@
 		aniPt.draw = drawCircle;
 		
 		aniPt.startPt = aniPt.getPt().clone();
-		aniPt.mod = aniPt.addModifier(new Ani.Approach(aniPt.getPt().clone()));
+		aniPt.mod = aniPt.addModifier(new Ani.ApproachTo(aniPt.getPt().clone()));
 		pts.push(aniPt);
 	}
 	function newShape2(setNum, idx) {
@@ -139,7 +139,7 @@
 		aniPt.draw = drawCircle;
 		
 		aniPt.startPt = aniPt.getPt().clone();
-		aniPt.mod = aniPt.addModifier(new Ani.Approach(aniPt.getPt().clone()));
+		aniPt.mod = aniPt.addModifier(new Ani.ApproachTo(aniPt.getPt().clone()));
 		pts.push(aniPt);
 	}
 	function newShape3(setNum, idx) {
@@ -154,7 +154,7 @@
 		aniPt.rotation.setEaseFunction(easeFuncs[idx]);
 		
 		aniPt.startPt = aniPt.getPt().clone();
-		aniPt.mod = aniPt.addModifier(new Ani.Approach(aniPt.getPt().clone()));
+		aniPt.mod = aniPt.addModifier(new Ani.ApproachTo(aniPt.getPt().clone()));
 		aniPt.draw = drawSquare;
 		pts.push(aniPt);
 	}
