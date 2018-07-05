@@ -10,6 +10,10 @@
 	<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>
 
 	<style>
+		table { 
+			display: inline-block;
+			vertical-align: top;
+		}
 		thead td {
 			text-align: center;
 			font-weight: bold;
@@ -49,33 +53,33 @@
 		<button onclick="_clearResults()">Clear Result(s)</button>
 	</div>
 	<div id="errMsg"></div>
-	<br />
+	<br>
 	<div id="beforePanel">
 		<div>Tear up:</div>
 		<textarea id="txtBefore" rows="8" cols="100" placeholder="var obj = {}; This section will not be included in the performance calculation and is performed only once."></textarea>
 	</div>
-	<br />
+	<br>
 	<div>
 		<div>Actual Test: </div>
 		<textarea id="txtActualTest" rows="8" cols="100"></textarea>
 	</div>
-	<br />
+	<br>
 	<div id="afterPanel">
 		<div>Tear down:</div>
 		<textarea id="txtAfter" rows="4" cols="100" placeholder="delete obj; This section will not be included in the performance calculation and is performed only once."></textarea>
 	</div>
-	<br />
+	<br>
 	<button onclick="_startPerfTest()">Start Performance Test</button>&#160;&#160;<span id="txtProgress"></span>
-	<br /><br />
+	<br><br>
 	<div id="resultPanel">
-		<table border="0" cellspacing="1" style="display: inline-block; vertical-align: top;">
+		<table>
 			<thead>
 				<tr>
 					<td>#</td>
-					<td><div>Avg. execution time (ms)<br />The lesser, the better</div></td>
-					<td><div>Avg. number of execution<br />The higher, the better</div></td>
-					<td><div>Speed Ratio<br />Maximum is 1</div></td>
-					<td><div>Test String<div></td>
+					<td><div>Avg. execution time (ms)<br>The lesser, the better</div></td>
+					<td><div>Avg. number of execution<br>The higher, the better</div></td>
+					<td><div>Speed Ratio<br>Maximum is 1</div></td>
+					<td><div>Test String</div></td>
 				</tr>
 			</th>
 			<tbody id="resultTable"></tbody>
@@ -83,7 +87,7 @@
 		<button onclick="_clearResults()" style="vertical-align: top; margin-top: 18px;">Clear Result(s)</button>
 	</div>
 
-<script type='text/javascript'>
+<script>
 	if(window.localStorage) { // In IE, localStorage may not exist
 		txtTimeLimit.value = window.localStorage.getItem("txtTimeLimit") || "100";
 		txtNoOfExec.value = window.localStorage.getItem("txtNoOfExec") || "30";
