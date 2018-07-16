@@ -276,7 +276,7 @@
 			param2 = chunks.length ? chunks.join(" ") : "";
 		}
 		writeCell(param1, t, 1, r);
-		writeCell(param2, t, 2, r);
+		writeCell(param2, t, 3, r); // Month cell is spanned
 	}
 	function writeNumbers(line, t, r) {
 		var chunks = extractLine(line);
