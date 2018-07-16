@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Unicode Characters</title>
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	<link rel="stylesheet" href="../assets/html.css">
+	<link rel="stylesheet" href="../assets/common.css">
+	
+	<script src="../assets/por.min.js"></script>
+
+	<style>
+		html, body {
+			height: 100%;
+		}
+		body {
+			font-family: Arial;
+		}
+		.header_row {
+			height: 60px;
+			line-height: 28px;
+		}
+		.header_row span {
+			white-space: nowrap;
+		}
+		#ucode_div {
+			font-size: 18px;
+			height: calc(100% - 70px);
+			border: 1px solid grey;
+			min-width: 300px;
+		}
+		.vl-items {
+			table-layout: fixed;
+		}
+		.ctbl-cell {
+			border: 0;
+			position: relative;
+		}
+		.ctbl-row:nth-child(even)>.ctbl-cell {
+			background-color: lightgrey;
+		}
+		.ctbl-cell>div {
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+		.row-indicator {
+			position: absolute;
+			top: 2px;
+			right: 4px;
+			text-align: right;
+			font-size: 10px;
+			color: mediumblue;
+		}
+		.ctbl-cell span {
+			display: inline-block;
+			width: 30px;
+			text-align: center;
+			cursor: pointer;
+		}
+		.ctbl-cell span:hover {
+			background-color: sandybrown;
+		}
+		.ctbl-cell span:active {
+			background-color: cornflowerblue;
+		}
+		.pt-popup {
+			border: 2px solid grey;
+			background-color: white;
+			padding: 4px;
+		}
+		.pt-popup td:first-child{
+			text-align: right;
+		}
+		.pt-popup td {
+			border: 1px solid lightgrey;
+			padding: 4px;
+		}
+		input {
+			margin-right: 8px;
+		}
+		#ff_in {
+			width: 120px;
+		}
+		#fs_in {
+			text-align: right;
+			width: 42px;
+		}
+		#scr_in {
+			text-align: right;
+			width: 65px;
+		}
+		#hex_scr_in {
+			width: 40px;
+		}
+	</style>
+</head>
+<body>
+	<div class="header_row"><!--
+		-->Font: 
+		<input id="ff_in" onchange="onFontFamilyChange(event)" type="text">
+		Size: 
+		<input  id="fs_in" onchange="onFontSizeChange(event)" min="8" max="24" type="number">
+		<span title="Scroll to">Dec &#18;&#18;:
+		<input id="scr_in" onchange="onScrollChange(event)" min="0" type="number"></span>
+		<span title="Scroll to">Hex &#18;&#18;:
+		<input id="hex_scr_in" onchange="onHexScrollChange(event)" type="text"></span>
+	</div>
+	<div id="ucode_div" onclick="onClickList(event)"></div>
+
+<script>
+	// https://www.w3schools.com/charsets/ref_utf_misc_symbols.asp
+	// https://www.martinstoeckli.ch/fontmap/fontmap.html
+	// https://en.wikibooks.org/wiki/Unicode/List_of_useful_symbols
+	var maxChar = 11742;
+	var defaultFont = "Arial";
+	var defaultFontSize = 18;
+	
+	var frameWidth = ucode_div.clientWidth - 34;
+	var startChar = 0;
+	var colCount = (frameWidth / 30) | 0;
+	var rowCount = Math.ceil((maxChar + 1 - startChar) / colCount);
+	var values = new Array(rowCount);
+	for(var i = 0; i < rowCount; ++i) {
+		values[i] = i;
+	}
+	
+	var col1 = ["JS:", "CSS:", "HTML:", "DEC:", "HEX:"];
+	var puTbl = new Table(2, 5);
+	assignText(puTbl.getCellsInColumn(0), col1);
+	var pu = new Popup(puTbl.getElement());
+	
+	var ucList = new VList(ucode_div, {
+		"render": onItemRendered,
+		"created": onItemCreated,
+		"data": values,
+		"itemSize": 40
+	});
+	
+	ff_in.value = defaultFont;
+	fs_in.value = defaultFontSize;
+	scr_in.value = Math.floor(startChar / rowCount);
+	scr_in.setAttribute("max", maxChar + "");
+	hex_scr_in.value = "0000";
+	ucode_div.addEventListener("mousedown", Ut.preventDefault);
+	
+	function assignText(cells, texts) {
+		for(var i = cells.length; --i >= 0;) {
+			cells[i].textContent = texts[i];
+		}
+	}
+	function getUnicode(c, r) {
+		return startChar + c + r * colCount;
+	}
+	function onItemRendered(e) {
+		var items = e.cell.items;
+		for(var i = 0; i < colCount; ++i) {
+			items[i].textContent = String.fromCharCode(getUnicode(i, e.index));
+		}
+		e.cell.indicator.textContent = e.index * colCount;
+	}
+	function onItemCreated(e) {
+		var div = document.createElement("div");
+		var items = new Array(colCount);
+		for(var i = 0; i < colCount; ++i) {
+			items[i] = div.appendChild(document.createElement("span"));
+		}
+		var indi = document.createElement("div");
+		indi.className = "row-indicator";
+		e.cell.appendChild(div);
+		e.cell.appendChild(indi);
+		e.cell.items = items;
+		e.cell.indicator = indi;
+	}
+	function onFontFamilyChange(e) {
+		var ff = e.currentTarget.value;
+		if(!ff) {
+			e.currentTarget.value = fontFamily;
+		} else if(ff.toLowerCase() === defaultFont.toLowerCase()) {
+			ff = "";
+		}
+		ucode_div.style.fontFamily = ff;
+	}
+	function onFontSizeChange(e) {
+		var fs = +e.currentTarget.value;
+		if(!fs) {
+			e.currentTarget.value = 16;
+		} else if(fs === 16) {
+			fs = 0;
+		}
+		ucode_div.style.fontSize = fs ? fs + "px" : "";
+	}
+	function onScrollChange(e) {
+		var chIndex = +e.currentTarget.value;
+		hex_scr_in.value = prefixZero(chIndex ? chIndex.toString(16) : 0);
+		var rowIndex = (chIndex > 0) ? Math.floor(chIndex / colCount) : 0; 
+		ucList.scrollToItem(rowIndex);
+	}
+	function onHexScrollChange(e) {
+		var chIndex = parseInt(e.currentTarget.value, 16);
+		scr_in.value = chIndex ? chIndex : 0;
+		var rowIndex = (chIndex > 0) ? Math.floor(chIndex / colCount) : 0; 
+		ucList.scrollToItem(rowIndex);
+	}
+	function onClickList(e) {
+		var tgt = e.target;
+		if(tgt.tagName !== "SPAN") {
+			return;
+		}
+		
+		var chdr = Ary.from(tgt.parentNode.children);
+		var colIndex = chdr.indexOf(tgt);
+		var rowIndex = ucList.getItemIndex(e);
+		var dec = getUnicode(colIndex, rowIndex);
+		var hex = dec.toString(16);
+		var col2 = [
+			'"\\u' + prefixZero(hex) + '"',
+			'content: "\\' + hex + '";', // CSS doesn't need prefixing
+			'&#' + dec + ';',
+			'' + dec,
+			'' + hex
+		];
+		assignText(puTbl.getCellsInColumn(1), col2);
+		pu.attachTo(tgt);
+		pu.show();
+	}
+	function prefixZero(val) {
+		if(!val) {
+			return "0000";
+		}
+		if(typeof val !== "string") {
+			val += "";
+		}
+		while(val.length < 4) {
+			val = "0" + val;
+		}
+		return val;
+	}
+</script>
+
+</body>
+</html>

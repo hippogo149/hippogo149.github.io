@@ -346,3 +346,30 @@ button:not([disabled]) { cursor: pointer; }
 .bi-dir-bar.vertical .negative-bar {
 	height: 50%;
 }
+
+.column-tbl {
+	display: table;
+	border-collapse: collapse;
+}
+.ctbl-row {
+	display: table-row;
+}
+.ctbl-cell {
+	display: table-cell;
+	vertical-align: middle;
+	border-bottom: 1px solid lightgrey;
+	padding: 0 5px;
+}
+
+.v-list {
+	position: relative;
+}
+.vl-items {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+}
+.vl-items > *, .vl-items .ctbl-cell {
+	box-sizing: border-box;
+}
