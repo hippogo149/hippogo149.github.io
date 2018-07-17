@@ -8,7 +8,7 @@
 	<link rel="stylesheet" href="../assets/html.css">
 	<link rel="stylesheet" href="../assets/common.css">
 	
-	<script src="../assets/por.min.js"></script>
+	<script src="../assets/por.js"></script>
 
 	<style>
 		html, body {
@@ -23,6 +23,9 @@
 		}
 		.header_row span {
 			white-space: nowrap;
+		}
+		.header_row span + span {
+			margin-left: 8px;
 		}
 		#ucode_div {
 			font-size: 18px;
@@ -77,9 +80,6 @@
 			border: 1px solid lightgrey;
 			padding: 4px;
 		}
-		input {
-			margin-right: 8px;
-		}
 		#ff_in {
 			width: 120px;
 		}
@@ -92,20 +92,22 @@
 			width: 65px;
 		}
 		#hex_scr_in {
-			width: 40px;
+			width: 50px;
 		}
 	</style>
 </head>
 <body>
 	<div class="header_row"><!--
-		-->Font: 
-		<input id="ff_in" onchange="onFontFamilyChange(event)" type="text">
-		Size: 
-		<input  id="fs_in" onchange="onFontSizeChange(event)" min="8" max="24" type="number">
-		<span title="Scroll to">Dec &#18;&#18;:
-		<input id="scr_in" onchange="onScrollChange(event)" min="0" type="number"></span>
-		<span title="Scroll to">Hex &#18;&#18;:
-		<input id="hex_scr_in" onchange="onHexScrollChange(event)" type="text"></span>
+		--><span>Font: 
+		<input id="ff_in" onchange="onFontFamilyChange(event)" type="text"></span>
+		<span>Size: 
+		<input  id="fs_in" onchange="onFontSizeChange(event)" min="8" max="24" type="number"></span>
+		<span title="Scroll to">To Item:
+		<input id="scr_in" placeholder="Decimal" onchange="onScrollChange(event)" min="0" type="number"></span>
+		<span title="Scroll to">
+		<input id="hex_scr_in" placeholder="Hex" onchange="onHexScrollChange(event)" type="text"></span>
+		<span><button title="Scroll Down" onclick="onScrollDown(event)">&#9660;</button></span>
+		<span><button title="Scroll Up"  onclick="onScrollUp(event)">&#9650;</button></span>
 	</div>
 	<div id="ucode_div" onclick="onClickList(event)"></div>
 
@@ -140,9 +142,9 @@
 	
 	ff_in.value = defaultFont;
 	fs_in.value = defaultFontSize;
-	scr_in.value = Math.floor(startChar / rowCount);
+	// scr_in.value = Math.floor(startChar / rowCount);
 	scr_in.setAttribute("max", maxChar + "");
-	hex_scr_in.value = "0000";
+	// hex_scr_in.value = "0000";
 	ucode_div.addEventListener("mousedown", Ut.preventDefault);
 	
 	function assignText(cells, texts) {
@@ -202,6 +204,14 @@
 		scr_in.value = chIndex ? chIndex : 0;
 		var rowIndex = (chIndex > 0) ? Math.floor(chIndex / colCount) : 0; 
 		ucList.scrollToItem(rowIndex);
+	}
+	function onScrollDown(e) {
+		var itemInView = this.ucList.getItemCountInView() - 2;
+		ucList.getScrollFrame().scrollTop(itemInView * 40);
+	}
+	function onScrollUp(e) {
+		var itemInView = this.ucList.getItemCountInView() - 2;
+		ucList.getScrollFrame().scrollTop(-itemInView * 40);
 	}
 	function onClickList(e) {
 		var tgt = e.target;
