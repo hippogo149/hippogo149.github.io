@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<title>Pasting Excel Table </title>
+		<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+		<style>
+			body, #container, #receiver {
+				text-align: center;
+			}
+			#container {
+				display: inline-block;
+			}
+			#receiver {
+				width: 100%;
+				font-family: sans-serif;
+				margin-bottom: 10px;
+			}
+			#receiver.empty {
+				height: 400px;
+				font-size: 2em;
+				font-weight: bold;
+			}
+		</style>
+	</head>
+	<body>
+		<input id="receiver" class="empty" placeholder="Try Pasting Excel Table Here" type="text">
+		<div id="container"></div>
+		<script>
+		receiver.focus();
+		receiver.addEventListener("paste", function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var txt = e.clipboardData.getData("text/html");
+			if(txt) {
+				container.innerHTML = txt;
+				this.value = "";
+				this.classList.remove("empty");
+			} else {
+				this.value = "No Excel Data (text/html) Detected";
+			}
+		});
+		</script>
+	</body>
+</html>
