@@ -147,6 +147,9 @@
 	scr_in.setAttribute("max", maxChar + "");
 	// hex_scr_in.value = "0000";
 	ucode_div.addEventListener("mousedown", Ut.preventDefault);
+	ucList.getScrollFrame().listen("scroll", function() {
+		pu.hide();
+	});
 	
 	function assignText(cells, texts) {
 		for(var i = cells.length; --i >= 0;) {

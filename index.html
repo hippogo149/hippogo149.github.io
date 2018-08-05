@@ -6,20 +6,38 @@
 		<title>hippogo149.github.io</title>
 		<link rel="icon" href="data:;base64,iVBORw0KGgo=">
 		<style>
-			html, body { overflow: hidden; }
-			body{ font: 18px Arial; text-align: center; }
-			div { width:140px; height: 140px; transform: rotate(45deg); position: fixed; }
-			#d1 { left: -70px;    top: -70px; background-color: red; }
-			#d2 { right:-70px;    top: -70px; background-color: cyan; }
-			#d3 { left: -70px; bottom: -70px; background-color: green; }
-			#d4 { right:-70px; bottom: -70px; background-color: gold; }
+			html, body { padding: 0; margin: 0; }
+			html, body, #bg_div { width: 100%; height: 100%; }
+			body { font: 18px Arial; text-align: center; text-shadow: 0 0 10px #fff;}
+			#bg_div { position: absolute; overflow: hidden; left: 0; top: 0; }
+			#bg_div div { position: absolute; border: 4px double; border-radius: 15px;}
+			#front_div { position: relative; }
 		</style>
 	</head>
 	<body>
-		<div id="d1"></div><div id="d2"></div><div id="d3"></div><div id="d4"></div>
-		<h1><a href="https://github.com/hippogo149/">Hello World!</a></h1>
-		<h3><a href="https://hippogo149.github.io/pages/">My Pages</a></h3>
-		<h3><a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fhippogo149.github.io%2F">W3C Markup Validation Service</a></h3>
-		<h3><a href="https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fhippogo149.github.io%2F&tab=mobile">Google PageSpeed Insights</a></h3>
+		<div id="bg_div"></div>
+		<div id="front_div">
+			<h1><a href="https://github.com/hippogo149/">Hello World!</a></h1>
+			<h3><a href="https://hippogo149.github.io/pages/">My Pages</a></h3>
+			<h3><a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fhippogo149.github.io%2F">W3C Markup Validation Service</a></h3>
+			<h3><a href="https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fhippogo149.github.io%2F&tab=mobile">Google PageSpeed Insights</a></h3>
+		</div>
+		<script>
+		var colors = ["red", "cyan", "green", "gold", "teal", "coral", "lightgrey", "khaki"];
+		colors.forEach(function(color) {
+			var div = document.createElement("div");
+			var sty = div.style;
+			sty.left = randBetween(-25, 85) + "%";
+			sty.top = randBetween(-25, 85) + "%";
+			sty.width = randBetween(15, 40) + "%";
+			sty.height = randBetween(15, 40) + "%";
+			sty.transform = "rotate(" + randBetween(0, 90) + "deg)";
+			sty.borderColor = color;
+			bg_div.appendChild(div);
+		});
+		function randBetween(min, max) {
+			return Math.floor(Math.random() * (max - min + 1)) + min;
+		}
+		</script>
 	</body>
 </html>
