@@ -22,12 +22,6 @@
 			text-align: left;
 		}
 		
-		#compare_btn {
-			position: fixed;
-			top: 40px;
-			left: 40px;
-		}
-		
 		td {
 			position: relative;
 		}
@@ -35,21 +29,20 @@
 			text-align: center;
 		}
 		td:nth-child(3) div {
-			width: 380px;
+			width: 290px;
 		}
-		td:nth-child(3) {
+		td:nth-child(3),
+		td:nth-child(4) {
 			font-size: 18px;
 		}
 		
-		.base-font {
-			display: none;
-			color: grey;
+		td:nth-child(4) div {
 			position: absolute;
-			top: 4px;
+			top: 14px;
 			left: 4px;
 		}
-		.comparing .base-font{
-			display: inline;
+		.base-font {
+			color: grey;
 		}
 	</style>
 </head>
@@ -57,11 +50,8 @@
 	<h2>Font Family</h2>
 	
 	<div id="list_div"></div>
-	
-	<button id="compare_btn" onclick="compareWithBase()"> Compare with base </button>
-
 <script>
-var headerRow = ["Family", "Base", "Sample", "CSS"];
+var headerRow = ["Family", "Base", "Sample", "Compare", "CSS"];
 var familyList = [
 	 ["Arial", "sans-serif"]
 	,["Arial Black", "sans-serif"]
@@ -168,7 +158,7 @@ for(var i = 0; i < rowCount; ++i) {
 	if(ff !== base) {
 		ff += ", " + base;
 	}
-	row.push("", ff);
+	row.push("", "", ff);
 }
 
 var tbl = new Table(list_div);
@@ -177,7 +167,7 @@ tbl.rebuild(familyList, headerRow);
 tbl.getCellsInColumn(2).forEach(function(cell, rowIndex) {
 	var row = familyList[rowIndex];
 	var baseFont = row[1];
-	var cssFont = row[3];
+	var cssFont = row[4];
 	
 	var sampleTxt = "The Quick Brown Fox Jumps Over The Lazy Dog";
 	var span = document.createElement("div");
@@ -186,7 +176,24 @@ tbl.getCellsInColumn(2).forEach(function(cell, rowIndex) {
 	}
 	span.textContent = sampleTxt;
 	span.style.fontFamily = cssFont;
+
+	cell.appendChild(span);
 	
+});
+tbl.getCellsInColumn(3).forEach(function(cell, rowIndex) {
+	var row = familyList[rowIndex];
+	var baseFont = row[1];
+	var cssFont = row[4];
+	
+	var sampleTxt = "AB ab";
+	
+	var span = document.createElement("div");
+	if(baseFont == "symbol") {
+		span.className = "symbol-font";
+	}
+	span.classList.add("custom-font");
+	span.innerHTML = sampleTxt;
+	span.style.fontFamily = cssFont;
 	
 	var baseSpan = document.createElement("div");
 	baseSpan.textContent = sampleTxt;
@@ -196,13 +203,6 @@ tbl.getCellsInColumn(2).forEach(function(cell, rowIndex) {
 	cell.appendChild(span);
 	cell.appendChild(baseSpan);
 });
-var compareWithBase = function(e) {
-	if(list_div.classList.contains("comparing")) {
-		list_div.classList.remove("comparing")
-	} else {
-		list_div.classList.add("comparing")
-	}
-};
 
 tbl.sort(1, "d");
 </script>

@@ -135,8 +135,10 @@
 	var pu = new Popup(puTbl.getElement());
 	
 	var ucList = new VList(ucode_div, {
-		"render": onItemRendered,
-		"created": onItemCreated,
+		"listeners" {
+			"render": onItemRendered,
+			"elemCreated": onItemCreated
+		},
 		"data": values,
 		"itemSize": 40
 	});
