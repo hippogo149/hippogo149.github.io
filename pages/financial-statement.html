@@ -126,6 +126,7 @@
 	
 	var drawTable = function() {
 		cb.clearCanvas();
+		cb.fillBg("#fff");
 		for(var i = tbls.length; --i >= 0;) {
 			tbls[i].drawTable();
 		}
