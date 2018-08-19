@@ -17,9 +17,6 @@
 			max-width: 100%;
 			width: 420px;
 		}
-		.column > * {
-			//vertical-align: top;
-		}
 		#paramList {
 			margin-left: 8px;
 		}
@@ -119,7 +116,8 @@
 		"a\tb\tc\nd\te\tf\ng\th\ti",
 		"[\n\t [\"abc\", \"b\", \"c\"]\n\t,[\"d\", \"eeeee\", \"f\"]\n\t,[\"g\", \"h\", \"iff\"]\n]",
 		"abc // line comment\nabc /* block comments */",
-		".column {\\n\\tdisplay: inline-block;\\n\\tline-height: 24px;\\n\\tmax-width: 100%;\\n\\twidth: 500px;\\n}"
+		".column {\\n\\tdisplay: inline-block;\\n\\tline-height: 24px;\\n\\tmax-width: 100%;\\n\\twidth: 500px;\\n}",
+		"elem.style.width = \"100px\";\nelem.style.height = \"200px\";\nelem.style.fontSize = \"2em\";"
 	];
 	
 	var selDefs = [
@@ -140,7 +138,8 @@
 		["Convert TSV to 2D Array", null, scriptifyTsv],
 		["Prettify 2D Array", null, prettify2DArray],
 		["Strip comments", null, stripComments],
-		["Strip escaped spaces", null, stripEscapedSpaces]
+		["Strip escaped spaces", null, stripEscapedSpaces],
+		["Convert JS to CSS", null, jsToCss]
 	];
 	
 	Dom.options(mode_sel, selDefs, outputMode);
@@ -408,6 +407,32 @@
 	}
 	function stripEscapedSpaces(str) {
 		return str.replace(/(\\n|\\t)/g, "");
+	}
+	function jsToCss(str) {
+		var out_str = "";
+		str.replace(/\.style\.(.+)/g, function(val, grp1) {
+			var parts = grp1.split("=");
+			if(parts.length == 2) {
+				var val = capToSnake(parts[0].replace(/\s/g, "")) + ":" + valToCssVal(parts[1]);
+				if(out_str) {
+					out_str += "\n";
+				}
+				out_str += val;
+			}
+		});
+		return out_str;
+	}
+	function capToSnake(str) {
+		return str.replace(/[A-Z]/g, addSnake);
+	}
+	function addSnake(str) {
+		return "-" + smallToBig(str);
+	}
+	function smallToBig(str) {
+		return String.fromCharCode(str.charCodeAt(0) + 32);
+	}
+	function valToCssVal(str) {
+		return str.replace(/['"]([^'"]*)['"]/, "$1");
 	}
 	
 	// Helper
