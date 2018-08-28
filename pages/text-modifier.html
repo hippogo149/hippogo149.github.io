@@ -74,7 +74,7 @@
 			<textarea id="txt_input" onkeyup="onInputKeyUp(event)"></textarea>
 		</div>
 		<div class="column">
-			Output: <select id="mode_sel" onchange="onModeChanged(event)"></select><span id="paramList"></span><br>
+			<select id="mode_sel" onchange="onModeChanged(event)"></select><span id="paramList"></span><br>
 			<textarea id="txt_output"></textarea>
 		</div>
 		<div class="column">
@@ -117,7 +117,8 @@
 		"[\n\t [\"abc\", \"b\", \"c\"]\n\t,[\"d\", \"eeeee\", \"f\"]\n\t,[\"g\", \"h\", \"iff\"]\n]",
 		"abc // line comment\nabc /* block comments */",
 		".column {\\n\\tdisplay: inline-block;\\n\\tline-height: 24px;\\n\\tmax-width: 100%;\\n\\twidth: 500px;\\n}",
-		"elem.style.width = \"100px\";\nelem.style.height = \"200px\";\nelem.style.fontSize = \"2em\";"
+		"elem.style.width = \"100px\";\nelem.style.height = \"200px\";\nelem.style.fontSize = \"2em\";",
+		"\n\n\tA\n\tB\n\tC\n\n"
 	];
 	
 	var selDefs = [
@@ -139,7 +140,8 @@
 		["Prettify 2D Array", null, prettify2DArray],
 		["Strip comments", null, stripComments],
 		["Strip escaped spaces", null, stripEscapedSpaces],
-		["Convert JS to CSS", null, jsToCss]
+		["Convert JS to CSS", null, jsToCss],
+		["Text List to Array", null, textToArray]
 	];
 	
 	Dom.options(mode_sel, selDefs, outputMode);
@@ -433,6 +435,14 @@
 	}
 	function valToCssVal(str) {
 		return str.replace(/['"]([^'"]*)['"]/, "$1");
+	}
+	function textToArray(str) {
+		str = str.replace(/[\r\t ]/g, "");
+		var chunks = str.split("\n");
+		chunks = chunks.filter(function(val) {
+			return val ? true : false;
+		});
+		return "[\n\t\"" + chunks.join("\",\n\t\"") + "\"\n]";
 	}
 	
 	// Helper
