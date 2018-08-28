@@ -199,7 +199,7 @@
 				
 				var href = HtmlDocument.extractAttributeValue(link, "href");
 				var req2 = new HttpRequest("http://localhost:3020/api/load", {
-					"url": href
+					"url": href.replace(/&amp;/g, "&")
 				});
 				req2.setRequestTimeout(180000);
 				return req2.send();
@@ -259,9 +259,6 @@
 		var indiStart = searchLines(lines, "งบการเงินเฉพาะกิจการ");
 		if(indiStart < 0) {
 			indiStart = searchLines(lines, "The Company Financial Statement");
-		}
-		if(indiStart >= 0 && reportName === "(F45-1)") {
-			indiStart += 4;
 		}
 		var nameStart = (combStart >= 0) ? combStart : indiStart;
 		
