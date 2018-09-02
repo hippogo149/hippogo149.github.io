@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>PDF Text Formatter</title>
+
+	<link rel="stylesheet" href="../src/css/html.css">
+	<style>
+		body { font-family: Arial; }
+		textarea { 
+			font-family: Tahoma; 
+			width: 600px;
+			height: 200px;
+		}
+	</style>
+</head>
+<body>
+	<div>
+		<b>Input:</b><br>
+		<textarea id="input1" onkeyup="onInputChange(event)"></textarea>
+		<br><br>
+		<b>Spaces removed:</b><br>
+		<textarea id="output2" readonly="readonly"></textarea>
+		<br>
+		<b>Newlines removed:</b><br>
+		<textarea id="output1" readonly="readonly"></textarea>
+	</div>
+
+<script>
+	var prevStr = window.localStorage.getItem("_input1");
+	if(prevStr) {
+		input1.value = prevStr;
+		onInputChange();
+	}
+	
+	function onInputChange() {
+		var inputStr = input1.value;
+		if(!inputStr) { return; }
+		window.localStorage.setItem("_input1", inputStr);
+		
+		inputStr = replaceAll(inputStr, 65533);
+		inputStr = replaceAll(inputStr, 8220, 34); // Smart left quote
+		inputStr = replaceAll(inputStr, 8221, 34); // Smart right quote
+		inputStr = replaceAll(inputStr, " " + String.fromCharCode(3656), 3656); // Mai eak
+		inputStr = replaceAll(inputStr, 63233, 3636); // Sara ei
+		inputStr = replaceAll(inputStr, 63234, 3637); // Sara e
+		inputStr = replaceAll(inputStr, 63242, 3656); // Mai eak
+		inputStr = replaceAll(inputStr, 63243, 3657); // Mai Toe
+		inputStr = replaceAll(inputStr, 3662, 3657); // Mai Toe
+		inputStr = replaceAll(inputStr, 42, 3657); // * >> Mai Toe WARNING
+		inputStr = replaceAll(inputStr, 63240, 3659); // Mai Jattava
+		inputStr = replaceAll(inputStr, 63246, 3660); // Kar run
+		inputStr = replaceAll(inputStr, 63248, 3633); // Mai hun argart
+		inputStr = replaceAll(inputStr, 63250, 3655); // Mai tai koo
+		inputStr = replaceAll(inputStr, String.fromCharCode(3661) + String.fromCharCode(3634), 3635); // Sara aum
+		inputStr = replaceAll(inputStr, " " + String.fromCharCode(3634), 3635); // Sara aum
+		inputStr = replaceAll(inputStr, 3661, 3656); // Mai eak
+		inputStr = replaceAll(inputStr, 14, 3656); // Mai eak
+		inputStr = replaceAll(inputStr, "ํ ิ", 3636); // Sara ei
+		inputStr = replaceAll(inputStr, "่ ิ", 3636); // Sara ei
+		inputStr = replaceAll(inputStr, "่ิ", 3636); // Sara ei
+		inputStr = replaceAll(inputStr, " ่ ็", 3655); // Mai tai koo
+		inputStr = replaceAll(inputStr, "่็", 3655); // Mai tai koo
+		inputStr = replaceAll(inputStr, "ดาเน", "ดำเน");
+		inputStr = replaceAll(inputStr, "ฝก", "ฝึก");
+		
+		removeNewLineChar(inputStr);
+		removeSpaceChar(inputStr);
+	}
+	
+	function removeNewLineChar(inputStr) {
+		output1.value = replaceAll(inputStr, 10);
+	}
+	
+	function removeSpaceChar(inputStr) {
+		var words = inputStr.split(" ");
+		
+		var outStr = words[0];
+		for(var i = 1; i < words.length; ++i) {
+			var prevWord = words[i - 1];
+			var curWord = words[i];
+			
+			var connected = false;
+			if(!isEndWithSpecialChar(prevWord)) {
+				if(isUnicode(prevWord) && isUnicode(curWord)) {
+					connected = true;
+				}
+			}
+			if(connected) {
+				outStr += curWord;
+			} else {
+				outStr += " " + curWord;
+			}
+		}
+		outStr = outStr.replace(/&/g, "และ");
+		output2.value = outStr;
+	}
+	
+	function replaceAll(hayStack, needle, replacer) {
+		if(typeof needle === "number") {
+			needle = String.fromCharCode(needle);
+		}
+		var chunks = hayStack.split(needle);
+		if(chunks.length <= 1) {
+			return hayStack;
+		}
+		
+		if(typeof replacer === "number") {
+			replacer = String.fromCharCode(replacer);
+		}
+		if(!replacer) {
+			replacer = "";
+		}
+		return chunks.join(replacer);
+	};
+	function isUnicode(str) {
+		for(var i = str.length; --i >= 0;) {
+			var charCode = str.charCodeAt(i)
+			if(charCode > 255) { // Unicode deteced
+				return true;
+			}
+		}
+		return false;
+	}
+	function isEndWithSpecialChar(str) {
+		if(str.length <= 0) { return false; }
+		
+		var lastChar = str.charAt(str.length - 1);
+		return lastChar === "," || lastChar === "." || lastChar === ":";
+	}
+</script>
+</body>
+</html>
