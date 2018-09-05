@@ -6,30 +6,28 @@
 	<title>Centering Content</title>
 	<link  href="data:;base64,iVBORw0KGgo=" rel="icon">
 	<link  href="../assets/html.css" rel="stylesheet">
-	<link  href="../assets/por.min.css" rel="stylesheet">
 
 	<style>
-	.block {
-		display: inline-block;
-		background-color: lightgrey;
-		width: 100px;
-		height: 100px;
-		border: 1px solid red;
-		box-sizing: border-box;
-	}
-	
 	.centering-flex {
 		display: -ms-flexbox;
 		display: flex;
 		height: 100%;
-		-ms-flex-align: center;
+		-ms-flex-align: center; /* IE10 */
 		align-items: center;
 		-ms-flex-pack: center;
 		justify-content: center;
+		/* text-align: center; is still required for wrapped text node */
 	}
 	
-	.centering-line {
-		line-height: 100px;
+	.filling-table {
+		display: table;
+		width: 100%;
+		height: 100%;
+		border-collapse: collapse;
+	}
+	.centering-cell {
+		display: table-cell;
+		vertical-align: middle;
 		text-align: center;
 	}
 	
@@ -43,7 +41,7 @@
 		width: 0; /* Possibly unnecessary */
 		vertical-align: middle;
 	}
-	.centering-ghost>*{
+	.centering-ghost>*{ /* Required for nested elements */
 		display: inline-block;
 		vertical-align: middle;
 	}
@@ -52,35 +50,115 @@
 		position: relative;
 		text-align: center;
 	}
-	.centering-transform>*{
+	.centering-transform>*{ /* Only work with elements */
 		position: absolute;
 		top: 50%;
 		transform: translateY(-50%);
-		width: 100%; /* Block element is resized to fit content when having absolute position  */
+		width: 100%; /* Block element is resized to fit content when having absolute position */
+	}
+	
+	.centering-line {
+		line-height: 100px; /* Equal to container size */
+		text-align: center;
+	}
+	</style>
+	<style>
+	body {
+		font-family: Arial;
+	}
+	pre {
+		overflow: auto;
+	}
+	fieldset {
+		display: inline-block;
+		width: 309px;
+		min-width: 0;
+		vertical-align: top;
+		margin: 0 10px 10px 0;
+		border-color: royalblue;
+	}
+	legend {
+		font-weight: bold;
+	}
+	.method-box legend{
+		margin-top: 0;
+	}
+	.method-box pre{
+		margin-bottom: 0;
+	}
+	
+	box,
+	.inline-block {
+		display: inline-block;
+		background-color: lightgrey;
+		width: 100px;
+		height: 100px;
+		border: 1px dotted red;
+		box-sizing: border-box;
 	}
 	</style>
 </head>
 <body>
-	<h3>Flex Box Method</h3>
-	<div class="block"><div class="centering-flex">ABC</div></div>
-	<div class="block"><div class="centering-flex">ABC DEF GHI JKLMN OPQ</div></div>
-	<div class="block"><div class="centering-flex">ABC</div></div>
-	<h3>Table Cell Method</h3>
-	<div class="block"><div class="filling-table"><div class="centering-cell">ABC</div></div></div>
-	<div class="block"><div class="filling-table"><div class="centering-cell">ABC DEF GHI JKLMN OPQ</div></div></div>
-	<div class="block"><div class="filling-table"><div class="centering-cell">ABC</div></div></div>
-	<h3>Line Height Method</h3>
-	<div class="block centering-line">ABC</div>
-	<div class="block centering-line">ABC DEF GHI JKLMN OPQ</div>
-	<div class="block centering-line">ABC</div>
-	<h3>Pseudo Element Method</h3>
-	<div class="block centering-ghost"><div>ABC</div></div>
-	<div class="block centering-ghost"><div>ABC DEF GHI JKLMN OPQ</div></div>
-	<div class="block centering-ghost"><div>ABC</div></div>
-	<h3>Transform Method</h3>
-	<div class="block centering-transform"><div>ABC</div></div>
-	<div class="block centering-transform"><div>ABC DEF GHI JKLMN OPQ</div></div>
-	<div class="block centering-transform"><div>ABC</div></div>
-	<h4><a href="https://css-tricks.com/centering-css-complete-guide/">https://css-tricks.com/centering-css-complete-guide/</a>
+<fieldset>
+	<legend>Flex Box Method</legend>
+	<box><div class="centering-flex">Text Node</div></box>
+	<box><div class="centering-flex">Long multi-line text node ...</div></box>
+	<box><div class="centering-flex"><div>Element</div></div></box>
+	<pre></pre>
+</fieldset>
+	
+<fieldset>
+	<legend>Table Cell Method</legend>
+	<box><div class="filling-table"><div class="centering-cell">Text Node</div></div></box>
+	<box><div class="filling-table"><div class="centering-cell">Long multi-line text node ...</div></div></box>
+	<box><div class="filling-table"><div class="centering-cell"><div>Element</div></div></div></box>
+	<pre></pre>
+</fieldset>
+	
+<fieldset>
+	<legend>Pseudo Element Method</legend>
+	<box class="centering-ghost">Text Node</box>
+	<div class="inline-block centering-ghost">Long multi-line text node ...</div>
+	<box class="centering-ghost"><div>Long multi-line text <mark>elem</mark> ...</div></box>
+	<pre></pre>
+</fieldset>
+	
+<fieldset>
+	<legend>Transform Method</legend>
+	<box class="centering-transform">Text Node</box>
+	<box class="centering-transform"><div>Long multi-line text <mark>elem</mark> ...</div></box>
+	<box class="centering-transform"><div>Element</div></box>
+	<pre></pre>
+</fieldset>
+	
+<fieldset>
+	<legend>Line Height Method</legend>
+	<box class="centering-line">Text Node</box>
+	<box class="centering-line">Long multi-line text node ...</box>
+	<box class="centering-line"><div>Element</div></box>
+	<pre></pre>
+</fieldset>
+
+	<br>
+	<b>Reference: </b><br>
+	<a href="https://css-tricks.com/centering-css-complete-guide/">https://css-tricks.com/centering-css-complete-guide/</a>
+	
+	<script>
+	function removeTabs(str) {
+		return str.replace(/\t+/g, function(val) {
+			return val.substr(1).replace(/\t/g, "    ");
+		});
+	}
+	var styleElem = document.head.getElementsByTagName("style")[0];
+	var txt = removeTabs(styleElem.innerText);
+	var preElems = document.getElementsByTagName("pre");
+	
+	preElems[0].innerText = txt.match(/\.centering-flex[\w\W]*?}/)[0];
+	preElems[1].innerText = txt.match(/\.filling-table[\w\W]*?}/)[0] 
+		+ "\n" + txt.match(/\.centering-cell[\w\W]*?}/)[0];
+	preElems[2].innerText = txt.match(/\.centering-ghost[\w\W]*?}/g).join("\n");
+	preElems[3].innerText = txt.match(/\.centering-transform[\w\W]*?}/g).join("\n");
+	preElems[4].innerText = txt.match(/\.centering-line[\w\W]*?}/)[0];
+	</script>
 </body>
 </html>
