@@ -65,6 +65,7 @@
 	<style>
 	body {
 		font-family: Arial;
+		margin-bottom: 20px;
 	}
 	pre {
 		overflow: auto;
@@ -80,15 +81,11 @@
 	legend {
 		font-weight: bold;
 	}
-	.method-box legend{
-		margin-top: 0;
-	}
-	.method-box pre{
+	fieldset pre{
 		margin-bottom: 0;
 	}
 	
-	box,
-	.inline-block {
+	box {
 		display: inline-block;
 		background-color: lightgrey;
 		width: 100px;
@@ -118,7 +115,7 @@
 <fieldset>
 	<legend>Pseudo Element Method</legend>
 	<box class="centering-ghost">Text Node</box>
-	<div class="inline-block centering-ghost">Long multi-line text node ...</div>
+	<box class="centering-ghost">Long multi-line text node ...</box>
 	<box class="centering-ghost"><div>Long multi-line text <mark>elem</mark> ...</div></box>
 	<pre></pre>
 </fieldset>
