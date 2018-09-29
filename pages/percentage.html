@@ -53,7 +53,7 @@
 	var tbl = new Table(tbl_div, 2, 6);
 	Dom.appendChild(tbl.getCell(0, 0),
 		Dom.appendChild(Dom.block(), Dom.text("Value: "), Dom.numericInput()),
-		Dom.appendChild(Dom.block(), Dom.text("Percentage: "), Dom.textInput())
+		Dom.appendChild(Dom.block(), Dom.text("Percentage: "), Dom.tag("input"))
 	);
 	tbl.getCell(1, 0).appendChild(
 		Dom.appendChild(Dom.block(), Dom.text("Total: "), Dom.numericInput())
@@ -65,7 +65,7 @@
 
 	Dom.appendChild(tbl.getCell(0, 2),
 		Dom.appendChild(Dom.block(), Dom.text("Initial: "), Dom.numericInput()),
-		Dom.appendChild(Dom.block(), Dom.text("% Change: "), Dom.textInput())
+		Dom.appendChild(Dom.block(), Dom.text("% Change: "), Dom.tag("input"))
 	);
 	tbl.getCell(1, 2).appendChild(
 		Dom.appendChild(Dom.block(), Dom.text("Final: "), Dom.numericInput())
@@ -77,7 +77,7 @@
 	
 	Dom.appendChild(tbl.getCell(0, 4),
 		Dom.appendChild(Dom.block(), Dom.text("Change: "), Dom.numericInput()),
-		Dom.appendChild(Dom.block(), Dom.text("Percentage: "), Dom.textInput())
+		Dom.appendChild(Dom.block(), Dom.text("Percentage: "), Dom.tag("input"))
 	);
 	tbl.getCell(1, 4).appendChild(
 		Dom.appendChild(Dom.block(), Dom.text("Principal: "), Dom.numericInput())

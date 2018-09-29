@@ -74,10 +74,9 @@
 		cell.appendChild(Dom.text(cRow[1]));
 		
 		cell = rows[r].cells[1];
-		var input = cell.appendChild(Dom.textInput(cRow[2]));
-		cell.appendChild(Dom.text(cRow[3]));
+		var input = Dom.numericInput(cRow[2]);
+		Dom.appendChild(cell, input, Dom.text(cRow[3]));
 		
-		input.type = "number";
 		var level = cRow[4];
 		var color = "";
 		var func = null;

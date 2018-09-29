@@ -20,6 +20,9 @@
 		#paramList {
 			margin-left: 8px;
 		}
+		#paramList input{
+			width: 35px;
+		}
 		button {
 			float: right;
 		}
@@ -146,7 +149,7 @@
 	
 	Dom.options(mode_sel, selDefs, outputMode);
 	
-	var param1 = Dom.texts("",  Dom.textInput(null, 40), "");
+	var param1 = Dom.texts("",  Dom.tag("input"), "");
 	var paramRef = Dom.map(param1, ["name", "in", "closure"]);
 	param1.ref = paramRef;
 	param1.ref.in.onkeyup = function() {
