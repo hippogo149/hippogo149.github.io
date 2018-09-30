@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>SVG Polygon Builder</title>
+	
+	<link  href="../assets/html.css" rel="stylesheet">
+	<link  href="../assets/por.min.css" rel="stylesheet">
+	<link  href="../assets/generic.min.css" rel="stylesheet">
+	
+	<script src="../assets/PolygonBuilder.min.js"></script>
+
+	<style>
+		body {
+			font-family: Arial;
+		}
+		button{
+			width: 100px;
+		}
+		textarea {
+			display: block;
+			width: 470px;
+			min-width: 300px;
+			height: 100px;
+			min-height: 2em;
+		}
+		.stacks>*+*{
+			margin-top: 10px;
+		}
+		#import_err {
+			color: red;
+			font-weight: bold;
+		}
+		#col_txt,
+		#row_txt {
+			font-family: monospace;
+			display: inline-block;
+			text-align: right;
+			width: 24px;
+		}
+		#bg_img {
+			pointer-events: none;
+		}
+		.pt-popup {
+			display: inline-block;
+			padding: 12px;
+			background-color: white;
+			border: 1px solid grey;
+			box-shadow: 2px 2px 2px darkgrey;
+		}
+		.pt-popup input[type="number"] {
+			width: 34px;
+		}
+		#canvas_pu input[type="number"] {
+			width: 44px;
+		}
+		
+		#help_pu td {
+			border: 1px solid lightgrey;
+			padding: 4px;
+		}
+		h3 {
+			margin-top: 0;
+			margin-bottom: 4px;
+		}
+	</style>
+	
+	
+</head>
+<body style="display:none;">
+	<div class="stacks">
+		<div>
+			<button onclick="centerMarks()">Center</button>
+			<button onclick="clearAllMarks()">Clear</button>
+			<input id="mark_color_in" value="#00bb00" onchange="onMarkColorChange(event)" type="color">
+			<button onclick="onOpenHelp(event)">Help</button>
+		</div>
+		<div class=""><span id="col_txt">0</span>,<span id="row_txt">0</span></div>
+		<div class="rel-pos inline-block">
+			<div id="bg_img" class="overlay"></div>
+			<div id="canvas_stack" tabindex="0"></div>
+		</div>
+		
+		<div>
+			<button onclick="onOpenCanvasDialog(event)"> Canvas </button>
+			<button onclick="onOpenExportDialog(event)"> Export </button>
+			<button onclick="onOpenImportDialog(event)"> Import </button>
+		</div>
+		<div>
+			Underlay image <input type="file" onchange="onFileUploaded(event)" accept="image/*" />
+			<span id="img_toggler"></span>
+		</div>
+	</div>
+	<div id="canvas_pu" class="stacks">
+		<h3>Canvas Size</h3>
+		<div>Column Count: <input id="col_count_in" onchange="onColumnCountChange(event)" min="11" max="151" value="51" type="number"></div>
+		<div>Row Count: <input id="row_count_in" onchange="onRowCountChange(event)" min="11" max="151" value="51" type="number"></div>
+		<div>Cell Size: <input id="cell_size" onchange="onCellSizeChange(event)" min="5" max="20" value="10" step="5" type="range"></div>
+		<div class="align-right">
+			<button onclick="onCloseCanvasDialog(event)">OK</button>
+		</div>
+	</div>
+	<div id="export_pu" class="stacks">
+		<div><b>Export:</b></div>
+		<div>
+			<span>Scale: </span>
+			<input id="scale_in" onchange="exportPts()" min="1" max="10" value="2" type="number">
+			<span>MidPointX: </span>
+			<input id="midX_in" onchange="exportPts()" min="0" max="51" value="0" type="number">
+			<span>MidPointY: </span>
+			<input id="midY_in" onchange="exportPts()" min="0" max="51" value="0" type="number">
+		</div>
+		<div>
+			<span>TranslateX: </span>
+			<input id="tranX_in" onchange="exportPts()" value="0" step="0.5" type="number">
+			<span>TranslateY: </span>
+			<input id="tranY_in" onchange="exportPts()" value="0" step="0.5" type="number">
+			<button onclick="onResetExport(event)">Reset</button>
+		</div>
+		<textarea id="export_ta"></textarea>
+		<div class="align-right">
+			<button onclick="onCloseExportDialog(event)">OK</button>
+		</div>
+	</div>
+	<div id="import_pu" class="stacks">
+		<b>Import:</b> <span id="import_err"></span>
+		<textarea id="import_ta" placeholder='<polygon points="0,0 10,10" />'></textarea>
+		<div class="align-right">
+			<button onclick="onCloseImportDialog(event)">Cancel</button>
+			<button onclick="importPts()">OK</button>
+		</div>
+	</div>
+	<div id="help_pu">
+		<h3>Shortcuts</h3>
+		<table id="">
+			<tr><td>Shift + Click</td><td>Add a node</td></tr>
+			<tr><td>Alt + Shift + Click</td><td>Remove a node</td></tr>
+			<tr><td>Click</td><td>Select a node</td></tr>
+			<tr><td>Ctrl + Click</td><td>Toggle Selection</td></tr>
+			<tr><td>Ctrl + A</td><td>Select all nodes</td></tr>
+			<tr><td>Ctrl + D</td><td>Deselect all nodes</td></tr>
+			<tr><td>Drag</td><td>Move selected nodes</td></tr>
+			<tr><td>Arrow keys</td><td>Shift selected nodes</td></tr>
+			<tr><td>WASD keys</td><td>Shift selected nodes</td></tr>
+			<tr><td>Backspace</td><td>Remove selected nodes</td></tr>
+			<tr><td>Delete</td><td>Remove selected nodes</td></tr>
+			<tr><td>Shift + Click</td><td>Close loop (clicked on a node)</td></tr>
+		</table>
+	</div>
+
+
+<script>
+var app = new PolygonBuilder(document.body);
+
+document.body.style.display = "";
+</script>
+
+</body>
+</html>
