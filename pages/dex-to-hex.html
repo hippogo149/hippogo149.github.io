@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Dec to Hex</title>
+	<link  href="data:;base64,iVBORw0KGgo=" rel="icon">
+	<link  href="../src/css/html.css" rel="stylesheet">
+	<style>
+		body { 
+			font-family: Arial;
+			text-align: center;
+		}
+		fieldset {
+			display: inline-block;
+			vertical-align: top;
+		}
+		legend {
+			font-size: 1.5em;
+		}
+		textarea {
+			font-size: 2em;
+			background: none;
+			border: none;
+			width: 350px;
+			height: 100px;
+			min-width: 150px;
+			min-height: 40px;
+		}
+	</style>
+</head>
+<body>
+	<fieldset>
+		<legend>Decimal (DEC) <small>max 8 digits</small></legend>
+		<textarea id="dec_ta" placeholder="rgba(255, 127, 16);" onkeyup="decKeyUp(event)"></textarea>
+	</fieldset>
+	<fieldset>
+		<legend>Hexadecimal (HEX) <small>max 6 digits</small></legend>
+		<textarea id="hex_ta" placeholder="#ff 7f 10" onkeyup="hexKeyUp(event)"></textarea>
+	</fieldset>
+
+	<script>
+		function decKeyUp(e) {
+			var str = e.currentTarget.value;
+			if(!str) { str = ""; }
+			if(hex_ta.inputStr !== str) {
+				hex_ta.value = str.replace(/\d{1,8}/g, dec2Hex);
+				hex_ta.inputStr = str;
+			}
+		}
+		function hexKeyUp(e) {
+			var str = e.currentTarget.value;
+			if(!str) { str = ""; }
+			if(dec_ta.inputStr !== str) {
+				dec_ta.value = str.replace(/[0-9a-fA-F]{1,6}/g, hex2Dec);
+				dec_ta.inputStr = str;
+			}
+		}
+		function dec2Hex(str) {
+			return Number(str).toString(16)
+		}
+		function hex2Dec(str) {
+			return parseInt(str, 16);
+		}
+	</script>
+</body>
+</html>
