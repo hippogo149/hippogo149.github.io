@@ -15,6 +15,11 @@
 		html, body {
 			height: 100%;
 		}
+		@media (max-width: 400px) { 
+			body {
+				padding: 4px;
+			} 
+		}
 		body {
 			font-family: Arial;
 		}
@@ -82,18 +87,16 @@
 			padding: 4px;
 		}
 		#ff_in {
-			width: 120px;
+			width: 80px;
 		}
 		#fs_in {
-			text-align: right;
 			width: 42px;
 		}
 		#scr_in {
-			text-align: right;
 			width: 65px;
 		}
 		#hex_scr_in {
-			width: 50px;
+			width: 65px;
 		}
 	</style>
 </head>
@@ -116,7 +119,7 @@
 	// https://www.w3schools.com/charsets/ref_utf_misc_symbols.asp
 	// https://www.martinstoeckli.ch/fontmap/fontmap.html
 	// https://en.wikibooks.org/wiki/Unicode/List_of_useful_symbols
-	var maxChar = 11742;
+	var maxChar = 13150;
 	var defaultFont = "Arial";
 	var defaultFontSize = 18;
 	
@@ -206,8 +209,13 @@
 		ucList.scrollToItem(rowIndex);
 	}
 	function onHexScrollChange(e) {
-		var chIndex = parseInt(e.currentTarget.value, 16);
+		var userInput = e.currentTarget.value;
+		var matches = userInput.match(/[0-9a-fA-F]{1,6}/);
+		var chIndex = matches ? parseInt(matches[0], 16) : 0;
 		scr_in.value = chIndex ? chIndex : 0;
+		if(chIndex) {
+			e.currentTarget.value = matches[0];
+		}
 		var rowIndex = (chIndex > 0) ? Math.floor(chIndex / colCount) : 0; 
 		ucList.scrollToItem(rowIndex);
 	}
