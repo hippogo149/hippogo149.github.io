@@ -161,13 +161,11 @@
 				"&to=" + date + "%2F" + month + "%2F" + year + 
 				"&submit=%E0%B8%84%E0%B9%89%E0%B8%99%E0%B8%AB%E0%B8%B2" + 
 				"&language=th&country=TH";
-			var req = new HttpRequest("http://localhost:3020/api/load", {
-				"url": settrade, 
+				
+			Ut.post("http://localhost:3020/api/load", {
+				"url": settrade,
 				"cookie": 'IPO_Language=English'
-			});
-			
-			req.setRequestTimeout(60000);
-			req.send()
+			})
 			.then(function(res) {
 				var txt = HtmlDocument.isolateBodyTag(res.document);
 				var linkRow = HtmlDocument.retrieveTag(txt, reportName, "tr");
@@ -198,11 +196,9 @@
 				link = HtmlDocument.replaceRelativePaths(link, domain);
 				
 				var href = HtmlDocument.extractAttributeValue(link, "href");
-				var req2 = new HttpRequest("http://localhost:3020/api/load", {
+				return Ut.post("http://localhost:3020/api/load", {
 					"url": href.replace(/&amp;/g, "&")
 				});
-				req2.setRequestTimeout(180000);
-				return req2.send();
 			})
 			.then(function(res) {
 				var txt = HtmlDocument.isolateBodyTag(res.document);
