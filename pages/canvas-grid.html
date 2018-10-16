@@ -22,7 +22,7 @@
 			padding-bottom: 10px;
 		}
 		#mainFrame {
-			height: calc(100% - 40px);
+			height: calc(100% - 37px);
 		}
 		.canvas-grid {
 			border: 1px solid lightgrey;
@@ -86,8 +86,10 @@
 	
 	var sf = new ScrollFrame(mainFrame, {
 		content: gridElem,
-		scroll: onScroll,
-		resize: onResize
+		listeners: {
+			scroll: onScroll,
+			resize: onResize
+		}
 	});
 	
 	var spinnerSize = Math.floor(loadingSpinner.offsetWidth / 2);
