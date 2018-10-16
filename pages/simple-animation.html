@@ -10,6 +10,7 @@
 	<link rel="stylesheet" href="../assets/por.min.css">
 	
 	<script src="../assets/por.min.js"></script>
+	<script src="../assets/ani.min.js"></script>
 
 	<style>
 		#container_div>div {
@@ -101,10 +102,10 @@
 	);
 	var easeFuncs = [
 		null,
-		Ani.Easing.Edge,
-		Ani.Easing.Overshoot.bind(null, 1.735),
-		Ani.Easing.Rebound,
-		Ani.Easing.Bounce
+		AniEasing.Edge,
+		AniEasing.Overshoot.bind(null, 1.735),
+		AniEasing.Rebound,
+		AniEasing.Bounce
 	];
 	var pts = [];
 	var aniRanges = [];
@@ -113,48 +114,48 @@
 	Ary.create(grpSize, 2).forEach(newShape3);
 	
 	function newShape1(setNum, idx) {
-		var aniPt = new Ani.Pt(Pt.create(cx, cy));
+		var aniPt = new AniPt(Pt.create(cx, cy));
 		aniPt.box = boxes[setNum * grpSize + idx];
 		aniPt.canvas = cvb;
 		aniPt.fillColor = colors[idx];
 		aniPt.radius = 30;
 		
-		aniRanges.push(aniPt.scaleR = new Ani.EaseRange(1, 2, 0.05));
+		aniRanges.push(aniPt.scaleR = new AniEaseRange(1, 2, 0.05));
 		aniPt.scaleR.setEaseFunction(easeFuncs[idx]);
 		aniPt.draw = drawCircle;
 		
 		aniPt.startPt = aniPt.getPt().clone();
-		aniPt.mod = aniPt.addModifier(new Ani.ApproachTo(aniPt.getPt().clone()));
+		aniPt.mod = aniPt.addModifier(new AniApproachTo(aniPt.getPt().clone()));
 		pts.push(aniPt);
 	}
 	function newShape2(setNum, idx) {
-		var aniPt = new Ani.Pt(Pt.create(20, cy));
+		var aniPt = new AniPt(Pt.create(20, cy));
 		aniPt.box = boxes[setNum * grpSize + idx];
 		aniPt.canvas = cvb;
 		aniPt.fillColor = colors[idx];
 		aniPt.radius = 4;
 		
-		aniRanges.push(aniPt.easeX = new Ani.EaseRange(0, boxWidth - 40, 0.05));
+		aniRanges.push(aniPt.easeX = new AniEaseRange(0, boxWidth - 40, 0.05));
 		aniPt.easeX.setEaseFunction(easeFuncs[idx]);
 		aniPt.draw = drawCircle;
 		
 		aniPt.startPt = aniPt.getPt().clone();
-		aniPt.mod = aniPt.addModifier(new Ani.ApproachTo(aniPt.getPt().clone()));
+		aniPt.mod = aniPt.addModifier(new AniApproachTo(aniPt.getPt().clone()));
 		pts.push(aniPt);
 	}
 	function newShape3(setNum, idx) {
-		var aniPt = new Ani.Pt(Pt.create(cx, cy));
+		var aniPt = new AniPt(Pt.create(cx, cy));
 		aniPt.box = boxes[setNum * grpSize + idx];
 		aniPt.canvas = cvb;
 		aniPt.fillColor = colors[idx];
 		aniPt.radius = 30;
-		aniPt.shape = new Pts(Pts.square(aniPt.radius));
+		aniPt.shape = new PolygonPts(Pts.square(aniPt.radius));
 		
-		aniRanges.push(aniPt.rotation = new Ani.EaseRange(0, Math.PI, 0.05));
+		aniRanges.push(aniPt.rotation = new AniEaseRange(0, Math.PI, 0.05));
 		aniPt.rotation.setEaseFunction(easeFuncs[idx]);
 		
 		aniPt.startPt = aniPt.getPt().clone();
-		aniPt.mod = aniPt.addModifier(new Ani.ApproachTo(aniPt.getPt().clone()));
+		aniPt.mod = aniPt.addModifier(new AniApproachTo(aniPt.getPt().clone()));
 		aniPt.draw = drawSquare;
 		pts.push(aniPt);
 	}
