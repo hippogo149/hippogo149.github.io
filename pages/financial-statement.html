@@ -13,6 +13,9 @@
 	<style>
 		body { font-family: arial;}
 		#error_span { color: red; }
+		#symbol_in {
+			width: 5em;
+		}
 		textarea {
 			white-space: nowrap;
 			overflow: auto;
@@ -25,15 +28,19 @@
 	</style>
 </head>
 <body>
-	<div class="hsect">Financial Statement : <span id="error_span"></span> <span id="release_span"></span></div>
+	<div class="hsect">
+		<input id="symbol_in" type="text"> 
+		Financial Statement : 
+		<span id="error_span"></span> <span id="release_span"></span>
+	</div>
 	<div id="report_div"></div>
 	<br>
 	<div>
 		<div class="hsect">Quarter and Consolidated F/S (F45-3) :</div>
-		<textarea id="userInput" onfocus="this.select()" onkeyup="extractReport()" cols="100" rows="24"></textarea>
+		<textarea id="report_in" onfocus="this.select()" onkeyup="extractReport()" cols="100" rows="24"></textarea>
 	</div>
 	<br>
-	<b>Source Link: </b><a id="ref_link" href="https://www.set.or.th/set/newslist.do?symbol=" target="_blank">https://www.set.or.th/set/newslist.do?symbol=</a>
+	<b>Source Link: </b><a id="ref_link" href="https://www.set.or.th/set/newslist.do?symbol=" target="_blank">https://www.set.or.th/set/newslist.do?symbol=%s</a>
 
 <script>
 	var cb = new CanvasBox(0, 723, 412);
@@ -136,92 +143,116 @@
 </script>
 	
 <script>
-	userInput.setAttribute("placeholder", "แปะ สรุปผลการดำเนินงานของไตรมาส (F45-3) ที่นี่");
+	report_in.setAttribute("placeholder", "แปะ สรุปผลการดำเนินงานของไตรมาส (F45-3) ที่นี่");
+	symbol_in.addEventListener("change", function(e){
+		changeSymbol(symbol_in.value);
+	}, false);
+	symbol_in.addEventListener("keydown", function(e){
+		if(e.keyCode === 13) {
+			changeSymbol(symbol_in.value);
+			e.stopPropagation();
+			e.preventDefault();
+		}
+	}, false);
+	symbol_in.addEventListener("focus", function(e){
+		symbol_in.select();
+	}, false);
 	
 	var reportName = "(F45-3)";
 	var args = QArgs.extract(location.search);
 	var symbol = "";
+	var upperCasedSymbol = "";
 	if(args) {
-		symbol = args.s;
-		if(symbol) {
-			var refLink = ref_link.textContent.replace("%s", symbol);
-			ref_link.setAttribute("href", refLink);
-			ref_link.textContent = refLink;
-			
-			var now = new Date();
-			var date = now.getDate();
-			date = (date < 10) ? "0" + date : "" + date; 
-			var month = now.getMonth() + 1;
-			month = (month < 10) ? "0" + month : "" + month; 
-			var year = now.getFullYear();
-			var settrade = "https://www.set.or.th/set/newslist.do" +
-				"?source=company&symbol=" + symbol.toUpperCase() + 
-				"&securityType=&newsGroupId=3&headline=" +
-				"&from=" + date + "%2F" + month + "%2F" + (year - 1) + 
-				"&to=" + date + "%2F" + month + "%2F" + year + 
-				"&submit=%E0%B8%84%E0%B9%89%E0%B8%99%E0%B8%AB%E0%B8%B2" + 
-				"&language=th&country=TH";
-				
-			Ut.post("http://localhost:3020/api/load", {
-				"url": settrade,
-				"cookie": 'IPO_Language=English'
-			})
-			.then(function(res) {
-				var txt = HtmlDocument.isolateBodyTag(res.document);
-				var linkRow = HtmlDocument.retrieveTag(txt, reportName, "tr");
-				if(!linkRow) {
-					reportName = "(F45-1)";
-					linkRow = HtmlDocument.retrieveTag(txt, reportName, "tr");
-					if(!linkRow) {
-						return Promise.reject("No F45-3 report detected");
-					}
-				}
-				
-				var linkCells = HtmlDocument.extractTags(linkRow, "td");
-				var thaiDateTime =  HtmlDocument.extractInnerHTML(linkCells[0]);
-				
-				var prevD = convertThaiDateTime(thaiDateTime);
-				if(!prevD) {
-					return Promise.reject("Unable to extract date time.");
-				}
-				
-				var curD = new Date();
-				var diffD = Math.floor((curD - prevD) / 86400000);
-				release_span.textContent = "Released " + diffD + 
-				" day(s) ago (" + thaiDateTime + ")";
-				
-				var link = HtmlDocument.retrieveTag(linkCells[5], "href", "a");
-				
-				var domain = "https://www.set.or.th";
-				link = HtmlDocument.replaceRelativePaths(link, domain);
-				
-				var href = HtmlDocument.extractAttributeValue(link, "href");
-				return Ut.post("http://localhost:3020/api/load", {
-					"url": href.replace(/&amp;/g, "&")
-				});
-			})
-			.then(function(res) {
-				var txt = HtmlDocument.isolateBodyTag(res.document);
-				var divReport = HtmlDocument.retrieveTag(txt, "newsstory-pre-font", "pre");
-				if(!divReport) {
-					return Promise.reject("No report detected");
-				}
-				
-				// userInput.value = HtmlDocument.replaceBR(divReport);
-				userInput.value = HtmlDocument.extractInnerHTML(divReport);
-				extractReport();
-			})
-			.catch(function(err) {
-				var errStr = err.message || err;
-				var errElem = HtmlDocument.isolateBodyTag(errStr);
-				if(errElem) {
-					error_span.innerHTML = errElem;
-				} else {
-					console.log(err);
-					error_span.textContent = errStr;
-				}
-			});
+		changeSymbol(args.s);
+	}
+	function changeSymbol(newSymbol) {
+		if(newSymbol && newSymbol !== symbol) {
+			symbol = newSymbol
+			upperCasedSymbol = symbol.toUpperCase();
+			requestReport();
 		}
+	}
+	function requestReport() {
+		if(!symbol) {
+			return;
+		}
+		
+		ref_link.setAttribute("href", ref_link.textContent.replace("%s", upperCasedSymbol));
+		symbol_in.value = upperCasedSymbol;
+		// ref_link.textContent = refLink;
+		
+		var now = new Date();
+		var date = now.getDate();
+		date = (date < 10) ? "0" + date : "" + date; 
+		var month = now.getMonth() + 1;
+		month = (month < 10) ? "0" + month : "" + month; 
+		var year = now.getFullYear();
+		var settrade = "https://www.set.or.th/set/newslist.do" +
+			"?source=company&symbol=" + upperCasedSymbol + 
+			"&securityType=&newsGroupId=3&headline=" +
+			"&from=" + date + "%2F" + month + "%2F" + (year - 1) + 
+			"&to=" + date + "%2F" + month + "%2F" + year + 
+			"&submit=%E0%B8%84%E0%B9%89%E0%B8%99%E0%B8%AB%E0%B8%B2" + 
+			"&language=th&country=TH";
+			
+		Ut.post("http://localhost:3020/api/load", {
+			"url": settrade,
+			"cookie": 'IPO_Language=English'
+		})
+		.then(function(res) {
+			var txt = HtmlDocument.isolateBodyTag(res.document);
+			var linkRow = HtmlDocument.retrieveTag(txt, reportName, "tr");
+			if(!linkRow) {
+				reportName = "(F45-1)";
+				linkRow = HtmlDocument.retrieveTag(txt, reportName, "tr");
+				if(!linkRow) {
+					return Promise.reject("No F45-3 report detected");
+				}
+			}
+			
+			var linkCells = HtmlDocument.extractTags(linkRow, "td");
+			var thaiDateTime =  HtmlDocument.extractInnerHTML(linkCells[0]);
+			
+			var prevD = convertThaiDateTime(thaiDateTime);
+			if(!prevD) {
+				return Promise.reject("Unable to extract date time.");
+			}
+			
+			var curD = new Date();
+			var diffD = Math.floor((curD - prevD) / 86400000);
+			release_span.textContent = "Released " + diffD + 
+			" day(s) ago (" + thaiDateTime + ")";
+			
+			var link = HtmlDocument.retrieveTag(linkCells[5], "href", "a");
+			
+			var domain = "https://www.set.or.th";
+			link = HtmlDocument.replaceRelativePaths(link, domain);
+			
+			var href = HtmlDocument.extractAttributeValue(link, "href");
+			return Ut.post("http://localhost:3020/api/load", {
+				"url": href.replace(/&amp;/g, "&")
+			});
+		})
+		.then(function(res) {
+			var txt = HtmlDocument.isolateBodyTag(res.document);
+			var divReport = HtmlDocument.retrieveTag(txt, "newsstory-pre-font", "pre");
+			if(!divReport) {
+				return Promise.reject("No report detected");
+			}
+			
+			report_in.value = HtmlDocument.extractInnerHTML(divReport);
+			extractReport();
+		})
+		.catch(function(err) {
+			var errStr = err.message || err;
+			var errElem = HtmlDocument.isolateBodyTag(errStr);
+			if(errElem) {
+				error_span.innerHTML = errElem;
+			} else {
+				console.log(err);
+				error_span.textContent = errStr;
+			}
+		});
 	}
 	function convertThaiDateTime(thaiDT) {
 		if(!thaiDT) {
@@ -243,7 +274,7 @@
 	}
 	
 	function extractReport() {
-		var inputStr = userInput.value;
+		var inputStr = report_in.value;
 		var lines = inputStr.split("\n");
 		var combStart = searchLines(lines, "งบการเงินรวม");
 		if(combStart < 0) {
@@ -260,7 +291,7 @@
 			
 			var companyName = chunks[0];
 			if(symbol && companyName) {
-				companyName += " (" + symbol.toUpperCase() + ")";
+				companyName += " (" + upperCasedSymbol + ")";
 			}
 			writeCell(companyName, 0, 0, 1);
 			chunks = extractLine(lines[nameStart - 1]);
