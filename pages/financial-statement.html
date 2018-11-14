@@ -158,7 +158,6 @@
 		symbol_in.select();
 	}, false);
 	
-	var reportName = "(F45-3)";
 	var args = QArgs.extract(location.search);
 	var symbol = "";
 	var upperCasedSymbol = "";
@@ -177,6 +176,8 @@
 			return;
 		}
 		
+		error_span.textContent = report_in.value = "";
+		release_span.textContent = "Waiting...";
 		ref_link.setAttribute("href", ref_link.textContent.replace("%s", upperCasedSymbol));
 		symbol_in.value = upperCasedSymbol;
 		// ref_link.textContent = refLink;
@@ -201,13 +202,12 @@
 		})
 		.then(function(res) {
 			var txt = HtmlDocument.isolateBodyTag(res.document);
-			var linkRow = HtmlDocument.retrieveTag(txt, reportName, "tr");
+			var linkRow = HtmlDocument.retrieveTag(txt, "(F45-3)", "tr");
 			if(!linkRow) {
-				reportName = "(F45-1)";
-				linkRow = HtmlDocument.retrieveTag(txt, reportName, "tr");
-				if(!linkRow) {
-					return Promise.reject("No F45-3 report detected");
-				}
+				linkRow = HtmlDocument.retrieveTag(txt, "(F45-1)", "tr");
+			}
+			if(!linkRow) {
+				return Promise.reject("No Financial report detected");
 			}
 			
 			var linkCells = HtmlDocument.extractTags(linkRow, "td");
@@ -252,6 +252,7 @@
 				console.log(err);
 				error_span.textContent = errStr;
 			}
+			release_span.textContent = report_in.value = "";
 		});
 	}
 	function convertThaiDateTime(thaiDT) {
