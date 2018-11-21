@@ -192,10 +192,11 @@
 		var balance_num = rows[lastPeriod][1];
 		var totalInterest = (balance_num - totalDeposit);
 		
-		Ary.filterOut(rows, function(val, idx) {
+		rows = rows.filter(function(val, idx) {
 			if(idx && idx < lastPeriod) {
-				return (!val[2] && !val[3]);
+				return (val[2] || val[3]) ? true : false;
 			}
+			return true;
 		});
 		balanceTbl.setContent(rows);
 		
