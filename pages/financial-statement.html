@@ -151,6 +151,7 @@
 	symbol_in.addEventListener("keydown", function(e){
 		if(e.keyCode === 13) {
 			changeSymbol(symbol_in.value);
+			symbol_in.select();
 			e.stopPropagation();
 			e.preventDefault();
 		}
@@ -166,7 +167,7 @@
 		changeSymbol(args.s);
 	}
 	function changeSymbol(newSymbol) {
-		if(newSymbol && newSymbol !== symbol) {
+		if(newSymbol && newSymbol.toUpperCase() !== upperCasedSymbol) {
 			symbol = newSymbol
 			upperCasedSymbol = symbol.toUpperCase();
 			requestReport();
@@ -293,7 +294,7 @@
 			
 			var companyName = chunks[0];
 			if(symbol && companyName) {
-				companyName += " (" + upperCasedSymbol + ")";
+				companyName = upperCasedSymbol + " - " + companyName;
 			}
 			writeCell(companyName, 0, 0, 1);
 			chunks = extractLine(lines[nameStart - 1]);
@@ -301,10 +302,14 @@
 			
 			if(combStart >= 0) {
 				writeReport(null, lines, combStart, 1);
+			} else {
+				writeReport(null, [], 0, 1);
 			}
 			
 			if(indiStart >= 0) {
 				writeReport(null, lines, indiStart, 2);
+			} else {
+				writeReport(null, [], 0, 2);
 			}
 			drawTable();
 		}
