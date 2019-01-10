@@ -61,6 +61,15 @@
 		line-height: 100px; /* Equal to container size */
 		text-align: center;
 	}
+	
+	.centering-button { /* Browser natively centers content in button */
+		height: 100%;
+		width: 100%;
+		background-color: transparent;
+		border: none;
+		outline: none;
+		font-size: 1em;
+	}
 	</style>
 	<style>
 	body {
@@ -136,6 +145,14 @@
 	<pre></pre>
 </fieldset>
 
+<fieldset>
+	<legend>Button Method</legend>
+	<box><button class="centering-button">Text Node</button></box>
+	<box><button class="centering-button">Long multi-line text node ...</button></box>
+	<box><button class="centering-button"><div>Element</div></button></box>
+	<pre></pre>
+</fieldset>
+
 	<br>
 	<b>Reference: </b><br>
 	<a href="https://css-tricks.com/centering-css-complete-guide/">https://css-tricks.com/centering-css-complete-guide/</a>
@@ -156,6 +173,7 @@
 	preElems[2].innerText = txt.match(/\.centering-ghost[\w\W]*?}/g).join("\n");
 	preElems[3].innerText = txt.match(/\.centering-transform[\w\W]*?}/g).join("\n");
 	preElems[4].innerText = txt.match(/\.centering-line[\w\W]*?}/)[0];
+	preElems[5].innerText = txt.match(/\.centering-button[\w\W]*?}/)[0];
 	</script>
 </body>
 </html>
