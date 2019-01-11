@@ -136,10 +136,12 @@
 	var puTbl = new Table(2, 5);
 	assignText(puTbl.getCellsInColumn(0), col1);
 	var pu = new Popup(puTbl.getElement());
+	var selection = null;
 	
 	var ucList = new VList(ucode_div, {
 		"listeners": {
 			"render": onItemRendered,
+			"postRender": onPostRendered,
 			"elemCreated": onItemCreated
 		},
 		"data": values,
@@ -170,6 +172,29 @@
 			items[i].textContent = String.fromCharCode(getUnicode(i, e.index));
 		}
 		e.cell.indicator.textContent = e.index * colCount;
+	}
+	function onPostRendered(e) {
+		if(!selection) {
+			return;
+		}
+		if(selection.rowIndex >= e.first && selection.rowIndex <= e.last) {
+			selection.item.classList.remove("selected");
+			selection.item = null;
+			
+			var itemIndex = selection.itemIndex;
+			var rowIndex = (itemIndex / colCount) | 0;
+			var cellIndex = itemIndex - rowIndex * colCount;
+			var rowElem = this._ucList.getItem(rowIndex);
+			selection.item = rowElem.cell.items[cellIndex];
+			
+			if(selection.item) {
+				selection.item.classList.add("selected");
+			}
+		} else {
+			selection.item.classList.remove("selected");
+			selection.item = null;
+			// selection = null;
+		}
 	}
 	function onItemCreated(e) {
 		var div = document.createElement("div");
