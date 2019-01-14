@@ -68,6 +68,10 @@
 			text-align: center;
 			cursor: pointer;
 		}
+		.ctbl-cell span.selected {
+			border: 1px dashed purple;
+			box-sizing: border-box;
+		}
 		.ctbl-cell span:hover {
 			background-color: sandybrown;
 		}
@@ -154,9 +158,6 @@
 	scr_in.setAttribute("max", maxChar + "");
 	// hex_scr_in.value = "0000";
 	ucode_div.addEventListener("mousedown", Ut.preventDefault);
-	ucList.getScrollFrame().listen("scroll", function() {
-		pu.hide();
-	});
 	
 	function assignText(cells, texts) {
 		for(var i = cells.length; --i >= 0;) {
@@ -174,26 +175,31 @@
 		e.cell.indicator.textContent = e.index * colCount;
 	}
 	function onPostRendered(e) {
+		pu.hide(); // Hide popup
+		
 		if(!selection) {
 			return;
 		}
 		if(selection.rowIndex >= e.first && selection.rowIndex <= e.last) {
-			selection.item.classList.remove("selected");
-			selection.item = null;
-			
+			if(selection.item) {
+				selection.item.classList.remove("selected");
+				selection.item = null;
+			}
 			var itemIndex = selection.itemIndex;
+			
 			var rowIndex = (itemIndex / colCount) | 0;
 			var cellIndex = itemIndex - rowIndex * colCount;
-			var rowElem = this._ucList.getItem(rowIndex);
-			selection.item = rowElem.cell.items[cellIndex];
-			
-			if(selection.item) {
-				selection.item.classList.add("selected");
+			var rowElem = ucList.getItem(rowIndex);
+			var itemElem = rowElem.cell.items[cellIndex];
+			if(itemElem) {
+				itemElem.classList.add("selected");
+				selection.item = itemElem;
 			}
 		} else {
-			selection.item.classList.remove("selected");
-			selection.item = null;
-			// selection = null;
+			if(selection.item) {
+				selection.item.classList.remove("selected");
+				selection.item = null;
+			}
 		}
 	}
 	function onItemCreated(e) {
@@ -229,6 +235,7 @@
 	}
 	function onScrollChange(e) {
 		var chIndex = +e.currentTarget.value;
+		selectItem(chIndex);
 		hex_scr_in.value = prefixZero(chIndex ? chIndex.toString(16) : 0);
 		var rowIndex = (chIndex > 0) ? Math.floor(chIndex / colCount) : 0; 
 		ucList.scrollToItem(rowIndex);
@@ -237,20 +244,49 @@
 		var userInput = e.currentTarget.value;
 		var matches = userInput.match(/[0-9a-fA-F]{1,6}/);
 		var chIndex = matches ? parseInt(matches[0], 16) : 0;
-		scr_in.value = chIndex ? chIndex : 0;
+		
+		if(!chIndex || chIndex < 0) { chIndex = 0; }
+		selectItem(chIndex);
+		scr_in.value = chIndex;
 		if(chIndex) {
 			e.currentTarget.value = matches[0];
 		}
-		var rowIndex = (chIndex > 0) ? Math.floor(chIndex / colCount) : 0; 
+		var rowIndex = chIndex ? Math.floor(chIndex / colCount) : 0; 
 		ucList.scrollToItem(rowIndex);
 	}
 	function onScrollDown(e) {
-		var itemInView = this.ucList.getItemCountInView() - 2;
+		var itemInView = ucList.getItemCountInView() - 2;
 		ucList.getScrollFrame().scrollTop(itemInView * 40);
 	}
 	function onScrollUp(e) {
-		var itemInView = this.ucList.getItemCountInView() - 2;
+		var itemInView = ucList.getItemCountInView() - 2;
 		ucList.getScrollFrame().scrollTop(-itemInView * 40);
+	}
+	function selectItem(itemIndex) {
+		deselectItem();
+		
+		var rowIndex = (itemIndex / colCount) | 0;
+		var cellIndex = itemIndex - rowIndex * colCount;
+		var rowElem = ucList.getItem(rowIndex);
+		var itemElem = rowElem ? rowElem.cell.items[cellIndex] : 0;
+		
+		selection = {
+			"itemIndex": itemIndex,
+			"rowIndex": rowIndex
+		};
+			
+		if(itemElem) {
+			selection.item = itemElem;
+			itemElem.classList.add("selected");
+		}
+	}
+	function deselectItem() {
+		if(selection) {
+			if(selection.item) {
+				selection.item.classList.remove("selected");
+			}
+			selection = null;
+		}
 	}
 	function onClickList(e) {
 		var tgt = e.target;
@@ -271,6 +307,9 @@
 			'' + hex
 		];
 		assignText(puTbl.getCellsInColumn(1), col2);
+		
+		selectItem(colIndex + rowIndex * colCount);
+		
 		pu.attachTo(tgt);
 		pu.show();
 	}
