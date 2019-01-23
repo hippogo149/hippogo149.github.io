@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>JSON Prettifier</title>
+	<link  href="data:;base64,iVBORw0KGgo=" rel="icon">
+	<link rel="stylesheet" href="../assets/html.css">
+	<style>
+		body { font-family: "Arial";}
+		#indent_in {
+			width: 40px;
+		}
+		#sel_btn {
+			position: absolute;
+			right: 0;
+			top: 0;
+		}
+		.column {
+			display: inline-block;
+			position: relative;
+		}
+		.left textarea {
+			width: 300px;
+		}
+		.right textarea {
+			width: 500px;
+			white-space: pre;
+		}
+		textarea {
+			height: 600px;
+			margin-top: 4px;
+		}
+		@media (max-width: 400px) { 
+			.column,.column textarea { 
+				width: 100%; 
+			}
+			textarea {
+				height: 400px;
+			}
+		}
+	</style>
+	
+</head>
+<body>
+	<h2>JSON Prettifier</h2>
+	<div>Indent: <input id="indent_in" type="text"></div><hr>
+	<div class="column left">
+		<b>Input: </b><button id="sel_btn">Select Output</button><br>
+		<textarea id="user_in"></textarea>
+	</div>
+	<div class="column right">
+		<b>Output: </b><br>
+		<textarea id="out_in" readonly="readonly"></textarea>
+	</div>
+
+<script>
+	var indent = "\t";
+	var indents = [""];
+	
+	init();
+	
+	function init() {
+		indent_in.value = "\\t";
+		indent_in.addEventListener("change", refresh);
+		user_in.addEventListener("change", prettify);
+		user_in.addEventListener("keydown", onInsertTab);
+		sel_btn.addEventListener("click", onSelectOutput);
+		window.addEventListener("keydown", onCtrlEnter);
+		
+		user_in.value = "{'a[][[]]', 'b', 'c', ['d', 'e'],   [a, [b, c], d], [[]]}, ABCDEF";
+		refresh();
+	}
+	
+	function refresh() {
+		buildIndent();
+		prettify();
+	}
+	
+	function buildIndent() {
+		indent = indent_in.value;
+		if(indent) {
+			indent = indent.replace(/\\t/g, "\t");
+		}
+		for(var i = 1; i < 20; ++i) {
+			indents[i] = indents[i - 1] + indent;
+		}
+	}
+	
+	function onSelectOutput(e) {
+		e.preventDefault();
+		
+		out_in.focus();
+		out_in.select();
+	}
+	
+	function onCtrlEnter(e) {
+		if(e.ctrlKey && e.keyCode === 13) {
+			e.preventDefault();
+			e.stopPropagation();
+			prettify();
+		}
+	}
+
+	function prettify() {
+		var inputStr = user_in.value;
+		var chars = inputStr.split("");
+		var len = chars.length;
+		var clStack = [];
+		var tagStack = [];
+		var last = 0;
+		var chunks = [];
+		
+		for(var c = 0; c < len; ++c) {
+			var cha = chars[c];
+			switch(cha) {
+			case '"':
+				c = searchAndShift(chars, '"', c);
+				break;
+			case "'":
+				c = searchAndShift(chars, "'", c);
+				break;
+			case "/":
+				switch(chars[c + 1]) {
+				case "/":
+					c = searchAndShift(chars, "\n", c);
+					break;
+				case "*":
+					c = searchAndShift(chars, "*/", c);
+					break;
+				}
+				break;
+			case "\t":
+				last = skipAndShift(chars, last, c, chunks);
+				break;
+			case "\n":
+				last = skipAndShift(chars, last, c, chunks);
+				break;
+			case "\r": 
+				last = skipAndShift(chars, last, c, chunks);
+				break;
+			case ",":
+				last = splitAndShift(chars, last, c, chunks, clStack.length);
+				break;
+			case "[":
+				if(chars.indexOf("]", c) >= 0) {
+					last = splitAndShift(chars, last, c, chunks, clStack.length);
+					clStack.push("]");
+				}
+				break;
+			case "{":
+				if(chars.indexOf("}", c) >= 0) {
+					last = splitAndShift(chars, last, c, chunks, clStack.length);
+					clStack.push("}");
+				}
+				break;
+			case "]":
+				if(clStack[clStack.length - 1] === "]") {
+					last = mergeAndClose(chars, last, c, chunks, clStack.length);
+					clStack.pop();
+				}
+				break;
+			case "}":
+				if(clStack[clStack.length - 1] === "}") {
+					last = mergeAndClose(chars, last, c, chunks, clStack.length);
+					clStack.pop();
+				}
+				break;
+			}
+		}
+		last = skipAndShift(chars, last, c, chunks);
+
+		var outputStr = "";
+		if(chunks.length > 0) {
+			outputStr = chunks.join("\n");
+			// outputStr = outputStr.replace(/☺/g, "");
+			outputStr = outputStr.replace(/\{\s+}/g, "{}");
+			outputStr = outputStr.replace(/\[\s+]/g, "[]");
+		}
+		
+		out_in.value = outputStr;
+	}
+	function searchAndShift(ary, needle, start) {
+		var at = ary.indexOf(needle, start + 1);
+		if(at >= 0) {
+			return at + needle.length - 1;
+		}
+		return start;
+	}
+	function skipAndShift(ary, start, inc_end, out_ary) {
+		var mergedStr = mergeString(ary, start, inc_end);
+		if(mergedStr) {
+			addToLast(out_ary, mergedStr);
+		}
+		return inc_end + 1;
+	}
+	function splitAndShift(ary, start, inc_end, out_ary, level) {
+		var mergedStr = mergeString(ary, start, inc_end);
+		if(mergedStr) {
+			trimAndPush(out_ary, mergedStr + ary[inc_end], level);
+		} else {
+			addToLast(out_ary, ary[inc_end]);
+		}
+		return inc_end + 1;
+	}
+	function mergeAndClose(ary, start, inc_end, out_ary, level) {
+		var mergedStr = mergeString(ary, start, inc_end);
+		trimAndPush(out_ary, mergedStr, level);
+		trimAndPush(out_ary, ary[inc_end], level - 1); // Closure
+		return inc_end + 1;
+	}
+	function addToLast(out_ary, str) {
+		var last = out_ary.length - 1;
+		if(last >= 0) {
+			out_ary[last] += str;
+		} else {
+			out_ary.push(str);
+		}
+	}
+	function mergeString(ary, start, exc_end) {
+		str = "";
+		for(var i = start; i < exc_end; ++i) {
+			str += ary[i];
+		}
+		return str;
+	}
+	function trimAndPush(out_ary, str, level) {
+		if(str) {
+			str = str.trim();
+		}
+		if(str) {
+			out_ary.push(indents[level] + str);
+		}
+	}
+	
+	function onInsertTab(e) { // onKeyDown
+		if(e.keyCode === 9) { // Tab key is pressed
+			var target = e.currentTarget;
+			var start = target.selectionStart;
+			var end = target.selectionEnd;
+
+			var value = target.value;
+			if(start < value.length) {
+				target.value = value.substring(0, start) + indent + value.substring(end);
+			} else {
+				target.value = value + indent;
+			}
+			
+			target.selectionStart = target.selectionEnd = start + 1;
+			e.preventDefault();
+		}
+	}
+</script>
+</body>
+</html>
