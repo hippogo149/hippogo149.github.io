@@ -18,12 +18,11 @@
 			text-align: center;
 			width: 100%;
 		}
-		body > div {
+		#list_div {
 			display: inline-block;
-			text-align: left;
 		}
-		td:nth-child(2) {
-			text-align: center;
+		td:first-child {
+			text-align: left;
 		}
 		table {
 			border-collapse: separate;
@@ -36,7 +35,7 @@
 	<div id="list_div"></div>
 
 <script>
-var headerRow = ["Keyword", "RGB hex value", "Live keyword", "RGB equivalent", "R", "G", "B"];
+var headerRow = ["Keyword", "RGB Hex Value", "Live keyword", "Brightness", "R", "G", "B"];
 var colorList = [
 	 ["black", "#000000"]
 	,["silver", "#c0c0c0"]
@@ -206,6 +205,10 @@ var getColorValue = function(hex) {
 	return val;
 };
 
+var getContrastPair = function(brightness) {
+	return brightness > 140 ? "#000000" : "#ffffff";
+};
+
 var rowCount = colorList.length;
 for(i = 0; i < rowCount; ++i) {
 	var row = colorList[i];
@@ -213,7 +216,7 @@ for(i = 0; i < rowCount; ++i) {
 	var triplet = Color.hexToTriplet(hex);
 	row.push(
 		hex, 
-		Color.toRgb(triplet[0], triplet[1], triplet[2]), 
+		Color.getBrightness(triplet), 
 		triplet[0], 
 		triplet[1], 
 		triplet[2]
@@ -228,21 +231,33 @@ tbl.getCellsInColumn(2).forEach(function(cell) {
 	cell.style.color = hex;
 	cell.style.backgroundColor = hex;
 	cell.style.borderColor = hex;
+	
+	var triplet = Color.hexToTriplet(hex);
+	cell.textContent = Color.toRgb(triplet[0], triplet[1], triplet[2]);
+	
 	cell.rawValue = getColorValue(hex);
+});
+tbl.getCellsInColumn(3).forEach(function(cell) {
+	var brightness = cell.rawValue | 0;
+	var hex = Color.grey(brightness);
+	cell.style.color = getContrastPair(cell.rawValue);
+	cell.style.backgroundColor = hex;
+	
+	cell.textContent = brightness;
 });
 tbl.getCellsInColumn(4).forEach(function(cell) {
 	var val = cell.rawValue;
-	cell.style.color = Color.getBrightness([val, 0, 0]) > 140 ? "black" : "white";
+	cell.style.color = getContrastPair(Color.getBrightness([val, 0, 0]));
 	cell.style.backgroundColor = Color.red(val);
 });
 tbl.getCellsInColumn(5).forEach(function(cell) {
 	var val = cell.rawValue;
-	cell.style.color = Color.getBrightness([0, val, 0]) > 140 ? "black" : "white";
+	cell.style.color = getContrastPair(Color.getBrightness([0, val, 0]));
 	cell.style.backgroundColor = Color.green(val);
 });
 tbl.getCellsInColumn(6).forEach(function(cell) {
 	var val = cell.rawValue;
-	cell.style.color = Color.getBrightness([0, 0, val]) > 140 ? "black" : "white";
+	cell.style.color = getContrastPair(Color.getBrightness([0, 0, val]));
 	cell.style.backgroundColor = Color.blue(val);
 });
 
