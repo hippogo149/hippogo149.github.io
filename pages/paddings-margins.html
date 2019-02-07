@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Paddings and Margins</title>
+	<link  href="data:;base64,iVBORw0KGgo=" rel="icon">
+
+	<style>
+		html, body {
+			margin: 0;
+		}
+		body {
+			font-family: Arial;
+			padding: 0 20px;
+			padding-bottom: 60px;
+		}
+		.line {
+			background-color: salmon;
+			margin: 20px 0;
+			position: relative;
+		}
+		.item {
+			display: inline-block;
+			width: 27%; 
+			height: 40px;
+			background-color: lightgrey;
+			box-sizing: border-box;
+			border: 1px solid green;
+		}
+		.margin5 .item {
+			margin: 5px;
+		}
+		.nagative-letter-spacing {
+			letter-spacing: -5px;
+		}
+		.vertical-align-top .item{
+			vertical-align: top;
+		}
+		.zero-line-height {
+			line-height: 0;
+		}
+		.padding5 {
+			padding: 5px;
+			box-sizing: border-box;
+		}
+		.flex {
+			display: flex;
+			flex-wrap: wrap;
+		}
+		.float .item {
+			float: left;
+		}
+		.float::after {
+			content: "";
+			clear: both;
+			display: block;
+		}
+		
+		.relative-pos {
+			position: relative;
+		}
+		td.item {
+			display: table-cell;
+		}
+		table {
+			width: 100%;
+		}
+		table.line {
+			position: initial;
+		}
+		.border-collapse {
+			border-collapse: collapse;
+		}
+		.border-spacing10 {
+			border-spacing: 10px;
+		}
+		label {
+			position: absolute;
+			background-color: white;
+			left: 5px;
+			top: 5px;
+			padding: 5px;
+			line-height: initial;
+			letter-spacing: initial;
+		}
+	</style>
+</head>
+<body>
+	<h2>Paddings and Margins</h2>
+	<div class="line">
+		<label>Default inline-block</label>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+	</div>
+	<div class="line"><!--
+	--><label>No White Space (NWS)</label><!--
+	--><div class="item"></div><!--
+	--><div class="item"></div><!--
+	--><div class="item"></div><!--
+	--><div class="item"></div><!--
+	--><div class="item"></div><!--
+	--></div>
+	<div class="line nagative-letter-spacing">
+		<label>Nagative Letter Spacing (NLS)</label>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+	</div>
+	<div class="line vertical-align-top">
+		<label>Vertical Align Top (VAT)</label>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+	</div>
+	<div class="line zero-line-height">
+		<label>Zero Line Height (ZLH)</label>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+	</div>
+	<div class="line nagative-letter-spacing zero-line-height">
+		<label>NLS + ZLH</label>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+	</div>
+	<div class="line margin5">
+		<label>Margin 5px</label>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+	</div>
+	<div class="line margin5 nagative-letter-spacing zero-line-height">
+		<label>Margin + NLS + ZLH</label>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+	</div>
+	<div class="line padding5">
+		<label>Padding 5px</label>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+	</div>
+	<div class="line padding5 margin5">
+		<label>Padding + Margin</label>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+	</div>
+	<div class="line padding5 margin5 nagative-letter-spacing zero-line-height">
+		<label>Padding + Margin + NLS + ZLH</label>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+	</div>
+	<div class="line padding5 margin5 vertical-align-top"><!--
+	--><label>Padding + Margin + NWS + VAT</label><!--
+	--><div class="item"></div><!--
+	--><div class="item"></div><!--
+	--><div class="item"></div><!--
+	--><div class="item"></div><!--
+	--><div class="item"></div><!--
+	--></div>
+	<div class="line flex">
+		<label>Flex Row</label>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+	</div>
+	<div class="line flex margin5">
+		<label>Flex Row + Margin</label>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+	</div>
+	<div class="line flex padding5 margin5">
+		<label>Flex Row + Padding + Margin</label>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+	</div>
+	<div class="line float">
+		<label>Float + :after{display:block;}</label>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+	</div>
+	<div class="line float padding5 margin5">
+		<label>Float + Padding + Margin</label>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+		<div class="item"></div>
+	</div>
+	<div class="relative-pos">
+		<label>Table Element + Border Collapse</label>
+		<table class="line border-collapse">
+			<tr>
+				<td class="item"></td>
+				<td class="item"></td>
+				<td class="item"></td>
+			</tr>
+			<tr>
+				<td class="item"></td>
+				<td class="item"></td>
+				<td class="item"></td>
+			</tr>
+		</table>
+	</div>
+	<div class="relative-pos">
+		<label>Table Element + Border Spacing 10px</label>
+		<table class="line border-spacing10">
+			<tr>
+				<td class="item"></td>
+				<td class="item"></td>
+				<td class="item"></td>
+			</tr>
+			<tr>
+				<td class="item"></td>
+				<td class="item"></td>
+				<td class="item"></td>
+			</tr>
+		</table>
+	</div>
+
+</body>
+</html>
