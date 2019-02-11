@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>JsDoc to Markdown</title>
+	<link  href="data:;base64,iVBORw0KGgo=" rel="icon">
+	<link rel="stylesheet" href="../assets/html.css">
+	<style>
+		body { font-family: "Arial";}
+		#sel_btn {
+			position: absolute;
+			right: 0;
+			top: 0;
+		}
+		.column {
+			display: inline-block;
+			position: relative;
+		}
+		.left textarea {
+			width: 300px;
+		}
+		.right textarea {
+			width: 500px;
+			white-space: pre;
+		}
+		textarea {
+			height: 600px;
+			margin-top: 4px;
+		}
+		@media (max-width: 400px) { 
+			.column,.column textarea { 
+				width: 100%; 
+			}
+			textarea {
+				height: 400px;
+			}
+		}
+	</style>
+	
+</head>
+<body>
+	<h2>JsDoc to Markdown Table</h2>
+	<div class="column left">
+		<b>Input: </b><button id="sel_btn">Select Output</button><br>
+		<textarea id="user_in"></textarea>
+	</div>
+	<div class="column right">
+		<b>Output: </b><br>
+		<textarea id="out_in" readonly="readonly"></textarea>
+	</div>
+
+<script>
+	var indent = "\t";
+	var indents = [""];
+	
+	init();
+	
+	function init() {
+		user_in.addEventListener("change", prettify);
+		user_in.addEventListener("keydown", onInsertTab);
+		sel_btn.addEventListener("click", onSelectOutput);
+		window.addEventListener("keydown", onCtrlEnter);
+		
+		user_in.value = '/** @typedef {Object} ClassName~TypeName\n' +
+			'* @description \n' +
+			'* @property {Array.<boolean>=} bool=-1.2 Description\n' +
+			'* @property {string|null|undefined=} str \n' +
+			'* @property {Object.<number, *>=} nameProp.abc=DefaultValue More More Description\n' +
+			'* @param  { function(Function, Element):Number }  prop="hmm" \tDescription a*b\n' +
+			'*/';
+		prettify();
+	}
+	
+	function onSelectOutput(e) {
+		e.preventDefault();
+		
+		out_in.focus();
+		out_in.select();
+	}
+	
+	function onCtrlEnter(e) {
+		if(e.ctrlKey && e.keyCode === 13) {
+			e.preventDefault();
+			e.stopPropagation();
+			prettify();
+		}
+	}
+
+	function prettify() {
+		var inputStr = user_in.value;
+		var properties = [];
+		inputStr.replace(/@property\s+(.+)/g, function(str, grp) {
+			properties.push(grp);
+			return "";
+		})
+		inputStr.replace(/@param\s+(.+)/g, function(str, grp) {
+			properties.push(grp);
+			return "";
+		})
+		var tables = [
+			["Name", "Type", "Attributes", "Default", "Description"],
+			["---", "---", ":---:", "---", "---"]
+		];
+		var len = properties.length;
+		for(var i = 0; i < len; ++i) {
+			var row = new Array(5);
+			var prop = properties[i];
+			prop = prop.replace(/\s+-\s*/g, " ");
+
+			var matches = prop.match(/\{.*\}\s*/);
+			var chunk0 = matches ? matches[0] : "";
+			if(chunk0) {
+				prop = prop.replace(chunk0, "");
+			}
+			
+			matches = prop.match(/\S+\s+/);
+			var chunk1 = matches ? matches[0] : "";
+			if(chunk1) {
+				prop = prop.replace(chunk1, "");
+			}
+			
+			var propName = chunk1.match(/[\w.]+/);
+			row[0] = (propName) ? propName[0] : "";
+			if(!row[0]) {
+				continue;
+			}
+			var dataType = chunk0.match(/[^{}=]+/);
+			row[1] = (dataType) ? dataType[0] : "";
+			var optional = chunk0.match(/=}/);
+			row[2] = (optional) ? "Optional" : "";
+			var defaultVal = chunk1.match(/=(.+)/);
+			row[3] = (defaultVal) ? defaultVal[1] : "";
+			row[4] = prop.replace(/\s+$/, "");
+			tables.push(row);
+		}
+		
+		len = tables.length;
+		for(i = 0; i < len; ++i) {
+			row = tables[i];
+			row = row.map(function(item) {
+				if(item) {
+					return item.replace(/\|/g, "\\|");
+				} else {
+					return " ";
+				}
+			});
+			tables[i] = row.join(" | ");
+		}
+		out_in.value = tables.join("\n");
+	}
+	
+	
+	function onInsertTab(e) { // onKeyDown
+		if(e.keyCode === 9) { // Tab key is pressed
+			var target = e.currentTarget;
+			var start = target.selectionStart;
+			var end = target.selectionEnd;
+
+			var value = target.value;
+			if(start < value.length) {
+				target.value = value.substring(0, start) + indent + value.substring(end);
+			} else {
+				target.value = value + indent;
+			}
+			
+			target.selectionStart = target.selectionEnd = start + 1;
+			e.preventDefault();
+		}
+	}
+</script>
+</body>
+</html>
