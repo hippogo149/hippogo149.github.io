@@ -363,6 +363,11 @@
 		}
 		return str + "\n]";
 	};
+	function removeArrayGaps(aryStr) {
+		return aryStr.replace(/ *, */g, ",") // Strip all spaces around a comma
+			.replace(/\[ +/g, "[") // Strip all spaces after open bracket
+			.replace(/ +\]/g, "]"); // Strip all spaces before close bracket
+	}
 	function prettify2DArray(str) {
 		var out_str = str.replace(/[\r\n\t]/g, ""); // Strip all new lines and tabs
 		out_str = out_str.trim(); // IE9+
@@ -371,9 +376,7 @@
 		if(!out_str.match(/^\[ *\[.*\] *\]$/)) {
 			return out_str; // Invalid input
 		}
-		out_str = out_str.replace(/ *, */g, ","); // Strip all spaces around a comma
-		out_str = out_str.replace(/\[ +/g, "["); // Strip all spaces after open bracket
-		out_str = out_str.replace(/ +\]/g, "]"); // Strip all spaces before close bracket
+		out_str = removeArrayGaps(out_str);
 		
 		out_str = out_str.substr(2, out_str.length - 4); // Strip outer brackets
 		
@@ -461,7 +464,8 @@
 		return "[\n\t\"" + chunks.join("\",\n\t\"") + "\"\n]";
 	}
 	function arrayToMarkdown(str) {
-		str = str.replace(/[\n\r\t "';]/g, ""); // Strip non essential content
+		str = str.replace(/[\r\n\t"';]/g, ""); // Strip non essential content
+		str = removeArrayGaps(str);
 		var rows = str.split("],[");
 		var header = null;
 		var contents = [];
