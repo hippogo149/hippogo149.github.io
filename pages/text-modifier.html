@@ -122,7 +122,8 @@
 		"abc // line comment\nabc /* block comments */",
 		".column {\\n\\tdisplay: inline-block;\\n\\tline-height: 24px;\\n\\tmax-width: 100%;\\n\\twidth: 500px;\\n}",
 		"elem.style.width = \"100px\";\nelem.style.height = \"200px\";\nelem.style.fontSize = \"2em\";",
-		"\n\n\tA\n\tB\n\tC\n\n"
+		"\n\n\tA\n\tB\n\tC\n\n",
+		"[\n\t [\"header 1\", \"Header 2\", \"Head\" ]\n\t,[\"cell 1\" , \"cell2\"  , \"cell 3\"]\n\t,[1     , 2     , 3    , 4, 5]\n]"
 	];
 	
 	var selDefs = [
@@ -146,7 +147,8 @@
 		["Strip comments", null, stripComments],
 		["Strip escaped spaces", null, stripEscapedSpaces],
 		["Convert JS to CSS", null, jsToCss],
-		["Text List to Array", null, textToArray]
+		["Text List to Array", null, textToArray],
+		["2D Array to Markdown Table", null, arrayToMarkdown]
 	];
 	
 	Dom.options(mode_sel, selDefs, outputMode);
@@ -457,6 +459,55 @@
 			return val ? true : false;
 		});
 		return "[\n\t\"" + chunks.join("\",\n\t\"") + "\"\n]";
+	}
+	function arrayToMarkdown(str) {
+		str = str.replace(/[\n\r\t "';]/g, ""); // Strip non essential content
+		var rows = str.split("],[");
+		var header = null;
+		var contents = [];
+		var rowCount = rows.length;
+		var maxColCount = 0;
+		var c, colCount;
+		for(var r = 0; r < rowCount; ++r) {
+			var rowStr = rows[r];
+			var cols = rowStr.replace(/\[|\]/g, "").split(",");
+			colCount = cols.length;
+			if(colCount > maxColCount) {
+				maxColCount = colCount;
+			}
+			if(r) {
+				contents.push(cols);
+			} else {
+				header = cols;
+			}
+		}
+		if(!header) {
+			return "null";
+		}
+		colCount = maxColCount;
+		var separators = new Array(colCount);
+		for(c = 0; c < colCount; ++c) {
+			if(!header[c]) {
+				header[c] = "-";
+			}
+			separators[c] = "---";
+		}
+		var table = [header.join(" | "), separators.join(" | ")];
+		rowCount = contents.length;
+		for(r = 0; r < rowCount; ++r) {
+			cols = contents[r];
+			for(c = 0; c < colCount; ++c) {
+				var cellStr = cols[c];
+				if(cellStr) {
+					cols[c] = cellStr.replace(/\|/g, "\\|");
+				} else {
+					cols[c] = " ";
+				}
+			}
+			table.push(cols.join(" | "));
+		}
+		
+		return table.join("\n");
 	}
 	
 	// Helper
