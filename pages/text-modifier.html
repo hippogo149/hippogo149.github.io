@@ -122,7 +122,8 @@
 		"abc // line comment\nabc /* block comments */",
 		".column {\\n\\tdisplay: inline-block;\\n\\tline-height: 24px;\\n\\tmax-width: 100%;\\n\\twidth: 500px;\\n}",
 		"elem.style.width = \"100px\";\nelem.style.height = \"200px\";\nelem.style.fontSize = \"2em\";",
-		"\n\n\tA\n\tB\n\tC\n\n",
+		'"abc" \'cef\' \\\"ghi\\\" \\\\"jkl\\\\"',
+		"\n\nA    \n\t\"B\"\n\t   C\n\nD    ",
 		"[\n\t [\"header 1\", \"Header 2\", \"Head\" ]\n\t,[\"cell 1\" , \"cell2\"  , \"cell 3\"]\n\t,[1     , 2     , 3    , 4, 5]\n]"
 	];
 	
@@ -147,7 +148,8 @@
 		["Strip comments", null, stripComments],
 		["Strip escaped spaces", null, stripEscapedSpaces],
 		["Convert JS to CSS", null, jsToCss],
-		["Text List to Array", null, textToArray],
+		["Escape Double Quotation Mark", null, escapeDoubleQuotes],
+		["Convert Text List to Array", null, textToArray, "Keep NewLine: ", "false"],
 		["2D Array to Markdown Table", null, arrayToMarkdown]
 	];
 	
@@ -158,7 +160,11 @@
 	param1.ref = paramRef;
 	param1.ref.in.onkeyup = function() {
 		lastInput = "";
+		ex_output.value = resolveOutput(ex_input.value);
 		onInputKeyUp();
+	};
+	param1.ref.in.onfocus = function(e) {
+		e.currentTarget.select();
 	};
 	
 	var cf = new Conflator(onInputKeyUp, 1000);
@@ -455,12 +461,23 @@
 	function valToCssVal(str) {
 		return str.replace(/['"]([^'"]*)['"]/, "$1");
 	}
-	function textToArray(str) {
-		str = str.replace(/[\r\t ]/g, "");
+	function escapeDoubleQuotes(str) {
+		return str.replace(/\\*"/g, replaceDoubleQuotes);
+	}
+	function replaceDoubleQuotes(str) {
+		return (str.length & 1) ? "\\" + str : str;
+	}
+	function textToArray(str, delim) {
+		str = escapeDoubleQuotes(str.replace(/[\r\t]/g, ""));
 		var chunks = str.split("\n");
-		chunks = chunks.filter(function(val) {
-			return val ? true : false;
+		chunks = chunks.map(function(val) {
+			return val.trim();
 		});
+		if(!delim || delim === "false" || delim === "0") {
+			chunks = chunks.filter(function(val) {
+				return val ? true : false;
+			});
+		}
 		return "[\n\t\"" + chunks.join("\",\n\t\"") + "\"\n]";
 	}
 	function arrayToMarkdown(str) {
