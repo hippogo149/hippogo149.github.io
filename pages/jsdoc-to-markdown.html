@@ -141,7 +141,8 @@
 			row = tables[i];
 			row = row.map(function(item) {
 				if(item) {
-					return item.replace(/\|/g, "\\|");
+					var str = item.replace(/\|/g, "\\|").trim();
+					return str ? str : " ";
 				} else {
 					return " ";
 				}
