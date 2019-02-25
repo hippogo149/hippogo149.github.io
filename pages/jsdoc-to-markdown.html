@@ -140,8 +140,8 @@
 		for(i = 0; i < len; ++i) {
 			row = tables[i];
 			row = row.map(function(item) {
-				if(item) {
-					var str = item.replace(/\|/g, "\\|").trim();
+				if(item) { // Some Markdown interpreter may not support "\\|". We use "&#124;" instead. 
+					var str = item.replace(/\|/g, "&#124;").trim();
 					return str ? str : " ";
 				} else {
 					return " ";

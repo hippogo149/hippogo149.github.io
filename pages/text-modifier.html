@@ -519,8 +519,8 @@
 			cols = contents[r];
 			for(c = 0; c < colCount; ++c) {
 				var cellStr = cols[c];
-				if(cellStr) {
-					cols[c] = cellStr.replace(/\|/g, "\\|");
+				if(cellStr) { // Some Markdown interpreter may not support "\\|". We use "&#124;" instead. 
+					cols[c] = cellStr.replace(/\|/g, "&#124;");
 				} else {
 					cols[c] = " ";
 				}
