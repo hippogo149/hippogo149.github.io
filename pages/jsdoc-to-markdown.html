@@ -115,7 +115,7 @@
 				prop = prop.replace(chunk0, "");
 			}
 			
-			matches = prop.match(/\S+\s+/);
+			matches = prop.match(/\S+\s*/); // Non-white space chars and until the last white space
 			var chunk1 = matches ? matches[0] : "";
 			if(chunk1) {
 				prop = prop.replace(chunk1, "");
@@ -141,7 +141,10 @@
 			row = tables[i];
 			row = row.map(function(item) {
 				if(item) { // Some Markdown interpreter may not support "\\|". We use "&#124;" instead. 
-					var str = item.replace(/\|/g, "&#124;").trim();
+					var str = item.replace(/\|/g, "&#124;")
+						.replace(/</g, "&lt;")
+						.replace(/~/g, "")
+						.trim();
 					return str ? str : " ";
 				} else {
 					return " ";
