@@ -41,19 +41,20 @@
 		inputStr = replaceAll(inputStr, 65533);
 		inputStr = replaceAll(inputStr, 8220, 34); // Smart left quote
 		inputStr = replaceAll(inputStr, 8221, 34); // Smart right quote
-		inputStr = replaceAll(inputStr, " " + String.fromCharCode(3656), 3656); // Mai eak
+		inputStr = replaceAll(inputStr, fromCharCodes(" ", 3656), 3656); // Mai eak
+		inputStr = replaceAll(inputStr, fromCharCodes(" ", 3657), 3657); // Mai toe
 		inputStr = replaceAll(inputStr, 63233, 3636); // Sara ei
 		inputStr = replaceAll(inputStr, 63234, 3637); // Sara e
 		inputStr = replaceAll(inputStr, 63242, 3656); // Mai eak
-		inputStr = replaceAll(inputStr, 63243, 3657); // Mai Toe
-		inputStr = replaceAll(inputStr, 3662, 3657); // Mai Toe
-		inputStr = replaceAll(inputStr, 42, 3657); // * >> Mai Toe WARNING
+		inputStr = replaceAll(inputStr, 63243, 3657); // Mai toe
+		inputStr = replaceAll(inputStr, 3662, 3657); // Mai toe
+		inputStr = replaceAll(inputStr, 42, 3657); // * >> Mai toe WARNING
 		inputStr = replaceAll(inputStr, 63240, 3659); // Mai Jattava
 		inputStr = replaceAll(inputStr, 63246, 3660); // Kar run
 		inputStr = replaceAll(inputStr, 63248, 3633); // Mai hun argart
 		inputStr = replaceAll(inputStr, 63250, 3655); // Mai tai koo
-		inputStr = replaceAll(inputStr, String.fromCharCode(3661) + String.fromCharCode(3634), 3635); // Sara aum
-		inputStr = replaceAll(inputStr, " " + String.fromCharCode(3634), 3635); // Sara aum
+		inputStr = replaceAll(inputStr, fromCharCodes(3661, 3634), 3635); // Sara aum
+		inputStr = replaceAll(inputStr, fromCharCodes(" ", 3634), 3635); // Sara aum
 		inputStr = replaceAll(inputStr, 3661, 3656); // Mai eak
 		inputStr = replaceAll(inputStr, 14, 3656); // Mai eak
 		inputStr = replaceAll(inputStr, "ํ ิ", 3636); // Sara ei
@@ -61,11 +62,24 @@
 		inputStr = replaceAll(inputStr, "่ิ", 3636); // Sara ei
 		inputStr = replaceAll(inputStr, " ่ ็", 3655); // Mai tai koo
 		inputStr = replaceAll(inputStr, "่็", 3655); // Mai tai koo
+		inputStr = replaceAll(inputStr, fromCharCodes(3655, " "), 3655); // Mai tai koo
 		inputStr = replaceAll(inputStr, "ดาเน", "ดำเน");
 		inputStr = replaceAll(inputStr, "ฝก", "ฝึก");
 		
 		removeNewLineChar(inputStr);
 		removeSpaceChar(inputStr);
+	}
+	
+	function fromCharCodes(arg) {
+		var str = "";
+		var ary = Array.isArray(arg) ? arg : arguments;
+		
+		var len = ary.length;
+		for(var i = 0; i < len; ++i) {
+			var val = ary[i];
+			str += (typeof val === "number") ? String.fromCharCode(val) : val;
+		}
+		return str;
 	}
 	
 	function removeNewLineChar(inputStr) {
