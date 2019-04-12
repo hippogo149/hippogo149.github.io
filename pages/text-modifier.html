@@ -119,6 +119,7 @@
 		,"Dom.toggleClass = function (elem, classStr, bool) {\n\tif(bool) {\n\t\telem.classList.add(classStr);\n\t} else if(bool == null) {\n\t\tif(elem.classList.contains(classStr)) {\n\t\t\telem.classList.remove(classStr);\n\t\t} else {\n\t\t\telem.classList.add(classStr);\n\t\t}\n\t} else {\n\t\telem.classList.remove(classStr);\n\t}\n};"
 		,"{\"a\":[1, 2, 3]; \"b\": { \"c\": \"abc\" /* comments */, \"d\": 123 }, \"c\": 456};"
 		,"{\"a\":[1, 2, 3]; \"b\": { \"c\": \"abc\" /* comments */, \"d\": 123 }, \"c\": 456};"
+		,"{\"a\":[1, 2, 3]; \"b\":\n{ \"c\": \"abc\" /* comments */,\n\"d\": 123 }, \"c\": 456};"
 		,"[\na,b,c\nd,e,f\ng,h,i\n]"
 		,"a\tb\tc\nd\te\tf\ng\th\ti"
 		,"[\n\t [\"abc\", \"b\", \"c\"]\n\t,[\"d\", \"eeeee\", \"f\"]\n\t,[\"g\", \"h\", \"iff\"]\n]"
@@ -146,6 +147,7 @@
 		["Stringify JavaScript", null, stringifyJS, "Delimiter: ", "'", ""],
 		["Stringify JSON", null, stringifyJSON],
 		["Prettify JSON", null, prettifyJSON, "Delimiter: ", "  "],
+		["Compress JSON", null, compressJSON],
 		["Convert Text to TSV", null, tabularFormat], // TSV = Tab-Separated Values
 		["Convert TSV to 2D Array", null, scriptifyTsv],
 		["Prettify 2D Array", null, prettify2DArray],
@@ -210,6 +212,7 @@
 			paramList.appendChild(param1);
 		} else {
 			Dom.removeChildren(paramList);
+			param1.ref.in.value = "";
 		}
 		
 		var ex_str = examples[outputMode] || "";
@@ -330,18 +333,19 @@
 		return str;
 	}
 	function stringifyJSON(str) {
-		var obj = Ut.parseJSON(str);
-		var mod = JSON.stringify(obj);
+		var mod = compressJSON(str);
 		return '"' + replaceAll(mod, '"', '\\"') + '"';
-		return str;
 	}
 	function prettifyJSON(str, delim) {
-		var obj = Ut.parseJSON(str);
 		if(!delim) {
 			delim = 2;
 		} else if(delim == "\\t") {
 			delim = "\t";
 		}
+		return compressJSON(str, delim);
+	}
+	function compressJSON(str, delim) {
+		var obj = Ut.parseJSON(str);
 		return JSON.stringify(obj, null, delim);
 	}
 	function tabularFormat(str) { // Text to TXV
