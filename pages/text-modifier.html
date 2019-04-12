@@ -119,7 +119,7 @@
 		,"Dom.toggleClass = function (elem, classStr, bool) {\n\tif(bool) {\n\t\telem.classList.add(classStr);\n\t} else if(bool == null) {\n\t\tif(elem.classList.contains(classStr)) {\n\t\t\telem.classList.remove(classStr);\n\t\t} else {\n\t\t\telem.classList.add(classStr);\n\t\t}\n\t} else {\n\t\telem.classList.remove(classStr);\n\t}\n};"
 		,"{\"a\":[1, 2, 3]; \"b\": { \"c\": \"abc\" /* comments */, \"d\": 123 }, \"c\": 456};"
 		,"{\"a\":[1, 2, 3]; \"b\": { \"c\": \"abc\" /* comments */, \"d\": 123 }, \"c\": 456};"
-		,"{\"a\":[1, 2, 3]; \"b\":\n{ \"c\": \"abc\" /* comments */,\n\"d\": 123 }, \"c\": 456};"
+		,"{\"a\":[1, 2, 3], b:\n{ c: \"abc\" /* comments */,\n\"d\": 123 }, \"c\": 456};"
 		,"[\na,b,c\nd,e,f\ng,h,i\n]"
 		,"a\tb\tc\nd\te\tf\ng\th\ti"
 		,"[\n\t [\"abc\", \"b\", \"c\"]\n\t,[\"d\", \"eeeee\", \"f\"]\n\t,[\"g\", \"h\", \"iff\"]\n]"
@@ -332,8 +332,12 @@
 		str = scriptifyTextLine(str, delim);
 		return str;
 	}
+	function fromJSON(str, delim) {
+		var obj = Ut.parseJSON(str);
+		return JSON.stringify(obj, null, delim);
+	}
 	function stringifyJSON(str) {
-		var mod = compressJSON(str);
+		var mod = fromJSON(str);
 		return '"' + replaceAll(mod, '"', '\\"') + '"';
 	}
 	function prettifyJSON(str, delim) {
@@ -342,11 +346,23 @@
 		} else if(delim == "\\t") {
 			delim = "\t";
 		}
-		return compressJSON(str, delim);
+		return fromJSON(str, delim);
 	}
-	function compressJSON(str, delim) {
-		var obj = Ut.parseJSON(str);
-		return JSON.stringify(obj, null, delim);
+	function compressJSON(str) {
+		str = stripComments(str).replace(/;/g, "");
+		var obj = null;
+		try {
+			var cmd = "(" + str + ")";
+			obj = eval(cmd);
+		} catch(err) {
+			return err.message || "null";
+		}
+		if(obj) {
+			str = JSON.stringify(obj);
+			return str.replace(/"([^"]*?)":/g, "$1:");
+		} else {
+			return "null";
+		}
 	}
 	function tabularFormat(str) { // Text to TXV
 		str = str.replace(/\[|\]|"|'/g, ""); // Allow JS Array to be transformed
