@@ -64,10 +64,12 @@
 		window.addEventListener("keydown", onCtrlEnter);
 		
 		user_in.value = '/** @typedef {Object} ClassName~TypeName\n' +
-			'* @description \n' +
+			'* @description Some typeDef description\n' +
 			'* @property {Array.<boolean>=} bool=-1.2 Description\n' +
-			'* @property {string|null|undefined=} str \n' +
+			'* @property {string|null|undefined=} str="" \n' +
 			'* @property {Object.<number, *>=} nameProp.abc=DefaultValue More More Description\n' +
+			'* @property {(Array|Object)} noDesc\n' +
+			'* @property {*} symbol See {@link Class#method}\n' +
 			'* @param  { function(Function, Element):Number }  prop="hmm" \tDescription a*b\n' +
 			'*/';
 		prettify();
@@ -91,6 +93,8 @@
 	function prettify() {
 		var inputStr = user_in.value;
 		var properties = [];
+		var defDesc = inputStr.match(/@description\s+(.+)/);
+		
 		inputStr.replace(/@property\s+(.+)/g, function(str, grp) {
 			properties.push(grp);
 			return "";
@@ -109,7 +113,7 @@
 			var prop = properties[i];
 			prop = prop.replace(/\s+-\s*/g, " ");
 
-			var matches = prop.match(/\{.*\}\s*/);
+			var matches = prop.match(/\{.*?\}\s*/);
 			var chunk0 = matches ? matches[0] : "";
 			if(chunk0) {
 				prop = prop.replace(chunk0, "");
@@ -119,6 +123,9 @@
 			var chunk1 = matches ? matches[0] : "";
 			if(chunk1) {
 				prop = prop.replace(chunk1, "");
+			} else {
+				chunk1 = prop;
+				prop = "";
 			}
 			
 			var propName = chunk1.match(/[\w.]+/);
@@ -127,12 +134,13 @@
 				continue;
 			}
 			var dataType = chunk0.match(/[^{}=]+/);
-			row[1] = (dataType) ? dataType[0] : "";
-			var optional = chunk0.match(/=}/);
-			row[2] = (optional) ? "Optional" : "";
+			row[1] = dataType ? dataType[0] : "";
+			var attribute = chunk0.match(/=}/);
+			row[2] = attribute ? "Optional" : "";
 			var defaultVal = chunk1.match(/=(.+)/);
-			row[3] = (defaultVal) ? defaultVal[1] : "";
-			row[4] = prop.replace(/\s+$/, "");
+			row[3] = defaultVal ? defaultVal[1] : "";
+			var propDesc = prop.replace(/\s+$/, "");
+			row[4] = propDesc ? propDesc.replace(/\{@link\s+(.*?)\}/g, "$1") : "";
 			tables.push(row);
 		}
 		
@@ -152,7 +160,12 @@
 			});
 			tables[i] = row.join(" | ");
 		}
-		out_in.value = tables.join("\n");
+		if(defDesc) {
+			defDesc = defDesc[1] + "\n\n";
+		} else {
+			defDesc = "";
+		}
+		out_in.value = defDesc + tables.join("\n");
 	}
 	
 	
