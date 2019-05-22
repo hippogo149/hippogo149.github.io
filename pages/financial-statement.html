@@ -37,7 +37,9 @@
 	<div id="report_div"></div>
 	<br>
 	<div>
-		<div class="hsect">Quarter and Consolidated F/S (F45-3) :</div>
+		<div class="hsect">Quarter and Consolidated F/S
+			<span id="report_code">(F45-3)</span> :
+		</div>
 		<textarea id="report_in" onfocus="this.select()" onkeyup="extractReport()" cols="100" rows="24"></textarea>
 	</div>
 	<br>
@@ -59,6 +61,7 @@
 		}
 		return null
 	};
+	var headerTxt = "สรุปผลการดำเนินงานของบจ.และรวมของบริษัทย่อย ";
 	
 	defs[0] = {
 		 canvas: cb
@@ -82,7 +85,7 @@
 	
 	defs[0].heights = Ary.create(3, defaultHeight);
 	defs[0].content = [
-		 ["สรุปผลการดำเนินงานของบจ.และรวมของบริษัทย่อย (F45-3)"]
+		 [headerTxt + report_code.textContent]
 	];
 	defs[0].spans = [
 		 [0, 4, 0]
@@ -204,13 +207,16 @@
 		})
 		.then(function(res) {
 			var txt = HtmlDocument.isolateBodyTag(res.document);
-			var linkRow = HtmlDocument.retrieveTag(txt, "(F45-3)", "tr");
-			if(!linkRow) {
-				linkRow = HtmlDocument.retrieveTag(txt, "(F45-1)", "tr");
+			var reportCode = 4
+			var linkRow = "";
+			while(!linkRow && reportCode > 0) {
+				linkRow = HtmlDocument.retrieveTag(txt, "(F45-" + (--reportCode) + ")", "tr");
 			}
 			if(!linkRow) {
 				return Promise.reject("No Financial report detected");
 			}
+			report_code.textContent = "(F45-" + reportCode + ")";
+			getCell(0, 0, 0).text = headerTxt + report_code.textContent;
 			
 			var linkCells = HtmlDocument.extractTags(linkRow, "td");
 			var thaiDateTime =  HtmlDocument.extractInnerHTML(linkCells[0]);
@@ -280,6 +286,9 @@
 		var inputStr = report_in.value;
 		var lines = inputStr.split("\n");
 		var combStart = searchLines(lines, "งบการเงินรวม");
+		if(combStart < 0) {
+			combStart = searchLines(lines, "งบการเงินที่");
+		}
 		if(combStart < 0) {
 			combStart = searchLines(lines, "The Consolidated Financial Statement");
 		}
@@ -418,7 +427,7 @@
 			return str.split(/ +/g);
 		}
 		return [];
-	};
+	}
 </script>
 </body>
 </html>
