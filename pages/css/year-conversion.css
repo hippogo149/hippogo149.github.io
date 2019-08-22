@@ -1,0 +1,2 @@
+html{padding:0;margin:0;-webkit-overflow-scrolling:touch}body{padding:20px;margin:0;box-sizing:border-box}body>h1,body>h2{margin-top:0}@supports(-webkit-overflow-scrolling:touch){*{cursor:pointer}}
+body{text-align:center;font-family:Tahoma}div{background-color:seashell;padding:20px 0;border-radius:10px;margin-bottom:20px}h3:first-child{margin-top:0}#be_txt,#ce_txt{color:navy;font-size:x-large}

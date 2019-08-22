@@ -5,64 +5,12 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Year Conversion</title>
 	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
-	<link rel="stylesheet" href="../assets/html.css">
-	<script src="../assets/por.min.js"></script>
-	<style>
-		body {
-			text-align: center;
-			font-family: Tahoma;
-		}
-		div {
-			background-color: seashell;
-			padding: 20px 0;
-			border-radius: 10px;
-			margin-bottom: 20px;
-		}
-		h3:first-child {
-			margin-top: 0;
-		}
-		#be_txt, #ce_txt{
-			color: navy;
-			font-size: x-large;
-		}
-	</style>
+	<link href="css/year-conversion.css" rel="stylesheet">
 </head>
 <body>
 	<h2>Year Conversion</h2>
 	
-<script>
-	var b = Dom.tree(document.body,
-		["div", 
-			"span(Year: )", "input#input_txt)"
-		],
-		["div", 
-			"h3(Buddhist Era (B.E.))",
-			"span (พ.ศ. )", "b#be_txt", 
-			"h3(Christian/Common Era. (C.E.))",
-			"span( ค.ศ. )", "b#ce_txt"
-		]
-	);
-	input_txt.addEventListener("change", calculateYear);
-	input_txt.addEventListener("keyup", calculateYear);
-		
-	function calculateYear(e) {
-		var str = input_txt.value;
-		var num = parseInt(str, 10);
-		if(!e || e.type === "change") {
-			if(num !== num) {
-				num = new Date().getFullYear();
-				input_txt.value = num;
-			}
-		}
-		if(num === num) {
-			be_txt.textContent = num + 543;
-			ce_txt.textContent = num - 543;
-		}
-	}
-	calculateYear();
-	input_txt.focus();
-	input_txt.select();
-</script>
+	<script src="js/year-conversion.min.js"></script>
 
 </body>
 </html>
