@@ -12,18 +12,30 @@
 	<h2>Text Modifier</h2>
 	<div>
 		<div class="column">
-			<table id="top_bar"><tr>
-				<td>Text Input: </td>
-				<td><button id="replace_btn"> Replace Input with Output </button></td>
-			</tr></table>
+			<div class="top-line">
+				<table class="space-between"><tr>
+					<td>Text Input: </td>
+					<td><button id="replace_btn"> Replace Input with Output </button></td>
+				</tr></table>
+			</div>
+			<hr>
 			<textarea id="txt_input"></textarea>
 		</div>
 		<div class="column">
-			<select id="mode_sel"></select><span id="param_list"></span><br>
+			<div class="top-line">
+				<select id="mode_sel"></select>
+				<div id="param_list" class="inline-block">
+					<span id="param_label"></span>
+					<input id="param_input"></input>
+					<span id="param_closure"></span>
+				</div>
+			</div>
+			<hr>
 			<textarea id="txt_output"></textarea>
 		</div>
 		<div class="column">
-			Example: <br>
+			<div class="top-line"> Example: </div>
+			<hr>
 			<textarea id="ex_input" readonly></textarea>
 			<textarea id="ex_output" readonly></textarea>
 		</div>
