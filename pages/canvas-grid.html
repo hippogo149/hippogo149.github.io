@@ -5,182 +5,25 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Canvas Grid</title>
 	<link  href="data:;base64,iVBORw0KGgo=" rel="icon">
-	<link  href="../assets/html.css" rel="stylesheet">
-	<link  href="../assets/por.min.css" rel="stylesheet">
-	<link  href="../assets/spinner.css" rel="stylesheet">
-	<script src="../assets/cgrid.min.js"></script>
 
-	<style>
-		html, body {
-			height: 100%;
-		}
-		h2 { 
-			margin: 0 10px 0 0;
-			display: inline-block; 
-		}
-		#titleBand {
-			padding-bottom: 10px;
-		}
-		#mainFrame {
-			height: calc(100% - 37px);
-		}
-		.canvas-grid {
-			border: 1px solid lightgrey;
-		}
-		
-		.blink_me {
-			font-size: 1.4em;
-			animation-name: blinker;
-			animation-duration: 2s;
-			animation-timing-function: linear;
-			animation-iteration-count: infinite;
-		}
-		#last_txt {
-			margin-right: 20px;
-		}
-		@keyframes blinker {  
-			0%, 100% { color: black; }
-			50% { color: red; }
-		}
-		
-		#loadingSpinner {
-			width: 100px;
-			height: 100px;
-			background-color: grey;
-
-			position: absolute;
-		}
-		
-		.activated {
-			outline: 1.5px outset orange;
-		}
-	</style>
+	<link href="css/canvas-grid.css" rel="stylesheet">
 </head>
 <body>
-	<div id="titleBand">
-		<h2>Canvas Grid</h2>Rendering grid with <span id="col_sp"></span> columns x <span id="row_sp"></span> rows = <span id="cell_sp" class="blink_me"></span> <span id="last_txt" class="blink_me">cells!!!</span><button id="ts_btn" onclick="onToggleStreaming()">Toggle Streaming</button>
+	<div id="title_band">
+		<h2>Canvas Grid</h2>
+		Rendering grid with
+		<span id="col_sp"></span>
+		columns x 
+		<span id="row_sp"></span>
+		rows = <span id="cell_sp" class="blink-me"></span>
+		<span id="last_txt" class="blink-me">cells!!!</span>
+		<button id="ts_btn">Toggle Streaming</button>
 	</div>
-	<div id="mainFrame">
-		<div id="loadingSpinner" class="spinner"></div>
+	<div id="main_frame">
+		<div id="loading_spinner" class="spinner"></div>
 	</div>
 	
-<script>
-	var rowCount = 500;
-	var options = {
-		colCount: 200,
-		rowHeight: 32,
-		colWidth: 80,
-		font: "14px sans-serif"
-	};
-
-	var cellCount = options.colCount * rowCount;
-	col_sp.textContent = options.colCount.toLocaleString(); // number with comma separators
-	row_sp.textContent = rowCount.toLocaleString();
-	cell_sp.textContent = cellCount.toLocaleString();
-		
-	var streaming = 0;
-	var grid = new CanvasGrid(null, options);
-	grid.listen("contentHeightChanged", onContentChanged);
-	var gridElem = grid.getElement();
-	gridElem.classList.add("canvas-grid");
-	
-	var sf = new ScrollFrame(mainFrame, {
-		content: gridElem,
-		listeners: {
-			scroll: onScroll,
-			resize: onResize
-		}
-	});
-	
-	var spinnerSize = Math.floor(loadingSpinner.offsetWidth / 2);
-	loadingSpinner.style.left = (Math.floor(mainFrame.clientWidth / 2) - spinnerSize) + "px";
-	loadingSpinner.style.top = (Math.floor(mainFrame.clientHeight / 2) - spinnerSize) + "px";
-		
-	setTimeout(init, 0);
-	
-	function init() {
-		sf.setSize(null, "calc(100% - " + titleBand.offsetHeight + "px)");
-		grid.setDataFromObjectMap(buildGridData());
-		mainFrame.removeChild(loadingSpinner);
-	}
-	function buildGridData() {
-		var colCount = options.colCount;
-		var data = {};
-		var cids = [];
-		for(var c = 0; c < colCount; ++c) {
-			cids[c] = c + "";
-		}
-		for(var r = 0; r < rowCount; ++r) {
-			var rid = r + "";
-			var row = {};
-			for(c = 0; c < colCount; ++c) {
-				row[cids[c]] = r + ", " + c;
-			}
-			
-			data[rid] = row;
-		}
-		return data;
-	}
-	
-	function onContentChanged() {
-		sf.setContentSize(grid.getContentWidth(), grid.getContentHeight());
-	}
-	
-	function onResize(e) {
-		grid.setSize(e.width, e.height);
-	}
-	function onScroll(e) {
-		grid.scrollTop(e.scrollTop);
-		grid.scrollLeft(e.scrollLeft);
-	}
-	function onToggleStreaming() {
-		if(streaming) {
-			ts_btn.classList.remove("activated");
-			clearTimeout(streaming);
-			streaming = 0;
-		} else {
-			ts_btn.classList.add("activated");
-			onRandomData();
-		}
-	}
-	function randBetween(min, max) {
-		var diff = max - min + 1;
-		return Math.floor(Math.random() * diff) + min;
-	}
-	function onRandomData() {
-		var fr, lr, fc, lc;
-		if(options.allDataAtOnce) {
-			fr = 0;
-			lr = grid.getRowCount() - 1;
-			fc = 0;
-			lc = grid.getColumnCount() - 1;
-		} else {
-			fr = grid.getFirstRowInView();
-			lr = grid.getLastRowInView();
-			fc = grid.getFirstColumnInView();
-			lc = grid.getLastColumnInView();
-			// console.log(fr, lr, fc, lc);
-		}
-		if(fc < 1) {
-			fc = 1; // For debugging purpose
-		}
-		
-		grid.freezeData();
-		for(var r = fr; r <= lr; ++r) {
-			if(randBetween(0, 1) === 0) {
-				values = {};
-				for(var c = fc; c <= lc; ++c) {
-					if(randBetween(0, 3) === 0) {
-						values[c] = randBetween(0, 100000);
-					}
-				}
-				grid.setRowData(r + "", values);
-			}
-		}
-		grid.unfreezeData();
-		streaming = setTimeout(onRandomData, randBetween(50, 100));
-	}
-</script>
+<script src="js/canvas-grid.min.js"></script>
 
 </body>
 </html>
