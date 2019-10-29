@@ -5,48 +5,12 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Hippogo149 Pages</title>
 	<link  href="data:;base64,iVBORw0KGgo=" rel="icon">
-	<link  href="../assets/html.css" rel="stylesheet"> 
-	<link  href="../assets/por.min.css" rel="stylesheet"> 
-	<link  href="../assets/table.css" rel="stylesheet"> 
-	<script src="../assets/por.min.js"></script>
-	<style>
-		body, table {
-			font-family: Arial;
-			width: 100%;
-		}
-		td:nth-child(2) {
-			text-align: center;
-		}
-		td:nth-child(3) {
-			text-align: right;
-		}
-	</style>
+	
+	<link href="css/github-page-index.css" rel="stylesheet">
 	<body>
 		<h1>Index of /pages</h1>
 		<div id="index_tbl"></div>
 		
-		<script>
-			__files = [["canvas-grid.html",1570724114069.6526,805],["centering.html",1566492671758.1458,5040],["chart-bars.html",1566492671778.1487,4417],["color-value.html",1566492671797.151,7262],["compound-interest.html",1566492671829.155,6133],["dec-to-hex.html",1566492671847.157,1730],["financial-statement.html",1571935919895.536,1075],["font-family.html",1566492671865.1594,5552],["gb-sky-events.html",1566492671880.1614,16585],["http-request.html",1566492671907.1646,6124],["jsdoc-to-markdown.html",1566492672008.1772,4930],["json-prettifier.html",1566492672033.1802,6041],["letter-casing.html",1566492672059.1836,6493],["min-401t.html",1566492672064.184,406],["min-x.html",1566492672069.1848,420],["min.html",1566492672074.1855,298],["paddings-margins.html",1566492672081.1863,6338],["percentage.html",1566492672110.1904,4603],["performance.html",1566492672131.1926,7109],["polygon-builder.html",1566492672141.194,4995],["proper.html",1566492672147.195,420],["risk-of-ruin.html",1566492672166.197,4846],["simple-animation.html",1566492672192.2004,5515],["spinners.html",1566492672208.2024,3103],["table-builder.html",1570540242392.1394,1352],["table-from-excel.html",1566492672242.2068,1084],["text-modifier.html",1570540242403.141,1264],["thai-pdf-formatter.html",1566492672340.219,4552],["thai-solar-calendar.html",1566492672353.2205,2740],["time-value-of-money.html",1566492672375.2234,5174],["tsv-loader.html",1566492672389.2253,1399],["unicode-characters.html",1566492672413.2283,8669],["year-conversion.html",1566490665871.8584,446]];
-			
-			var tbl = new Table(index_tbl);
-			tbl.getBody().setCellRenderer(function(cell, val, c, r) {
-				switch(c) {
-				case 0:
-					var link = document.createElement("a");
-					link.textContent = val;
-					link.setAttribute("href", val);
-					cell.appendChild(link);
-					break;
-				case 1:
-					cell.textContent = new Date(val).toLocaleString("en-GB");
-					break;
-				case 2:
-					cell.textContent = Ut.fillZeroes(val / 1024) + " KB";
-					break;
-				}
-			})
-			tbl.rebuild(__files, ["Name", "Last Modified", "Size"]);
-			tbl.sort(1, "d");
-		</script>
+		<script src="js/github-page-index.min.js"></script>
 	</body>
 </html>
