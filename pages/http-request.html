@@ -5,215 +5,57 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>HTTP Request</title>
 	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
-	<link rel="stylesheet" href="../assets/html.css">
-	<script src="../assets/por.min.js"></script>
-	<script src="../assets/HtmlDocument.min.js"></script>
-
-	<style>
-		#req_in {
-			width: 559px;
-		}
-		.column > * {
-			display: inline-block;
-			vertical-align: top;
-		}
-		td input[type=text] {
-			width: 572px;
-		}
-		textarea {
-			overflow-x: auto;
-			white-space: nowrap;
-		}
-		body {
-			font-family: tahoma;
-		}
-	</style>
 	
-	
+	<link href="css/http-request.css" rel="stylesheet">
 </head>
 <body>
-	<div class="column">
+<div class="column">
 	<div>
-	<h3><span>Request URL: </span><input id="req_in" onchange="extractReq()" value="" type="text"></h3>
-	<button id="submit_btn" onclick="submitRequest()">Submit</button> <span id="status_txt"></span><br><br>
+		<h3><span>Request URL: </span><input id="req_in"></h3>
+		<button id="submit_btn">Submit</button> <span id="status_txt"></span><br><br>
 
-	<table id="">
-		<tr><td>Protocol: </td><td><input id="proto_in" onchange="constructReq()" value="http" type="text"></td></tr>
-		<tr><td>Domain: </td><td><input id="domain_in" onchange="constructReq()" value="localhost" type="text"></td></tr>
-		<tr><td>Port: </td><td><input id="port_in" onchange="constructReq()" value="3020" type="text"></td></tr>
-		<tr><td>Path: </td><td><input id="dir_in" onchange="constructReq()" value="api/load" type="text"></td></tr>
-		<tr><td>Query: </td><td><input id="query_in" onchange="constructReq()" placeholder="var1=val1&var2=val2" type="text"></td></tr>
-		<tr><td>Response Type: </td><td><input id="rt_radio" name="respType" checked="true" type="radio"><span>JSON</span> <input id="rt_radio2" name="respType" type="radio"><span>Plain Text</span></td></tr>
-		<tr><td>Payload (PUT): </td><td><textarea id="payload_ta" placeholder="var1: val1, var2: val2" cols="79" rows="6"></textarea></td></tr>
-	</table>
-	<h3>Request Response: </h3>
-	<textarea id="out_ta" onchange="" cols="96" rows="12" readonly></textarea>
+		<table id="url_table">
+			<tr>
+				<td>Protocol: </td>
+				<td><input id="proto_in" value="http"></td>
+			</tr>
+			<tr>
+				<td>Domain: </td>
+				<td><input id="domain_in" value="localhost"></td>
+			</tr>
+			<tr>
+				<td>Port: </td>
+				<td><input id="port_in" value="3020"></td>
+			</tr>
+			<tr>
+				<td>Path: </td>
+				<td><input id="dir_in" value="api/load"></td>
+			</tr>
+			<tr>
+				<td>Query: </td>
+				<td><input id="query_in" placeholder="var1=val1&var2=val2"></td>
+			</tr>
+			<tr>
+				<td>Response Type: </td>
+				<td>
+					<input id="rt_radio" name="resp_type" checked="true" type="radio">
+					<span>JSON</span>
+					<input id="rt_radio2" name="resp_type" type="radio">
+					<span>Plain Text</span>
+				</td>
+			</tr>
+			<tr>
+				<td>Payload (PUT): </td>
+				<td><textarea id="payload_ta" placeholder="var1: val1, var2: val2"></textarea></td>
+			</tr>
+		</table>
+		<h3>Request Response: </h3>
+		<textarea id="out_ta" readonly></textarea>
 	</div>
-	<div><iframe id="test_frame" style="width: 600px; height: 800px;"></iframe></div>
-	</div>
+	<div><iframe id="test_frame"></iframe></div>
+</div>
 
-<script>
-	InputStorage.restore();
-	test_frame.style.display = "none";
-	
-	function constructReq() {
-		var url = "";
-		var protocol = proto_in.value;
-		if(protocol) {
-			url += protocol + "://";
-			if(protocol == "file") {
-				url += "/";
-			}
-		}
-		
-		var domain = domain_in.value;
-		if(domain) {
-			url += domain;
-		}
-		
-		var port = +port_in.value;
-		if(port) {
-			url += ":" + port;
-		}
-		
-		var dir = dir_in.value;
-		if(dir) {
-			if(dir.charAt(0) == "/") {
-				dir = dir.substr(1);
-				dir_in.value = dir;
-			}
-			url += "/" + dir;
-		}
-		
-		var q = query_in.value;
-		if(q) {
-			if(q.charAt(0) == "?") {
-				q = q.substr(1);
-				query_in.value = q;
-			}
-			url += "?" + encodeURIComponent(q); // TODO: url encode
-		}
-		req_in.value = url;
-	}
-	function extractReq() {
-		var url = req_in.value;
-		url = url.replace(/^\s+/, "").replace(/\s+$/, ""); // trim white spaces
-		req_in.value = url;
-		
-		var matches = url.split("://");
-		if(matches.length > 1) {
-			proto_in.value = matches.shift();
-			url = matches.join("://");
-		} else {
-			proto_in.value = "";
-		}
-		url = url.replace(/^\//, "");
-		
-		port_in.value = "";
-		if(url.indexOf(":") >= 0) {
-			url = url.replace(/:\d*/, function(m) {
-				port_in.value = m.substr(1);
-				return "";
-			});
-		}
-		
-		matches = url.split("\/");
-		domain_in.value = matches.shift();
-		
-		url = matches.join("\/");
-		matches = url.split("?");
-		if(matches.length > 1) {
-			dir_in.value = matches[0];
-			query_in.value = matches[1];
-		} else {
-			dir_in.value = url;
-			query_in.value = "";
-		}
-	}
-	function JSONParse(str) {
-		if(!str) { return null; }
-		try {
-			return JSON.parse(str);
-		} catch (err1) {
-			try {
-				str = str.replace(/[\t\n\r]/g, ""); // Strip all tabs
-				str = str.replace(/^\s+/, "").replace(/\s+$/, ""); // trim white spaces
-				if(str.charAt(0) != "{") {
-					str = "{" + str + "}";
-				}
-				str = str.replace(/['\w]+ *(?=:(?!\/))/g, function(val) {
-					if(val) {
-						val = val.replace(/ /g, ""); // trim all spaces
-						var ch = val.charAt(0);
-						if(ch == "'") { // JSON cannot parse single quote
-							return val.replace(/'/g, '"');
-						}
-						if(ch != '"') { // JSON.parse requires each key to be enclosed with double quotes
-							return '"' + val + '"';
-						}
-					}
-					return val;
-				});
-				return JSON.parse(str);
-			} catch (err2) {
-				console.warn(err2.message);
-			}
-		} 
-		return null;
-	}
-	function submitRequest() {
-		InputStorage.save();
-		status_txt.textContent = "";
-		out_ta.value = "";
-		test_frame.style.display = "none";
-		
-		if(payload_ta.value) {
-			var payload = JSONParse(payload_ta.value);
-			if(!payload) {
-				status_txt.textContent += "Payload cannot be parsed. No request sent. ";
-				return;
-			}
-			payload_ta.value = JSON.stringify(payload, null, 2);
-		}
-		
-		var xhr = new HttpRequest(req_in.value, payload);
-		if(rt_radio2.checked) {
-			xhr.setResponseType("text");
-		}
-		
-		status_txt.textContent += "Request sent. ";
-		submit_btn.disabled = true;
-		xhr.send().then(function(res) {
-			status_txt.textContent = "Response received. ";
-			submit_btn.disabled = false;
-			
-			if(xhr.getResponseType() != "text") {
-				out_ta.value = JSON.stringify(res, null, 2);
-				if(res.document && res.document.indexOf("<html") >= 0) {
-					var txt = HtmlDocument.getHeader() + 
-						HtmlDocument.isolateBodyTag(res.document) + 
-						HtmlDocument.getFooter();
-					HtmlDocument.writeIFrame(test_frame, txt);
-					test_frame.style.display = "";
-				}
-			} else {
-				out_ta.value = res; // decodeURIComponent
-			}
-		})
-		.catch(function(msg) {
-			status_txt.textContent += "Error occured. ";
-			submit_btn.disabled = false;
-			
-			out_ta.value = msg;
-			if(msg.indexOf("<html") >= 0) {
-				HtmlDocument.writeIFrame(test_frame, msg);
-				test_frame.style.display = "";
-			}
-		});
-	}
-	
-	constructReq();
-</script>
+<script src="js/http-request.min.js"></script>
 
 </body>
 </html>

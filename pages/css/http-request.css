@@ -1,0 +1,2 @@
+html{padding:0;margin:0;-webkit-overflow-scrolling:touch}body{padding:20px;margin:0;box-sizing:border-box}body>h1,body>h2{margin-top:0}@media(max-width:450px){body{padding:5px}}@supports(-webkit-overflow-scrolling:touch){*{cursor:pointer}}
+body{font-family:Tahoma}#req_in{width:559px}.column > *{display:inline-block;vertical-align:top}td input:not[type="radio"]{width:572px}iframe{width:600px;height:800px}#payload_ta{width:570px;height:90px}#out_ta{width:689px;height:180px}
