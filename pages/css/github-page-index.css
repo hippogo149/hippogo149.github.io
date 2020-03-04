@@ -1,4 +1,0 @@
-html{padding:0;margin:0;-webkit-overflow-scrolling:touch}body{padding:20px;margin:0;box-sizing:border-box}body>h1,body>h2{margin-top:0}@media(max-width:450px){body{padding:5px}}@supports(-webkit-overflow-scrolling:touch){*{cursor:pointer}}
-.inline-table{display:inline-block}.js-table thead td,.js-table thead th{cursor:pointer;text-align:center;position:relative}.js-table .sorted:after{content:" ";position:absolute;left:calc(50% - 0.5em);top:0;width:0;height:0;border:solid 5px transparent}.js-table .ascending:after{border-top-width:0;border-bottom-color:black}.js-table .descending:after{border-bottom-width:0;border-top-color:black}.content-table td{padding:0;text-align:center;vertical-align:middle}.cell-editor{text-align:center}
-
-body,table{font-family:Arial;width:100%}td:nth-child(2){text-align:center}td:nth-child(3){text-align:right}

@@ -6,12 +6,66 @@
 	<title>Hippogo149 Pages</title>
 	<link  href="data:;base64,iVBORw0KGgo=" rel="icon">
 	
-	<link href="css/github-page-index.css" rel="stylesheet">
-	<link href="css/table-styles.css" rel="stylesheet">
+	<style>
+	body {
+		font-family: Arial;
+		margin: 0;
+		padding: 20px;
+		box-sizing: border-box;
+	}
+	#index_tbl {
+		display: flex;
+		width: 100%;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+	}
+	#index_tbl>*{
+		width: 30%;
+		box-sizing: border-box;
+		padding: 10px;
+	}
+	#index_tbl>*:nth-child(odd) {
+		background-color: #eee;
+	}
+	small {
+		color: black;
+	}
+	@media (max-width: 600px) { 
+		#index_tbl>*{
+			width: 100%;
+		}
+	}
+	</style>
+	
 	<body>
 		<h1>Index of /pages</h1>
 		<div id="index_tbl"></div>
 		
-		<script src="js/github-page-index.min.js"></script>
+<script>
+	fetch("file-info.json", {
+		method: "GET",
+		headers: { "Content-Type": "application/json" }
+	}).then(function(res) {
+		if (res.status >= 200 && res.status < 300) { // Status checking is not part of the spec
+			return res.json();
+		} else {
+			throw res.status + ": " + res.statusText;
+		}
+	}).then(function(fileList) {
+		var fileCount = fileList.length;
+		for(var i = 0; i < fileCount; ++i) {
+			var fileInfo = fileList[i];
+			var link = document.createElement("a");
+			var span = document.createElement("span");
+			var small = document.createElement("small");
+			link.href = span.textContent = fileInfo[0];
+			small.textContent = " (" + (((fileInfo[2] / 102.4) | 0) / 10) + " KB)";
+			link.appendChild(span);
+			link.appendChild(small);
+			index_tbl.appendChild(link);
+		}
+	});
+</script>
 	</body>
 </html>
