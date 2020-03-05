@@ -1,0 +1,2 @@
+html{padding:0;margin:0;-webkit-overflow-scrolling:touch}body{padding:20px;margin:0;box-sizing:border-box}body>h1,body>h2{margin-top:0}@media(max-width:450px){body{padding:5px}}@supports(-webkit-overflow-scrolling:touch){*{cursor:pointer}}
+#indenter_div{padding-left:20px}#indenter_div>*{vertical-align:top}#p_output{color:darkblue}input{text-align:right;width:80px}input[readonly="true"]{color:grey}#demo_frame{display:inline-block;margin-left:20px;max-height:421px;overflow:auto}#demo_frame td{border:1px solid grey}
