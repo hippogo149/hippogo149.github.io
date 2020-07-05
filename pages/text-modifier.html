@@ -10,37 +10,23 @@
 </head>
 <body>
 	<h2>Text Modifier</h2>
-	<div>
-		<div class="column">
-			<div class="top-line">
-				<table class="space-between"><tr>
-					<td>Text Input: </td>
-					<td><button id="replace_btn"> Replace Input with Output </button></td>
-				</tr></table>
-			</div>
-			<hr>
-			<textarea id="txt_input"></textarea>
-		</div>
-		<div class="column">
-			<div class="top-line">
-				<select id="mode_sel"></select>
-				<div id="param_list" class="inline-block">
+	<div class="flex-row space-between align-start flex-wrap">
+		<div id="sel_module">
+			<select id="mode_sel" class="w100" multiple></select>
+			<fieldset>
+				<legend>Options</legend>
+				<div id="param_list">
 					<span id="param_label"></span>
 					<input id="param_input"></input>
 					<span id="param_closure"></span>
 				</div>
-			</div>
-			<hr>
-			<textarea id="txt_output"></textarea>
+			</fieldset>
 		</div>
-		<div class="column">
-			<div class="top-line"> Example: </div>
-			<hr>
-			<textarea id="ex_input" readonly></textarea>
-			<textarea id="ex_output" readonly></textarea>
-		</div>
+		<div class="v-separator"></div>
+		<div id="main_module"></div>
+		<div class="v-separator"></div>
+		<div id="example_module"></div>
 	</div>
-
 	
 	<script src="js/text-modifier.min.js"></script>
 </body>
