@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<title>Pasting Clipboard Data</title>
+		<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+		<style>
+			body {
+				font-family: sans-serif;
+				padding: 8px;
+				box-sizing: border-box;
+				margin: 0;
+			}
+			hr {
+				margin: 5px;
+			}
+			textarea {
+				width: 100%;
+				max-width: 100%;
+				padding: 4px;
+				box-sizing: border-box;
+			}
+			#example_frame:empty {
+				height: 200px;
+			}
+			#example_frame:empty:after {
+				content: "Try Pasting Clipboard Data Here";
+			}
+			fieldset {
+				position: relative;
+			}
+			#hidden_in {
+				padding: 0;
+				margin: 0;
+				height: 0;
+				visibility: hidden;
+				position: absolute;
+				left: 0;
+				top: 0;
+			}
+			iframe {
+				width: 100%;
+				border: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div><big>Text/Plain</big></div>
+		<textarea id="plain_ta" placeholder="Try Pasting Clipboard Data Here"></textarea>
+		<hr>
+		<div><big>Text/HTML</big></div>
+		<textarea id="html_ta" placeholder="Try Pasting Clipboard Data Here" readonly></textarea>
+		<hr>
+		<fieldset>
+			<legend>HTML</legend>
+			<input id="hidden_in">
+			<div id="example_frame" readonly></div>
+		</fieldset>
+		<fieldset>
+			<legend>IFrame</legend>
+			<iframe id="example_iframe"></iframe>
+		</fieldset>
+		
+		<script>
+		hidden_in.value = "dummy";
+		hidden_in.select();
+		hidden_in.addEventListener("copy", function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+		});
+		
+		plain_ta.focus();
+		plain_ta.addEventListener("paste", onClipboardPasted);
+		html_ta.addEventListener("paste", onClipboardPasted);
+		document.getElementsByTagName("fieldset")[0].addEventListener("paste", onClipboardPasted);
+		
+		plain_ta.addEventListener("copy", onClipboardCopied);
+		html_ta.addEventListener("copy", onClipboardCopied);
+		
+		function onClipboardCopied(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			
+			var txt = plain_ta.value;
+			var htmlTxt = "";
+			if(txt.match(/<.+>/)) {
+				htmlTxt = txt;
+			}
+			e.clipboardData.setData("text/plain", txt);
+			e.clipboardData.setData("text/html", htmlTxt);
+		}
+		function onClipboardPasted(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var htmlTxt = e.clipboardData.getData("text/html") || "";
+			var txt = e.clipboardData.getData("text/plain") || "";
+			
+			if(txt && !htmlTxt) {
+				if(txt.match(/<.+>/)) {
+					htmlTxt = txt;
+				}
+			}
+			
+			plain_ta.value = txt;
+			html_ta.value = htmlTxt ? htmlTxt : "<!-- No text/html Detected -->";
+			example_frame.innerHTML = htmlTxt;
+			
+			var doc = example_iframe.contentDocument;
+			doc.open();
+			if(htmlTxt.match(/<html/)) {
+				doc.write(htmlTxt);
+			}
+			doc.close();
+		}
+		</script>
+	</body>
+</html>
