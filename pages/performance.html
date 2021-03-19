@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,9 +10,43 @@
 	<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>
 
 	<style>
+		body {
+			font-family: sans-serif;
+		}
+		.main-panel {
+			width: 100%;
+			min-width: 500px;
+		}
+		big {
+			font-size: 1.5em;
+		}
+		input {
+			width: 40px;
+		}
+		textarea {
+			width: 100%;
+			max-width: 100%;
+			height: 120px;
+			box-sizing: border-box;
+		}
+		#teardown_ta {
+			height: 66px;
+		}
+		
+		.control-line {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+		.control-line button {
+			font-size: 1.2em;
+		}
+		.error {
+			color: red;
+		}
+		
 		table { 
-			display: inline-block;
-			vertical-align: top;
+			width: 100%;
 		}
 		thead td {
 			text-align: center;
@@ -22,7 +56,9 @@
 			padding: 8px;
 			border: 1px solid lightgrey;
 		}
-		tbody td {text-align: right;}
+		tbody td {
+			text-align: right;
+		}
 		tr:nth-child(even) td {
 			background-color: #efefef;
 		}
@@ -32,73 +68,87 @@
 		tr.fastest td {
 			background-color: lightgreen;
 		}
-		td:last-child div {
-			width: 100px;
+		.test-case {
+			width: 100%;
+			max-width: 400px;
+			height: 100%;
+			display: inline-block;
 			white-space: nowrap;
 			overflow:hidden;
 			text-overflow: ellipsis;
+			box-sizing: border-box;
+			cursor: pointer;
+			user-select: none;
 		}
-		#errMsg {
-			color: red;
+		.test-case.selected {
+			box-shadow: inset 0 0 0 1px blue;
 		}
 	</style>
 </head>
 <body>
-	<h2>Performance Tester</h2>
-
-	<div>
-		<button onclick="_startPerfTest()">Start Performance Test</button>
-		<span>Time Limit (ms): </span> <input id="txtTimeLimit" style="width: 40px;" type="text"/>
-		<span>Number of execution: </span> <input id="txtNoOfExec" style="width: 40px;" type="text"/>
-		<button onclick="_clearResults()">Clear Result(s)</button>
-	</div>
-	<div id="errMsg"></div>
-	<br>
-	<div id="beforePanel">
-		<div>Tear up:</div>
-		<textarea id="txtBefore" rows="8" cols="100" placeholder="var obj = {}; This section will not be included in the performance calculation and is performed only once."></textarea>
-	</div>
-	<br>
-	<div>
-		<div>Actual Test: </div>
-		<textarea id="txtActualTest" rows="8" cols="100"></textarea>
-	</div>
-	<br>
-	<div id="afterPanel">
-		<div>Tear down:</div>
-		<textarea id="txtAfter" rows="4" cols="100" placeholder="delete obj; This section will not be included in the performance calculation and is performed only once."></textarea>
-	</div>
-	<br>
-	<button onclick="_startPerfTest()">Start Performance Test</button>&#160;&#160;<span id="txtProgress"></span>
-	<br><br>
-	<div id="resultPanel">
+	<div class="main-panel">
+		<div>
+			<div>
+				<big>Tear up</big>
+				<small>The code in this phase will not be included in the performance calculation and is performed only once.</small>
+			</div>
+			<textarea id="tearup_ta" placeholder="var obj = {};"></textarea>
+		</div>
+		<br>
+		<div>
+			<div><big>Actual Test</big></div>
+			<textarea id="test_ta"></textarea>
+		</div>
+		<br>
+		<div>
+			<div>
+				<big>Tear down</big>
+				<small>The code in this phase will not be included in the performance calculation and is performed only once.</small>
+			</div>
+			<textarea id="teardown_ta" placeholder="delete obj; "></textarea>
+		</div>
+		<br>
+		<fieldset>
+			<legend>Test Settings</legend>
+			<span>Time Limit (ms):</span>
+			<input id="time_limit_in">
+			<span>Number of execution:</span>
+			<input id="num_exec_in">
+		</fieldset>
+		<br>
+		<div class="control-line">
+			<button id="start_btn">Start Performance Test</button>
+			<button id="clear_btn">Clear Result(s)</button>
+		</div>
+		<br>
+		<div id="status_line">No Test Result</div>
+		<br>
 		<table>
 			<thead>
 				<tr>
 					<td>#</td>
-					<td><div>Avg. execution time (ms)<br>The lesser, the better</div></td>
-					<td><div>Avg. number of execution<br>The higher, the better</div></td>
-					<td><div>Speed Ratio<br>Maximum is 1</div></td>
-					<td><div>Test String</div></td>
+					<td><div>Avg. execution time (ms)</div><div>The lesser, the better</div></td>
+					<td><div>Avg. number of execution</div><div>The higher, the better</div></td>
+					<td><div>Speed Ratio</div><div>Maximum is 1</div></td>
+					<td><div>Test Case</div></td>
 				</tr>
 			</thead>
-			<tbody id="resultTable"></tbody>
+			<tbody id="result_tbl"></tbody>
 		</table>
-		<button onclick="_clearResults()" style="vertical-align: top; margin-top: 18px;">Clear Result(s)</button>
 	</div>
 
 <script>
 	if(window.localStorage) { // In IE, localStorage may not exist
-		txtTimeLimit.value = window.localStorage.getItem("txtTimeLimit") || "100";
-		txtNoOfExec.value = window.localStorage.getItem("txtNoOfExec") || "30";
-		txtBefore.value = window.localStorage.getItem("txtBefore") || "";
-		txtActualTest.value = window.localStorage.getItem("txtActualTest") || "";
-		txtAfter.value = window.localStorage.getItem("txtAfter") || "";
+		time_limit_in.value = window.localStorage.getItem("time_limit_in") || "100";
+		num_exec_in.value = window.localStorage.getItem("num_exec_in") || "30";
+		tearup_ta.value = window.localStorage.getItem("tearup_ta") || "";
+		test_ta.value = window.localStorage.getItem("test_ta") || "";
+		teardown_ta.value = window.localStorage.getItem("teardown_ta") || "";
 	}
 
-	var _actualTest, _noOfExec, _timeLimit, _batchSize, _totalTime, _execCounts, _curCycle, _runningPerf;
+	var _actualTest, _noOfExec, _timeLimit, _batchSize, _totalTime, _execCounts, _curCycle, _runningPerf, _lastClickedTestCase;
 
-	function _startPerfTest() {
+	start_btn.addEventListener("click", function(e) {
 		if(!_parseInputs()) {
 			return;
 		}
@@ -109,24 +159,30 @@
 		_runningPerf = true;
 		
 		if(window.localStorage) { // In IE, localStorage may not exist
-			window.localStorage.setItem("txtTimeLimit", txtTimeLimit.value);
-			window.localStorage.setItem("txtNoOfExec", txtNoOfExec.value);
-			window.localStorage.setItem("txtBefore", txtBefore.value);
-			window.localStorage.setItem("txtActualTest", txtActualTest.value);
-			window.localStorage.setItem("txtAfter", txtAfter.value);
+			window.localStorage.setItem("time_limit_in", time_limit_in.value);
+			window.localStorage.setItem("num_exec_in", num_exec_in.value);
+			window.localStorage.setItem("tearup_ta", tearup_ta.value);
+			window.localStorage.setItem("test_ta", test_ta.value);
+			window.localStorage.setItem("teardown_ta", teardown_ta.value);
 		}
 		
-		_timeLimit = +txtTimeLimit.value || 100;
-		_noOfExec = +txtNoOfExec.value || 30;
+		_timeLimit = +time_limit_in.value || 100;
+		_noOfExec = +num_exec_in.value || 30;
 		_batchSize = 10;
 		_totalTime = 0;
 		_execCounts = [];
 		_curCycle = 0;
-		setTimeout(_onTimer, 1);
-	}
+		setTimeout(_onTimer);
+	});
+	clear_btn.addEventListener("click", function(e) {
+		while (result_tbl.firstChild) {
+			result_tbl.removeChild(result_tbl.firstChild);
+		}
+		_lastClickedTestCase = null;
+	});
 
 	function _onTimer() {
-		txtProgress.textContent = "Executing... [" + (_curCycle + 1) + "]";
+		status_line.textContent = "Executing... [" + (_curCycle + 1) + "]";
 		var execCount = 0;
 		var timeElapsed = 0;
 
@@ -144,7 +200,7 @@
 		_execCounts.push(execCount);
 		_curCycle++;
 		if(_curCycle < _noOfExec) {
-			setTimeout(_onTimer, 1);
+			setTimeout(_onTimer);
 		} else {
 			_concludeResults();
 		}
@@ -164,13 +220,18 @@
 		var td2 = document.createElement('td');
 		var td3 = document.createElement('td'); 
 		var td4 = document.createElement('td');
-		td0.textContent = resultTable.children.length + 1;
+		td0.textContent = result_tbl.children.length + 1;
 		td1.textContent = avgTime.toFixed(5);
 		td2.textContent = (Math.floor(totalCount / _noOfExec * 100) / 100).toFixed(2);
 		// td3.textContent = "";
 		var div = document.createElement("div");
-		div.textContent = txtActualTest.value;
-		div.title = txtActualTest.value;
+		div.className = "test-case";
+		var testText = div._testText = test_ta.value;
+		var shortenText = testText.length > 1000 ? testText.substr(0, 1000) : testText;
+		div.textContent = shortenText;
+		div.title = shortenText;
+		div.addEventListener("click", onTestCaseClicked);
+		div.addEventListener("dblclick", onTestCaseDblClicked);
 		td4.appendChild(div);
 		
 		var tr = document.createElement('tr');
@@ -180,10 +241,10 @@
 		tr.appendChild(td3);
 		tr.appendChild(td4);
 		
-		resultTable.insertBefore(tr, resultTable.firstChild);
+		result_tbl.insertBefore(tr, result_tbl.firstChild);
 		
 		// Find slowest and fastest results
-		var children = resultTable.children;
+		var children = result_tbl.children;
 		var min = NaN, max = NaN;
 		for(k = children.length; --k >= 0;) {
 			tr = children[k];
@@ -210,29 +271,42 @@
 			children[maxAt].className = "fastest";
 		}
 	}
-
-	function _clearResults() {
-		while (resultTable.firstChild) {
-			resultTable.removeChild(resultTable.firstChild);
+	
+	function onTestCaseClicked(e) {
+		var elem = e.currentTarget;
+		if(elem !== _lastClickedTestCase) {
+			if(_lastClickedTestCase) {
+				_lastClickedTestCase.classList.remove("selected");
+			}
+			_lastClickedTestCase = elem; 
+			elem.classList.add("selected");
 		}
 	}
-
+	function onTestCaseDblClicked(e) {
+		var elem = e.currentTarget;
+		test_ta.value = elem._testText;
+		e.preventDefault();
+		e.stopPropagation();
+	}
+	
 	function _parseInputs() {
-		errMsg.textContent = "";
+		status_line.classList.remove("error");
+		status_line.textContent = "Parsing...";
 		try {
-			_actualTest  =
+			_actualTest =
 				eval("(function(__batchSize) { "
-				+ txtBefore.value + ";\n"
+				+ tearup_ta.value + ";\n"
 				+ "var __begin = new Date().getTime();\n"
 				+ "for(var __j = __batchSize; --__j >= 0;) {\n"
-				+ txtActualTest.value + ";\n"
+				+ test_ta.value + ";\n"
 				+ "} var __end = new Date().getTime();\n"
-				+ txtAfter.value + ";\n"
+				+ teardown_ta.value + ";\n"
 				+ "return __end - __begin;})");
 			_actualTest(1); // Test the parsed function once
 			return true;
 		} catch(err) {
-			errMsg.textContent = err.message;
+			status_line.classList.add("error");
+			status_line.textContent = err.message;
 		}
 		return false;
 	}
