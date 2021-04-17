@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Maximum of 275 characters">
+	<title>Break Even Planner</title>
+	<link href="data:;base64,iVBORw0KGgo=" rel="icon">
+	
+	<link href="css/theme.css" rel="stylesheet">
+	<link href="css/table-styles.css" rel="stylesheet">
+	<link href="css/break-even.css" rel="stylesheet">
+</head>
+<body>
+	<h2>Break Even Planner</h2>
+	<div class="control-block">
+	<fieldset>
+		<legend>Portfolio</legend>
+		
+		<div class="label-line"><label for="price_in">Share Price:</label></div>
+		<input id="price_in" type="number" value="10">
+		
+		<div class="label-line"><label for="vol_in">Volume Amount:</label></div>
+		<input id="vol_in" type="number" value="1000" min="0" step="100">
+		
+		<div class="label-line"><label for="cost_in">Cost:</label></div>
+		<input id="cost_in">
+	</fieldset>
+	<fieldset>
+		<legend>Market</legend>
+		
+		<div class="label-line"><label for="mkt_price_in">Market Price:</label></div>
+		<input id="mkt_price_in" type="number" value="5">
+
+		<div class="label-line"><label for="pct_change_in">Percent Change:</label></div>
+		<input id="pct_change_in" type="number">
+		
+		<div class="label-line short-line"><label>Need <span id="recuperation_txt"></span> gain to restore loss</label></div>
+	</fieldset>
+	<fieldset>
+		<legend>Averaging Down</legend>
+		<div class="label-line"><label for="snd_vol_in">Volume Amount:</label></div>
+		<input id="snd_vol_in" type="number" value="0" min="0" step="100">
+		<div id="avg_table"></div>
+	</fieldset>
+	</div>
+	<fieldset>
+		<legend>Break Even Targets</legend>
+		<div id="be_table"></div>
+	</fieldset>
+	<br><br>
+	<b>Reference:</b><br>
+	<a href="https://en.wikipedia.org/wiki/Break-even" target="_blank">https://en.wikipedia.org/wiki/Break-even</a>
+	<a href="https://www.bogleheads.org/wiki/Percentage_gain_and_loss" target="_blank">https://www.bogleheads.org/wiki/Percentage_gain_and_loss</a>
+	
+<script src="js/break-even.min.js"></script>
+</body>
+</html>
