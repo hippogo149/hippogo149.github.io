@@ -172,6 +172,8 @@
 		_totalTime = 0;
 		_execCounts = [];
 		_curCycle = 0;
+		
+		status_line.textContent = "Executing... [1]";
 		setTimeout(_onTimer);
 	});
 	clear_btn.addEventListener("click", function(e) {
@@ -182,7 +184,6 @@
 	});
 
 	function _onTimer() {
-		status_line.textContent = "Executing... [" + (_curCycle + 1) + "]";
 		var execCount = 0;
 		var timeElapsed = 0;
 
@@ -200,6 +201,7 @@
 		_execCounts.push(execCount);
 		_curCycle++;
 		if(_curCycle < _noOfExec) {
+			status_line.textContent = "Executing... [" + (_curCycle + 1) + "]";
 			setTimeout(_onTimer);
 		} else {
 			_concludeResults();
@@ -208,6 +210,7 @@
 
 	function _concludeResults() {
 		_runningPerf = false;
+		status_line.textContent = "Done";
 		
 		var totalCount = 0;
 		for (var k = _noOfExec; --k >= 0;) {

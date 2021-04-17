@@ -163,17 +163,19 @@
 			return val.substr(1).replace(/\t/g, "    ");
 		});
 	}
-	var styleElem = document.head.getElementsByTagName("style")[0];
-	var txt = removeTabs(styleElem.innerText);
-	var preElems = document.getElementsByTagName("pre");
-	
-	preElems[0].innerText = txt.match(/\.centering-flex[\w\W]*?}/)[0];
-	preElems[1].innerText = txt.match(/\.filling-table[\w\W]*?}/)[0] 
-		+ "\n" + txt.match(/\.centering-cell[\w\W]*?}/)[0];
-	preElems[2].innerText = txt.match(/\.centering-ghost[\w\W]*?}/g).join("\n");
-	preElems[3].innerText = txt.match(/\.centering-transform[\w\W]*?}/g).join("\n");
-	preElems[4].innerText = txt.match(/\.centering-line[\w\W]*?}/)[0];
-	preElems[5].innerText = txt.match(/\.centering-button[\w\W]*?}/)[0];
+	if(document.head) {
+		var styleElem = document.head.getElementsByTagName("style")[0];
+		var txt = removeTabs(styleElem.innerText);
+		var preElems = document.getElementsByTagName("pre");
+		
+		preElems[0].innerText = txt.match(/\.centering-flex[\w\W]*?}/)[0];
+		preElems[1].innerText = txt.match(/\.filling-table[\w\W]*?}/)[0] 
+			+ "\n" + txt.match(/\.centering-cell[\w\W]*?}/)[0];
+		preElems[2].innerText = txt.match(/\.centering-ghost[\w\W]*?}/g).join("\n");
+		preElems[3].innerText = txt.match(/\.centering-transform[\w\W]*?}/g).join("\n");
+		preElems[4].innerText = txt.match(/\.centering-line[\w\W]*?}/)[0];
+		preElems[5].innerText = txt.match(/\.centering-button[\w\W]*?}/)[0];
+	}
 	</script>
 </body>
 </html>
