@@ -40,12 +40,16 @@
 	<fieldset>
 		<legend>Averaging Down</legend>
 		<div class="label-line"><label for="snd_vol_in">Volume Amount:</label></div>
-		<input id="snd_vol_in" type="number" value="0" min="0" step="100">
+		<div class="split-line">
+			<input id="snd_vol_in" type="number" value="0" min="0" step="100">
+			<button id="apply_btn">Apply</button>
+		</div>
+		
 		<div id="avg_table"></div>
 	</fieldset>
 	</div>
 	<fieldset>
-		<legend>Break Even Targets</legend>
+		<legend>Expected Rebounds</legend>
 		<div id="be_table"></div>
 	</fieldset>
 	<br><br>
