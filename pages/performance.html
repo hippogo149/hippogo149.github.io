@@ -5,88 +5,12 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Performance Tester</title>
 	<link href="data:;base64,iVBORw0KGgo=" rel="icon">
-	<link href="../assets/html.css" rel="stylesheet">
-	<script src="../assets/por.min.js"></script>
+	<link href="css/performance.css" rel="stylesheet">
+	
 	<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>
-
-	<style>
-		body {
-			font-family: sans-serif;
-		}
-		.main-panel {
-			width: 100%;
-			min-width: 500px;
-		}
-		big {
-			font-size: 1.5em;
-		}
-		input {
-			width: 40px;
-		}
-		textarea {
-			width: 100%;
-			max-width: 100%;
-			height: 120px;
-			box-sizing: border-box;
-		}
-		#teardown_ta {
-			height: 66px;
-		}
-		
-		.control-line {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-		}
-		.control-line button {
-			font-size: 1.2em;
-		}
-		.error {
-			color: red;
-		}
-		
-		table { 
-			width: 100%;
-		}
-		thead td {
-			text-align: center;
-			font-weight: bold;
-		}
-		td {
-			padding: 8px;
-			border: 1px solid lightgrey;
-		}
-		tbody td {
-			text-align: right;
-		}
-		tr:nth-child(even) td {
-			background-color: #efefef;
-		}
-		tr.slowest td {
-			background-color: lightpink;
-		}
-		tr.fastest td {
-			background-color: lightgreen;
-		}
-		.test-case {
-			width: 100%;
-			max-width: 400px;
-			height: 100%;
-			display: inline-block;
-			white-space: nowrap;
-			overflow:hidden;
-			text-overflow: ellipsis;
-			box-sizing: border-box;
-			cursor: pointer;
-			user-select: none;
-		}
-		.test-case.selected {
-			box-shadow: inset 0 0 0 1px blue;
-		}
-	</style>
+	<script src="js/performance.min.js"></script>
 </head>
 <body>
-	<div class="main-panel">
 		<div>
 			<div>
 				<big>Tear up</big>
@@ -123,19 +47,8 @@
 		<br>
 		<div id="status_line">No Test Result</div>
 		<br>
-		<table>
-			<thead>
-				<tr>
-					<td>#</td>
-					<td><div>Avg. execution time (ms)</div><div>The lesser, the better</div></td>
-					<td><div>Avg. number of execution</div><div>The higher, the better</div></td>
-					<td><div>Speed Ratio</div><div>Maximum is 1</div></td>
-					<td><div>Test Case</div></td>
-				</tr>
-			</thead>
-			<tbody id="result_tbl"></tbody>
-		</table>
-	</div>
+		<div id="result_tbl"></div>
+
 
 <script>
 	if(window.localStorage) { // In IE, localStorage may not exist
@@ -208,72 +121,6 @@
 		}
 	}
 
-	function _concludeResults() {
-		_runningPerf = false;
-		status_line.textContent = "Done";
-		
-		var totalCount = 0;
-		for (var k = _noOfExec; --k >= 0;) {
-			totalCount += _execCounts[k];
-		}
-		var avgTime = Math.floor(_totalTime / totalCount * 100000) / 100000;
-
-		var td0 = document.createElement('td');
-		var td1 = document.createElement('td');
-		var td2 = document.createElement('td');
-		var td3 = document.createElement('td'); 
-		var td4 = document.createElement('td');
-		td0.textContent = result_tbl.children.length + 1;
-		td1.textContent = avgTime.toFixed(5);
-		td2.textContent = (Math.floor(totalCount / _noOfExec * 100) / 100).toFixed(2);
-		// td3.textContent = "";
-		var div = document.createElement("div");
-		div.className = "test-case";
-		var testText = div._testText = test_ta.value;
-		var shortenText = testText.length > 1000 ? testText.substr(0, 1000) : testText;
-		div.textContent = shortenText;
-		div.title = shortenText;
-		div.addEventListener("click", onTestCaseClicked);
-		div.addEventListener("dblclick", onTestCaseDblClicked);
-		td4.appendChild(div);
-		
-		var tr = document.createElement('tr');
-		tr.appendChild(td0);
-		tr.appendChild(td1);
-		tr.appendChild(td2);
-		tr.appendChild(td3);
-		tr.appendChild(td4);
-		
-		result_tbl.insertBefore(tr, result_tbl.firstChild);
-		
-		// Find slowest and fastest results
-		var children = result_tbl.children;
-		var min = NaN, max = NaN;
-		for(k = children.length; --k >= 0;) {
-			tr = children[k];
-			var val = +tr.cells[2].textContent;
-			if(!(val >= min)) {
-				min = val;
-				minAt = k;
-			}
-			if(!(val <= max)) {
-				max = val;
-				maxAt = k;
-			}
-			tr.className = "";
-		}
-		var maxVal = +children[maxAt].cells[2].textContent;
-		for(k = children.length; --k >= 0;) {
-			tr = children[k];
-			var val = +tr.cells[2].textContent;
-			tr.cells[3].textContent = (Math.floor(val / maxVal * 10000) / 10000).toFixed(4);
-		}
-		
-		if(minAt !== maxAt) {
-			children[minAt].className = "slowest";
-			children[maxAt].className = "fastest";
-		}
-	}
 	
 	function onTestCaseClicked(e) {
 		var elem = e.currentTarget;
