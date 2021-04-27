@@ -5,6 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Performance Tester</title>
 	<link href="data:;base64,iVBORw0KGgo=" rel="icon">
+	<link href="css/theme.css" rel="stylesheet">
+	<link href="css/table-styles.css" rel="stylesheet">
 	<link href="css/performance.css" rel="stylesheet">
 	
 	<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>
@@ -58,19 +60,46 @@
 		test_ta.value = window.localStorage.getItem("test_ta") || "";
 		teardown_ta.value = window.localStorage.getItem("teardown_ta") || "";
 	}
+	var tbl = null;
+	var tester = new PerfTester({
+		"listeners": {
+			"testStarted": onTestStarted,
+			"testCompleted": onTestCompleted,
+			// "caseStarted": function(e) {},
+			// "caseCompleted": function(e) {},
+			"progress": onProgress,
+			"error": onError
+		}
+	});
 
-	var _actualTest, _noOfExec, _timeLimit, _batchSize, _totalTime, _execCounts, _curCycle, _runningPerf, _lastClickedTestCase;
+	var _lastClickedTestCase;
 
 	start_btn.addEventListener("click", function(e) {
-		if(!_parseInputs()) {
+		if(tester.isRunningTest()) { // Prevent running perf test twice during the test
 			return;
 		}
+		tester.config({
+			round: +num_exec_in.value,
+			roundInterval: +time_limit_in.value
+		});
 		
-		if(_runningPerf) { // Prevent running perf test twice during the test
-			return;
+		tester.runTest({
+			"testContent": test_ta.value,
+			"before": tearup_ta.value,
+			"after": teardown_ta.value
+		});
+	});
+	clear_btn.addEventListener("click", function(e) {
+		tester.clearTestResults();
+		_lastClickedTestCase = null;
+		if(tbl) {
+			tbl.setRowCount(0);
 		}
-		_runningPerf = true;
-		
+	});
+	
+	function onTestStarted(e) {
+		status_line.classList.remove("error");
+		status_line.textContent = "Executing... [" + 0 + "]";
 		if(window.localStorage) { // In IE, localStorage may not exist
 			window.localStorage.setItem("time_limit_in", time_limit_in.value);
 			window.localStorage.setItem("num_exec_in", num_exec_in.value);
@@ -78,49 +107,32 @@
 			window.localStorage.setItem("test_ta", test_ta.value);
 			window.localStorage.setItem("teardown_ta", teardown_ta.value);
 		}
-		
-		_timeLimit = +time_limit_in.value || 100;
-		_noOfExec = +num_exec_in.value || 30;
-		_batchSize = 10;
-		_totalTime = 0;
-		_execCounts = [];
-		_curCycle = 0;
-		
-		status_line.textContent = "Executing... [1]";
-		setTimeout(_onTimer);
-	});
-	clear_btn.addEventListener("click", function(e) {
-		while (result_tbl.firstChild) {
-			result_tbl.removeChild(result_tbl.firstChild);
-		}
-		_lastClickedTestCase = null;
-	});
-
-	function _onTimer() {
-		var execCount = 0;
-		var timeElapsed = 0;
-
-		while (timeElapsed < _timeLimit){
-			var diff = _actualTest(_batchSize);
-			_totalTime += diff;
-			timeElapsed += diff;
-			execCount += _batchSize;
-			if(diff <= 0) {
-				_batchSize++;
-			} else if(_batchSize > 1 && diff > _timeLimit) {
-				_batchSize--;
-			}
-		}
-		_execCounts.push(execCount);
-		_curCycle++;
-		if(_curCycle < _noOfExec) {
-			status_line.textContent = "Executing... [" + (_curCycle + 1) + "]";
-			setTimeout(_onTimer);
-		} else {
-			_concludeResults();
+	}
+	function onTestCompleted(e) {
+		status_line.textContent = "Test Completed";
+		var results = tester.getTestResults();
+		tbl = tester.createResultTable(results, result_tbl);
+		var cells = tbl.getCellsInColumn(tbl.getColumnCount() - 1);
+		var len = cells.length;
+		for(var i = 0; i < len; ++i) {
+			var cell = cells[i];
+			var div = document.createElement("div");
+			div.textContent = cell.textContent;
+			cell.textContent = "";
+			cell.appendChild(div);
+			cell.classList.add("test-case");
+			cell.addEventListener("click", onTestCaseClicked);
+			cell.addEventListener("dblclick", onTestCaseDblClicked);
+			cell._testText = results[i].testContent;
 		}
 	}
-
+	function onProgress(e) {
+		status_line.textContent = "Executing... [" + e.round + "]";
+	}
+	function onError(e) {
+		status_line.classList.add("error");
+		status_line.textContent = e.message;
+	}
 	
 	function onTestCaseClicked(e) {
 		var elem = e.currentTarget;
@@ -137,28 +149,6 @@
 		test_ta.value = elem._testText;
 		e.preventDefault();
 		e.stopPropagation();
-	}
-	
-	function _parseInputs() {
-		status_line.classList.remove("error");
-		status_line.textContent = "Parsing...";
-		try {
-			_actualTest =
-				eval("(function(__batchSize) { "
-				+ tearup_ta.value + ";\n"
-				+ "var __begin = new Date().getTime();\n"
-				+ "for(var __j = __batchSize; --__j >= 0;) {\n"
-				+ test_ta.value + ";\n"
-				+ "} var __end = new Date().getTime();\n"
-				+ teardown_ta.value + ";\n"
-				+ "return __end - __begin;})");
-			_actualTest(1); // Test the parsed function once
-			return true;
-		} catch(err) {
-			status_line.classList.add("error");
-			status_line.textContent = err.message;
-		}
-		return false;
 	}
 </script>
 
