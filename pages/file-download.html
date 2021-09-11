@@ -11,19 +11,33 @@
 	body {
 		font-family: Arial;
 		font-size: 12px;
+		text-align: center;
+	}
+	button {
+		font-size: 16px;
+		padding: 10px;
+		margin: 10px 0px;
+		position: relative;
+		cursor: pointer;
+	}
+	button a {
+		display: inline-block;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		left: 0;
+		top: 0;
 	}
 	</style>
 </head>
 <body>
 	
 	<button id="download_btn">Click to Download a Text File (Using Link)</button>
-	
+	<hr>
 	<button id="download_btn2">Click to Download a Text File (Using Extension's API)</button>
 	
 <script>
 	var link = createDownloadLink("test.txt", "test test test");
-	link.textContent = download_btn.textContent;
-	download_btn.textContent = "";
 	download_btn.appendChild(link);
 	
 	
@@ -52,6 +66,7 @@
 		anchor.download = fileName;
 		anchor.href = url;
 		anchor._url = url;
+		anchor.title = "Download " + fileName;
 		
 		return anchor;
 	}
