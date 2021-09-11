@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>File Downloading</title>
+	<link href="data:;base64,iVBORw0KGgo=" rel="icon">
+	<link href="../assets/html.css" rel="stylesheet">
+	
+	<style>
+	body {
+		font-family: Arial;
+		font-size: 12px;
+	}
+	</style>
+</head>
+<body>
+	
+	<button id="download_btn">Click to Download a Text File (Using Link)</button>
+	
+	<button id="download_btn2">Click to Download a Text File (Using Extension's API)</button>
+	
+<script>
+	var link = createDownloadLink("test.txt", "test test test");
+	link.textContent = download_btn.textContent;
+	download_btn.textContent = "";
+	download_btn.appendChild(link);
+	
+	
+	download_btn2.addEventListener("click", function() {
+		saveAs("test.txt", "test test test");
+	});
+	
+	
+	// https://code-boxx.com/create-save-files-javascript/
+	function download(fileName, content) {
+		var link = createDownloadLink(fileName, content);
+		
+		document.body.appendChild(link);
+		forceClick(link);
+		document.body.removeChild(link);
+		window.URL.revokeObjectURL(link._url)
+	}
+	function createUrlData(content) {
+		return "data:text/plain;charset=utf-8," + encodeURIComponent(content);
+	}
+	function createDownloadLink(fileName, content) {
+		var myBlob = new Blob([content], {type: "text/plain"});
+		var url = window.URL.createObjectURL(myBlob);
+		
+		var anchor = document.createElement("a");
+		anchor.download = fileName;
+		anchor.href = url;
+		anchor._url = url;
+		
+		return anchor;
+	}
+	function forceClick(elem) {
+		if (document.createEvent) {
+			var event = document.createEvent("MouseEvents");
+			event.initEvent("click", true, true);
+			elem.dispatchEvent(event);
+		} else {
+			elem.click();
+		}
+	}
+	
+	// https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/downloads
+	function saveAs(fileName, content) {
+		var myBlob = new Blob([content], {type: "text/plain"});
+		var url = window.URL.createObjectURL(myBlob);
+		var clearUrl = function() {
+			window.URL.revokeObjectURL(url);
+			browser.downloads.onChanged.removeListener(clearUrl);
+		};
+		browser.downloads.onChanged.addListener(clearUrl);
+
+		var promise = browser.downloads.download({
+			url : url,
+			filename : fileName,
+			saveAs: true // Cause error in FireFox Android
+			// conflictAction : "uniquify"
+		});
+		
+		promise.then(function(id) {
+			console.log("Download Completed");
+		}).catch(function(e) {
+			console.log(e);
+		});
+	}
+</script>
+	
+</body>
+</html>
