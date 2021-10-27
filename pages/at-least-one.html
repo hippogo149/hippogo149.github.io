@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Maximum of 275 characters">
+	<title>At Least One</title>
+	<link href="data:;base64,iVBORw0KGgo=" rel="icon">
+	
+	<link href="css/theme.css" rel="stylesheet">
+	<!-- <link href="css/table-styles.css" rel="stylesheet"> -->
+	<link href="css/at-least-one.css" rel="stylesheet">
+	
+</head>
+<body>
+	<table id="main_tbl">
+		<colgroup>
+			<col>
+			<col>
+		</colgroup>
+		<tr>
+			<td>
+				<div>Total Number of Events</div>
+				<div class="small">Number of every possible outcomes from a single pick/try</div>
+			</td>
+			<td><input id="pool_in" value="52" type="number" max="100" min="1"></td>
+		</tr>
+		<tr>
+			<td>Number of Success Events</td>
+			<td><input id="hit_in" value="4" type="number" min="0"></td>
+		</tr>
+		<tr>
+			<td>
+				<div>Success Rate</div>
+				<div class="small">Chance of getting a success on the first pick/try</div>
+			</td>
+			<td id="success_cell"></td>
+		</tr>
+		<tr>
+			<td>
+				<div>Independent Events</div>
+				<div class="small">If enabled, # events is not reduced by 1 for each pick/try</div>
+			</td>
+			<td><div id="independent_chk"></div></td>
+		</tr>
+		<tr>
+			<td>Number of Picks/Tries</td>
+			<td><input id="pick_in" value="5" type="number" min="1"></td>
+		</tr>
+		<tr>
+			<td>Chance of at Least One Success</td>
+			<td id="alo_cell"></td>
+		</tr>
+		<tr>
+			<td>Chance of Failure</td>
+			<td id="failure_cell"></td>
+		</tr>
+		<tr>
+			<td>
+				<div>Chance of Getting All Successes</div>
+				<div class="small">Chance of getting a success on every pick/try, or getting every success event, if number of picks/tries is greater than number of success events</div>
+			</td>
+			<td id="all_success_cell"></td>
+		</tr>
+		<tr>
+			<td>
+				<div>Chance of at Least <input id="aln_in" value="2" type="number" min="0"> Success(es)</div>
+			</td>
+			<td id="aln_success_cell"></td>
+		</tr>
+		<tr>
+			<td>
+				<div>Chance of Exactly <input id="exact_in" value="1" type="number" min="0"> Success(es)</div>
+			</td>
+			<td id="exact_success_cell"></td>
+		</tr>
+	</table>
+	<hr>
+	<div>Examples and References</div>
+	<ul>
+		<li>Chances of getting 4 Aces in 5-card draw: 1 in 54,145 hands on average (about 0.002%)</li>
+		<li>Chances of getting at least 3 lands in 7-card draw on a 60-card deck with 24 lands: 58.79%</li>
+		<li>Chances of getting at least one rare (3%) from a single 10 pull: 26.26%</li>
+		<li>Chances of getting exactly 2 sixes from rolling 3 dices: 6.94%</li>
+		<li>The probability that a ball in a <a href="https://en.wikipedia.org/wiki/Bean_machine" target="_blank">Galton box</a> with 8 layers ends up in the central bin is 70/256 (about 27.34%)</li>
+		<li><a href="https://en.wikipedia.org/wiki/Combination" target="_blank">Combination</a></li>
+		<li><a href="https://en.wikipedia.org/wiki/Binomial_distribution" target="_blank">Binomial Distribution</a></li>
+		<li><a href="https://en.wikipedia.org/wiki/Hypergeometric_distribution" target="_blank">Hypergeometric Distribution</a></li>
+		<li><a href="https://en.wikipedia.org/wiki/Poker_probability" target="_blank">Poker Probability</a></li>
+	</ul>
+	
+	<script src="js/at-least-one.min.js"></script>
+</body>
+</html>
