@@ -1,0 +1,2 @@
+html{padding:0;margin:0;-webkit-overflow-scrolling:touch}body{padding:20px;margin:0;box-sizing:border-box}body>h1,body>h2{margin-top:0}@media(max-width:450px){body{padding:5px}}@supports(-webkit-overflow-scrolling:touch){*{cursor:pointer}}
+.input-processor{height:600px}.normal-line{line-height:1.5em}
