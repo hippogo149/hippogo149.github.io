@@ -12,17 +12,32 @@
 	<link href="css/tag-sorter.css" rel="stylesheet">
 </head>
 <body>
-	<div class="normal-line">
-		Sort by:
-		<select id="sort_by_sel"></select>
-		<input id="attr_in" placeholder="Attribute name">
-		<br>
-		Sort order:
-		<select id="sort_order_sel"></select>
-		<br>
-		Data type:
-		<select id="data_type_sel"></select>
-	</div>
+	<table id="option_tbl">
+		<colgroup>
+			<col>
+			<col>
+		</colgroup>
+		<tr>
+			<td>
+				Sort by:
+				<select id="sort_by_sel"></select>
+				<input id="attr_in" placeholder="Attribute name" disabled></td>
+			<td>
+				Sort order:
+				<select id="sort_order_sel"></select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Data type:
+				<select id="data_type_sel"></select>
+			</td>
+			<td>
+				Exclude extension:
+				<input id="ext_chk" type="checkbox" checked>
+			</td>
+		</tr>
+	</table>
 	<hr>
 	<div id="input_processor"></div>
 	
