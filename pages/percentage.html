@@ -17,144 +17,240 @@
 			font-size: 22px;
 		}
 
-		body {
-			text-align: center;
+		.input-row {
+			display: flex;
+			padding: 20px 40px;
+			box-sizing: border-box;
 		}
-		input {
-			width: 140px;
-		}
-		table {
-			border-collapse: separate;
-		}
-		.js-table td {
-			border-radius: 5px;
+		.input-row>* {
+			flex: 1;
 			padding: 10px;
+			box-sizing: border-box;
 		}
-		td:first-child {
-			text-align: right;
+		label input {
+			width: 100%;
+			box-sizing: border-box;
 		}
-		td[colspan] {
+		.output-row {
 			text-align: center;
 		}
-		div+div {
-			margin-top: 4px;
-		}
-		div[style] span:nth-child(odd) {
+		span[id] {
 			color: red;
 		}
 	</style>
 
 </head>
 <body>
-	<h2>Percentage Calculator</h2>
-	<div id="tbl_div" class="inline-table"></div>
+	<h1>Percentage Calculator</h1>
 	
-<script>
-	var tbl = new Table(tbl_div, 2, 6);
-	Dom.appendChild(tbl.getCell(0, 0),
-		Dom.appendChild(Dom.block(), Dom.text("Value: "), Dom.numericInput()),
-		Dom.appendChild(Dom.block(), Dom.text("Percentage: "), Dom.tag("input"))
-	);
-	tbl.getCell(1, 0).appendChild(
-		Dom.appendChild(Dom.block(), Dom.text("Total: "), Dom.numericInput())
-	);
-	var spans0 = tbl.spanBlock(0, 1, 1, 1).appendChild(
-		Dom.texts("", " percent of ", "", " is ", "")
-		// What is 5% of 200? >> 10
-	).children;
-
-	Dom.appendChild(tbl.getCell(0, 2),
-		Dom.appendChild(Dom.block(), Dom.text("Initial: "), Dom.numericInput()),
-		Dom.appendChild(Dom.block(), Dom.text("% Change: "), Dom.tag("input"))
-	);
-	tbl.getCell(1, 2).appendChild(
-		Dom.appendChild(Dom.block(), Dom.text("Final: "), Dom.numericInput())
-	);
-	var spans3 = tbl.spanBlock(0, 1, 3, 3).appendChild(
-		Dom.texts("", " is changed to ", "", " for ", "", " percent")
-		// 10 is what% of 200? >> 5%
-	).children;
+	<div class="input-row">
+		<label>Initial value: <input id="in0_val_in" type="number" value="200"></label>
+		<label>% change: <input id="in0_pct_chng_in" type="number" value="20"></label>
+		<label>Final value: <input id="in0_final_in" type="number"></label>
+	</div>
+	<div class="output-row" id="out0_div">
+		<span id="out0_val"></span>
+		<span>changed by</span>
+		<span id="out0_net_chng"></span>
+		(<span id="out0_pct_chng"></span>%)
+		<span>gives</span>
+		<span id="out0_final"></span>
+	</div>
 	
-	Dom.appendChild(tbl.getCell(0, 4),
-		Dom.appendChild(Dom.block(), Dom.text("Change: "), Dom.numericInput()),
-		Dom.appendChild(Dom.block(), Dom.text("Percentage: "), Dom.tag("input"))
-	);
-	tbl.getCell(1, 4).appendChild(
-		Dom.appendChild(Dom.block(), Dom.text("Principal: "), Dom.numericInput())
-	);
-	var spans5 = tbl.spanBlock(0, 1, 5, 5).appendChild(
-		Dom.texts("", " is ", "", " percent of ", "")
-		// 10 is 5% of what? >> 200
-	).children;
+	<hr>
 	
-	var inputList = tbl.getElement().getElementsByTagName("INPUT");
-	var inputs = [];
-	for(var i = inputList.length; --i >= 0;) { inputs[i] = inputList[i]; }
+	<div class="input-row">
+		<label>Initial value: <input id="in2_val_in" type="number" value="200"></label>
+		<label>Final value: <input id="in2_final_in" type="number" value="120"></label>
+		<label>% change: <input id="in2_pct_chng_in" type="number"></label>
+	</div>
+	<div class="output-row" id="out2_div">
+		<span id="out2_val"></span>
+		<span>is changed to</span>
+		<span id="out2_final"></span>
+		<span>for</span>
+		<span id="out2_net_chng"></span>
+		(<span id="out2_pct_chng"></span>%)
+	</div>
 	
-	tbl.addEventListener("change", onInputChange);
-	var v, t, p, pc;
-	var vMap = {0: 10, 3: 10, 6: 10};
-	var tMap = {2: 50, 5: 50, 8: 50};
+	<hr>
 	
-	setTimeout(function() {
-		inputs[1].focus();
-		inputs[1].select();
-	}, 100);
-	onInputChange({target: inputs[0]});
-	function onInputChange(e) {
-		var tgt = e.target;
-		var index = inputs.indexOf(tgt);
-		var vIndex = vMap[index] != null ? index : 0;
-		var tIndex = tMap[index] != null ? index : 2;
-		if(index === 4) { // pc is changed. Calculate t and p
-			pc = Ut.getNumericValue(inputs[4], 0);
-			v = Ut.getNumericValue(inputs[vIndex], vMap[vIndex]);
-			
-			t = v + v * pc / 100;
-			p = Ut.round(v / t * 100);
-		} else { // Calculate pc
-			if(index === 6 || index === 7) { // p or v is changed. Calculate t
-				p = Ut.getNumericValue(inputs[7], 0);
-				v = Ut.getNumericValue(inputs[vIndex], vMap[vIndex]);
-				
-				t = Ut.round(v / p * 100);
-			} else if(index === 1 || index === 2) { // t is changed. Calculate v
-				p = Ut.getNumericValue(inputs[1], 0);
-				t = Ut.getNumericValue(inputs[tIndex], tMap[tIndex]);
-				
-				v = Ut.round(p * t / 100);
-			} else { // v (0, 3) or t (5, 8) is changed. Calculate p
-				v = Ut.getNumericValue(inputs[vIndex], vMap[vIndex]);
-				t = Ut.getNumericValue(inputs[tIndex], tMap[tIndex]);
-				
-				p = Ut.round(v / t * 100);
-			}
-			pc = Ut.round((t - v) / Math.abs(v) * 100);
-		}
-		render();
-	};
-	function render() {
-		inputs[0].value = v;
-		inputs[1].value = p;
-		inputs[2].value = t;
-		inputs[3].value = v;
-		inputs[4].value = pc;
-		inputs[5].value = t;
-		inputs[6].value = v;
-		inputs[7].value = p;
-		inputs[8].value = t;
+	<div class="input-row">
+		<label>Percentage: <input id="in1_pct_in" type="number" value="20"></label>
+		<label>Total value: <input id="in1_total_in" type="number" value="120"></label>
+		<label>Value: <input id="in1_val_in" type="number"></label>
+	</div>
+	<div class="output-row" id="out1_div">
+		<span id="out1_pct"></span>
+		<span>percent of</span>
+		<span id="out1_total"></span>
+		<span>is</span>
+		<span id="out1_val"></span>
+	</div>
+	
+	<hr>
+	
+	<div class="input-row">
+		<label>Net change: <input id="in3_diff_in" type="number" value="30"></label>
+		<label>% change: <input id="in3_pct_chng_in" type="number" value="40"></label>
+		<label>Principal: <input id="in3_val_in" type="number"></label>
+	</div>
+	<div class="output-row" id="out3_div">
+		<span id="out3_chng"></span>
+		<span>is</span>
+		<span id="out3_pct"></span>
+		<span>percent of</span>
+		<span id="out3_prin"></span>
+	</div>
+	
+	<script>
+		in0_val_in.addEventListener("input", onStartingInput0Change);
+		in0_pct_chng_in.addEventListener("input", onStartingInput0Change);
+		in0_final_in.addEventListener("input", onEndingInput0Change);
 		
-		spans0[0].textContent = p;
-		spans0[2].textContent = t;
-		spans0[4].textContent = v;
-		spans3[0].textContent = v;
-		spans3[2].textContent = t;
-		spans3[4].textContent = pc;
-		spans5[0].textContent = v;
-		spans5[2].textContent = p;
-		spans5[4].textContent = t;
-	}
-</script>
+		in2_val_in.addEventListener("input", onStartingInput2Change);
+		in2_final_in.addEventListener("input", onStartingInput2Change);
+		in2_pct_chng_in.addEventListener("input", onEndingInput2Change);
+		
+		in1_pct_in.addEventListener("input", onStartingInput1Change);
+		in1_total_in.addEventListener("input", onStartingInput1Change);
+		in1_val_in.addEventListener("input", onEndingInput1Change);
+		
+		in3_diff_in.addEventListener("input", onStartingInput3Change);
+		in3_pct_chng_in.addEventListener("input", onStartingInput3Change);
+		in3_val_in.addEventListener("input", onEndingInput3Change);
+		
+		function calcPercentChange(initVal, finalVal) {
+			const diff = finalVal - initVal;
+			return {
+				diff,
+				pctChng: diff * 100 / Math.abs(initVal)
+			};
+		}
+		function round(val) {
+			return Math.round(val * 100) / 100;
+		}
+		function setTexts(elems, ...args) {
+			let elemCount = elems.length;
+			for(let i = 0; i < elemCount; ++i) {
+				let elem = elems[i];
+				let val = args[i];
+				elem.textContent = (val || val === 0) ? round(val) : 'NaN';
+			}
+		}
+		function onStartingInput0Change() {
+			const initVal = Number(in0_val_in.value); 
+			const pctChng = Number(in0_pct_chng_in.value);
+			const diff = initVal * pctChng / 100
+			const finalVal = in0_final_in.value = initVal + diff;
+			
+			setTexts(
+				out0_div.querySelectorAll('span[id]'), 
+				initVal, 
+				diff, 
+				pctChng, 
+				finalVal
+			);
+		}
+		function onEndingInput0Change() {
+			const initVal = Number(in0_val_in.value); 
+			const finalVal = Number(in0_final_in.value);
+			const ret = calcPercentChange(initVal, finalVal);
+			in0_pct_chng_in.value = ret.pctChng;
+			
+			setTexts(
+				out0_div.querySelectorAll('span[id]'), 
+				initVal, 
+				ret.diff, 
+				ret.pctChng, 
+				finalVal
+			);
+		}
+		
+		function onStartingInput1Change() {
+			const pctChng = Number(in1_pct_in.value);
+			const initVal = Number(in1_total_in.value);
+			const finalVal = in1_val_in.value = initVal * pctChng / 100;
+			
+			setTexts(
+				out1_div.querySelectorAll('span[id]'), 
+				pctChng, 
+				initVal, 
+				finalVal
+			);
+		}
+		function onEndingInput1Change() {
+			const pctChng = Number(in1_pct_in.value);
+			const finalVal = Number(in1_val_in.value);
+			const initVal = in1_total_in.value = finalVal / pctChng * 100;
+			
+			setTexts(
+				out1_div.querySelectorAll('span[id]'), 
+				pctChng, 
+				initVal, 
+				finalVal
+			);
+		}
+		
+		function onStartingInput2Change() {
+			const initVal = Number(in2_val_in.value);
+			const finalVal = Number(in2_final_in.value);
+			const ret = calcPercentChange(initVal, finalVal);
+			in2_pct_chng_in.value = ret.pctChng;
+			
+			setTexts(
+				out2_div.querySelectorAll('span[id]'), 
+				initVal, 
+				finalVal, 
+				ret.diff, 
+				ret.pctChng
+			);
+		}
+		function onEndingInput2Change() {
+			const initVal = Number(in2_val_in.value);
+			const pctChng = Number(in2_pct_chng_in.value);
+			const finalVal = in1_val_in.value = initVal * pctChng / 100;
+			const diff = finalVal - initVal;
+			
+			setTexts(
+				out2_div.querySelectorAll('span[id]'), 
+				initVal, 
+				finalVal,
+				diff,
+				pctChng
+			);
+		}
+		
+		function onStartingInput3Change() {
+			const diff = Number(in3_diff_in.value);
+			const pctChng = Number(in3_pct_chng_in.value);
+			const initVal = in3_val_in.value = diff * 100 / pctChng;
+			
+			setTexts(
+				out3_div.querySelectorAll('span[id]'), 
+				diff, 
+				pctChng, 
+				initVal
+			);
+		}
+		function onEndingInput3Change() {
+			const diff = Number(in3_diff_in.value);
+			const initVal = Number(in3_val_in.value);
+			const pctChng = in3_pct_chng_in.value = diff * 100 / initVal;
+			
+			setTexts(
+				out3_div.querySelectorAll('span[id]'), 
+				diff, 
+				pctChng, 
+				initVal
+			);
+		}
+		
+		onStartingInput0Change();
+		onStartingInput1Change();
+		onStartingInput2Change();
+		onStartingInput3Change();
+	</script>
 
 </body>
 </html>
